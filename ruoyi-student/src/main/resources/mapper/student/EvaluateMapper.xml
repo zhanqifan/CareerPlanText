@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.EvaluateMapper">
+    
+    <resultMap type="Evaluate" id="EvaluateResult">
+        <result property="evaluateId"    column="evaluate_id"    />
+        <result property="content"    column="content"    />
+        <result property="type"    column="type"    />
+        <result property="skillsId"    column="skills_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectEvaluateVo">
+        select evaluate_id, content, type, skills_id, create_by, create_time, update_time from evaluate
+    </sql>
+
+    <select id="selectEvaluateList" parameterType="Evaluate" resultMap="EvaluateResult">
+        <include refid="selectEvaluateVo"/>
+        <where>  
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="skillsId != null "> and skills_id = #{skillsId}</if>
+        </where>
+    </select>
+    
+    <select id="selectEvaluateByEvaluateId" parameterType="Integer" resultMap="EvaluateResult">
+        <include refid="selectEvaluateVo"/>
+        where evaluate_id = #{evaluateId}
+    </select>
+        
+    <insert id="insertEvaluate" parameterType="Evaluate">
+        insert into evaluate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="evaluateId != null">evaluate_id,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="skillsId != null">skills_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            update_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="evaluateId != null">#{evaluateId},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="skillsId != null">#{skillsId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            sysdate()
+         </trim>
+    </insert>
+
+    <update id="updateEvaluate" parameterType="Evaluate">
+        update evaluate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="skillsId != null">skills_id = #{skillsId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where evaluate_id = #{evaluateId}
+    </update>
+
+    <delete id="deleteEvaluateByEvaluateId" parameterType="Integer">
+        delete from evaluate where evaluate_id = #{evaluateId}
+    </delete>
+
+    <delete id="deleteEvaluateByEvaluateIds" parameterType="String">
+        delete from evaluate where evaluate_id in 
+        <foreach item="evaluateId" collection="array" open="(" separator="," close=")">
+            #{evaluateId}
+        </foreach>
+    </delete>
+</mapper>

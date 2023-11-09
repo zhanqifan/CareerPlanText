@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.TargetPositionMapper">
+    
+    <resultMap type="com.ruoyi.student.domain.TargetPosition" id="TargetPositionResult">
+        <result property="positionId"    column="position_id"    />
+        <result property="positionName"    column="position_name"    />
+        <result property="state"    column="state"    />
+        <result property="isMain"    column="is_main"    />
+        <result property="modificationsNumber"    column="modifications_number"    />
+        <result property="reviewsNumber"    column="reviews_number"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectTargetPositionVo">
+        select position_id, position_name, state, is_main, modifications_number, reviews_number, create_by, create_time from target_position
+    </sql>
+
+    <select id="selectTargetPositionList" parameterType="com.ruoyi.student.domain.TargetPosition" resultMap="TargetPositionResult">
+        <include refid="selectTargetPositionVo"/>
+        <where>  
+            <if test="positionName != null  and positionName != ''"> and position_name like concat('%', #{positionName}, '%')</if>
+            <if test="state != null "> and state = #{state}</if>
+            <if test="isMain != null "> and is_main = #{isMain}</if>
+            <if test="modificationsNumber != null "> and modifications_number = #{modificationsNumber}</if>
+            <if test="reviewsNumber != null "> and reviews_number = #{reviewsNumber}</if>
+            <if test="createby != null "> and create_by = #{createby}</if>
+        </where>
+    </select>
+    <select id="selectTargetPositionListByUserId" resultMap="TargetPositionResult" parameterType="String">
+        <include refid="selectTargetPositionVo"/> where create_by =#{createby}
+    </select>
+    
+    <select id="selectTargetPositionByPositionId" parameterType="string" resultMap="TargetPositionResult">
+        <include refid="selectTargetPositionVo"/>
+        where position_id = #{positionId}
+    </select>
+        
+    <insert id="insertTargetPosition" parameterType="com.ruoyi.student.domain.TargetPosition" useGeneratedKeys="true" keyProperty="positionId">
+        insert into target_position
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="positionId != null and positionId != ''">position_id,</if>
+            <if test="positionName != null and positionName != ''">position_name,</if>
+            <if test="state != null">`state`,</if>
+            <if test="isMain != null">is_main,</if>
+            <if test="modificationsNumber != null">modifications_number,</if>
+            <if test="reviewsNumber != null">reviews_number,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+           create_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="positionId != null and positionId != ''">#{positionId},</if>
+            <if test="positionName != null and positionName != ''">#{positionName},</if>
+            <if test="state != null">#{state},</if>
+            <if test="isMain != null">#{isMain},</if>
+            <if test="modificationsNumber != null">#{modificationsNumber},</if>
+            <if test="reviewsNumber != null">#{reviewsNumber},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            sysdate()
+         </trim>
+    </insert>
+
+    <update id="updateTargetPosition" parameterType="com.ruoyi.student.domain.TargetPosition">
+        update target_position
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="positionName != null and positionName != ''">position_name = #{positionName},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="isMain != null">is_main = #{isMain},</if>
+            <if test="modificationsNumber != null">modifications_number = #{modificationsNumber},</if>
+            <if test="reviewsNumber != null">reviews_number = #{reviewsNumber},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where position_id = #{positionId}
+    </update>
+
+    <delete id="deleteTargetPositionByPositionId" parameterType="Long">
+        delete from target_position where position_id = #{positionId}
+    </delete>
+
+    <delete id="deleteTargetPositionByPosition
+Ids" parameterType="String">
+        delete from target_position where position_id in
+        <foreach item="positionId" collection="array" open="(" separator="," close=")">
+            #{positionId}
+        </foreach>
+    </delete>
+</mapper>
