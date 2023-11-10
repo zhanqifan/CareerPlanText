@@ -39,7 +39,6 @@ public class EvaluateController extends BaseController
     /**
      * 查询评价列表
      */
-    @PreAuthorize("@ss.hasPermi('students:evaluate:list')")
     @GetMapping("/list")
     public TableDataInfo list(Evaluate evaluate)
     {
@@ -51,7 +50,6 @@ public class EvaluateController extends BaseController
     /**
      * 导出评价列表
      */
-    @PreAuthorize("@ss.hasPermi('students:evaluate:export')")
     @Log(title = "评价", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Evaluate evaluate)
@@ -64,7 +62,6 @@ public class EvaluateController extends BaseController
     /**
      * 获取评价详细信息
      */
-    @PreAuthorize("@ss.hasPermi('students:evaluate:query')")
     @GetMapping(value = "/{skillsId}")
     public AjaxResult getInfo(@PathVariable("skillsId") Integer skillsId)
     {
@@ -74,7 +71,6 @@ public class EvaluateController extends BaseController
     /**
      * 新增评价
      */
-    @PreAuthorize("@ss.hasPermi('students:evaluate:add')")
     @Log(title = "评价", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody EvaluateDTO evaluateDTO)
@@ -85,7 +81,6 @@ public class EvaluateController extends BaseController
     /**
      * 修改评价
      */
-    @PreAuthorize("@ss.hasPermi('students:evaluate:edit')")
     @Log(title = "评价", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody EvaluateDTO evaluateDTO)
@@ -96,7 +91,6 @@ public class EvaluateController extends BaseController
     /**
      * 删除评价
      */
-    @PreAuthorize("@ss.hasPermi('students:evaluate:remove')")
     @Log(title = "评价", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{evaluateId}")
     public AjaxResult remove(@PathVariable Integer evaluateId)

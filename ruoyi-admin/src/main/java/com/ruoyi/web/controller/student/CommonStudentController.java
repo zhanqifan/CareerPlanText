@@ -37,7 +37,6 @@ public class CommonStudentController extends BaseController
     /**
      * 查询公用 学生信息列表
      */
-    @PreAuthorize("@ss.hasPermi('student:student:list')")
     @GetMapping("/list")
     public TableDataInfo list(CommonStudent commonStudent)
     {
@@ -49,7 +48,6 @@ public class CommonStudentController extends BaseController
     /**
      * 导出公用 学生信息列表
      */
-    @PreAuthorize("@ss.hasPermi('student:student:export')")
     @Log(title = "公用 学生信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, CommonStudent commonStudent)
@@ -62,7 +60,6 @@ public class CommonStudentController extends BaseController
     /**
      * 获取公用 学生信息详细信息
      */
-    @PreAuthorize("@ss.hasPermi('student:student:query')")
     @GetMapping(value = "/{sId}")
     public AjaxResult getInfo(@PathVariable("sId") Long sId)
     {
@@ -72,7 +69,6 @@ public class CommonStudentController extends BaseController
     /**
      * 新增公用 学生信息
      */
-    @PreAuthorize("@ss.hasPermi('student:student:add')")
     @Log(title = "公用 学生信息", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody CommonStudent commonStudent)
@@ -83,7 +79,6 @@ public class CommonStudentController extends BaseController
     /**
      * 修改公用 学生信息
      */
-    @PreAuthorize("@ss.hasPermi('student:student:edit')")
     @Log(title = "公用 学生信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody CommonStudent commonStudent)
@@ -94,7 +89,6 @@ public class CommonStudentController extends BaseController
     /**
      * 删除公用 学生信息
      */
-    @PreAuthorize("@ss.hasPermi('student:student:remove')")
     @Log(title = "公用 学生信息", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{sIds}")
     public AjaxResult remove(@PathVariable Long[] sIds)

@@ -37,7 +37,6 @@ public class CtatlogueController extends BaseController
     /**
      * 查询技能目录列表
      */
-    @PreAuthorize("@ss.hasPermi('student:ctatlogue:list')")
     @GetMapping("/list")
     public AjaxResult list(Ctatlogue ctatlogue)
     {
@@ -48,7 +47,6 @@ public class CtatlogueController extends BaseController
     /**
      * 导出技能目录列表
      */
-    @PreAuthorize("@ss.hasPermi('student:ctatlogue:export')")
     @Log(title = "技能目录", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Ctatlogue ctatlogue)
@@ -61,7 +59,6 @@ public class CtatlogueController extends BaseController
     /**
      * 获取技能目录详细信息
      */
-    @PreAuthorize("@ss.hasPermi('student:ctatlogue:query')")
     @GetMapping(value = "/{catalogueId}")
     public AjaxResult getInfo(@PathVariable("catalogueId") Long catalogueId)
     {
@@ -71,7 +68,6 @@ public class CtatlogueController extends BaseController
     /**
      * 新增技能目录
      */
-    @PreAuthorize("@ss.hasPermi('student:ctatlogue:add')")
     @Log(title = "技能目录", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Ctatlogue ctatlogue)
@@ -82,7 +78,6 @@ public class CtatlogueController extends BaseController
     /**
      * 修改技能目录
      */
-    @PreAuthorize("@ss.hasPermi('student:ctatlogue:edit')")
     @Log(title = "技能目录", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Ctatlogue ctatlogue)
@@ -93,7 +88,6 @@ public class CtatlogueController extends BaseController
     /**
      * 删除技能目录
      */
-    @PreAuthorize("@ss.hasPermi('student:ctatlogue:remove')")
     @Log(title = "技能目录", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{catalogueIds}")
     public AjaxResult remove(@PathVariable Long[] catalogueIds)

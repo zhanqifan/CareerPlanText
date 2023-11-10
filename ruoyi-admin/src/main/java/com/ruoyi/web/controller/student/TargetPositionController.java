@@ -44,7 +44,6 @@ public class TargetPositionController extends BaseController
     /**
      * 查询岗位管理列表
      */
-    @PreAuthorize("@ss.hasPermi('student:position:list')")
     @GetMapping("/list")
     public TableDataInfo list(TargetPosition targetPosition)
     {
@@ -72,7 +71,6 @@ public class TargetPositionController extends BaseController
     /**
      * 获取岗位管理详细信息
      */
-    @PreAuthorize("@ss.hasPermi('student:position:query')")
     @GetMapping(value = "/{positionId}")
     public AjaxResult getInfo(@PathVariable("positionId") String positionId)
     {
@@ -82,7 +80,6 @@ public class TargetPositionController extends BaseController
     /**
      * 学生修改岗位管理
      */
-    @PreAuthorize("@ss.hasPermi('student:position:edit')")
     @Log(title = "岗位管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody SkillsInfo skillsInfo)
@@ -104,7 +101,6 @@ public class TargetPositionController extends BaseController
     /**
      * 导出岗位管理列表
      */
-    @PreAuthorize("@ss.hasPermi('student:position:export')")
     @Log(title = "岗位管理", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, TargetPosition targetPosition)
@@ -118,7 +114,6 @@ public class TargetPositionController extends BaseController
     /**
      * 删除岗位管理
      */
-    @PreAuthorize("@ss.hasPermi('student:position:remove')")
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{positionIds}")
     public AjaxResult remove(@PathVariable Long[] positioIds)

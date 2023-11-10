@@ -81,21 +81,18 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Transactional
     public int addTargetPosition(TargetPositionDTO targetPositionDTO) {
         String userId = SecurityUtils.getUserId().toString();
-        //TODO 添加岗位名称
         String positionId = IdUtils.fastSimpleUUID();
         TargetPosition targetPosition = new TargetPosition();
         targetPosition.setPositionId(positionId);
         targetPosition.setPositionName(targetPositionDTO.getPositionName());
         targetPosition.setCreateBy(userId);
         targetPosition.setState(targetPositionDTO.getState());
-        //TODO 添加岗位技能详情
         if(targetPositionMapper.insertTargetPosition(targetPosition)==1){
             List<SkillsInfo> skillsInfoList = targetPositionDTO.getSkillsInfoList();
-            System.out.println(skillsInfoList);
             for (SkillsInfo skillsInfo:skillsInfoList){
                 skillsInfo.setTargetPositionId(positionId);
                 skillsInfo.setCreateBy(userId);
-                System.out.println("岗位技能详情:"+skillsInfo);
+
                 skillsInfoService.insertSkillsInfo(skillsInfo);
             }
             return 1;
@@ -172,7 +169,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     public List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition)
     {
 
-        return targetPositionMapper.selectTargetPositionListByUserId(SecurityUtils.getUserId().toString());
+        return targetPositionMapper.selectTargetPositionListByUserId(SecurityUtils.getUsername());
     }
 
     /**
