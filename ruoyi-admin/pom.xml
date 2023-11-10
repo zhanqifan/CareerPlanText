@@ -64,6 +64,10 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-student</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ruoyi.teacher</groupId>
+            <artifactId>ruoyi-teacher</artifactId>
+        </dependency>
 
     </dependencies>
 

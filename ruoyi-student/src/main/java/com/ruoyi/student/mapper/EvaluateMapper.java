@@ -57,5 +57,8 @@ public interface EvaluateMapper
      * @param evaluateIds 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteEvaluateByEvaluateIds(Integer[] evaluateIds);
+    public int deleteEvaluateByEvaluateIds(Integer evaluateIds);
+
+    Evaluate selectEvaluateBySkillsId(Integer skillsId);
+
 }

@@ -67,5 +67,11 @@ public interface ITargetPositionService
 
     int updateskillsInfo(SkillsInfo skillsInfo);
 
-    int evaluateskills(SkillsInfo skillsInfo);
+
+
+    int repealPositionId(String positionId);
+
+    List<TargetPosition> selectTargetPositionListByUserName(String createBy);
+
+    List<TargetPosition> selectgetAbandonedTargetByStudentId(String studentId);
 }

@@ -52,11 +52,7 @@ public interface TargetPositionMapper
      */
     public int deleteTargetPositionByPositionId(Long positionId);
 
-    /**
-     * 批量删除岗位管理
-     * 
-     * @param positionIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteTargetPositionByPositionIds(Long[] positionIds);
+    List<TargetPosition> selectTargetPositionListByUserName(String createBy);
+
+    List<TargetPosition> selectgetAbandonedTargetByStudentId(String studentId);
 }

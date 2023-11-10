@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teacher.mapper.TeacherClassMapper">
+    
+    <resultMap type="TeacherClass" id="TeacherClassResult">
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="collegeId"    column="college_id"    />
+        <result property="professionalId"    column="professional_id"    />
+        <result property="grade"    column="grade"    />
+        <result property="classId"    column="class_id"    />
+    </resultMap>
+
+    <sql id="selectTeacherClassVo">
+        select teacher_id, class_id ,college_id,professional_id,grade from teacher_class
+    </sql>
+
+    <select id="selectTeacherClassList" parameterType="TeacherClass" resultMap="TeacherClassResult">
+        <include refid="selectTeacherClassVo"/>
+        <where>  
+            <if test="teacherId != null "> and teacher_id = #{teacherId}</if>
+            <if test="classId != null "> and class_id = #{classId}</if>
+            <if test="collegeId != null "> and college_id = #{collegeId}</if>
+            <if test="professionalId != null "> and professional_id = #{professionalId}</if>
+            <if test="grade != null "> and grade = #{grade}</if>
+        </where>
+    </select>
+    
+    <select id="selectTeacherClassByTeacherId" parameterType="Long" resultMap="TeacherClassResult">
+        <include refid="selectTeacherClassVo"/>
+        where teacher_id = #{teacherId}
+    </select>
+        
+    <insert id="insertTeacherClass" parameterType="TeacherClass">
+        insert into teacher_class
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="collegeId != null">college_id,</if>
+            <if test="professionalId != null">professional_id,</if>
+            <if test="grade != null">grade,</if>
+            <if test="classId != null">class_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="classId != null">#{collegeId},</if>
+            <if test="classId != null">#{professionalId},</if>
+            <if test="classId != null">#{grade},</if>
+            <if test="classId != null">#{classId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTeacherClass" parameterType="TeacherClass">
+        update teacher_class
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="classId != null">class_id = #{classId},</if>
+        </trim>
+        where teacher_id = #{teacherId}
+    </update>
+
+    <delete id="deleteTeacherClassByTeacherId" parameterType="Long">
+        delete from teacher_class where teacher_id = #{teacherId}
+    </delete>
+
+    <delete id="deleteTeacherClassByTeacherIds" parameterType="String">
+        delete from teacher_class where teacher_id in 
+        <foreach item="teacherId" collection="array" open="(" separator="," close=")">
+            #{teacherId}
+        </foreach>
+    </delete>
+</mapper>

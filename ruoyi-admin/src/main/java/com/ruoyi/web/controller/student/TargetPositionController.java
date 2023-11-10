@@ -13,6 +13,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.student.domain.SkillsInfo;
 import com.ruoyi.student.domain.dto.TargetPositionDTO;
 import com.ruoyi.student.domain.vo.TargetPositionVO;
+import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,13 +91,14 @@ public class TargetPositionController extends BaseController
     }
 
     /**
-     * 学生自评
+     * 废止目标
+     * @param positionId
+     * @return
      */
-    @PostMapping("/evaluate")
-    public AjaxResult evaluate(@RequestBody SkillsInfo skillsInfo){
-        return toAjax(targetPositionService.evaluateskills(skillsInfo));
+    @GetMapping("/repeal/{positionId}")
+    public AjaxResult repeal(@PathVariable("positionId") String positionId){
+        return toAjax(targetPositionService.repealPositionId(positionId));
     }
-
 
 
     /**

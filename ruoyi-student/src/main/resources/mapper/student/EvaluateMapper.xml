@@ -31,7 +31,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectEvaluateVo"/>
         where evaluate_id = #{evaluateId}
     </select>
-        
+
+    <select id="selectEvaluateBySkillsId" parameterType="int" resultMap="EvaluateResult">
+        <include refid="selectEvaluateVo"/>
+            where skills_id=#{skillsId}
+    </select>
+
     <insert id="insertEvaluate" parameterType="Evaluate">
         insert into evaluate
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -71,10 +76,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from evaluate where evaluate_id = #{evaluateId}
     </delete>
 
-    <delete id="deleteEvaluateByEvaluateIds" parameterType="String">
-        delete from evaluate where evaluate_id in 
-        <foreach item="evaluateId" collection="array" open="(" separator="," close=")">
-            #{evaluateId}
-        </foreach>
+    <delete id="deleteEvaluateByEvaluateIds" parameterType="Integer">
+        delete from evaluate where evaluate_id =#{evaluateId}
     </delete>
 </mapper>

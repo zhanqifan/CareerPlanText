@@ -42,15 +42,15 @@ public interface IEvaluateService
      * @param evaluate 评价
      * @return 结果
      */
-    public int updateEvaluate(Evaluate evaluate);
+    public int updateEvaluate(EvaluateDTO evaluateDTO);
 
     /**
      * 批量删除评价
      * 
-     * @param evaluateIds 需要删除的评价主键集合
+     * @param evaluateId 需要删除的评价主键集合
      * @return 结果
      */
-    public int deleteEvaluateByEvaluateIds(Integer[] evaluateIds);
+    public int deleteEvaluateByEvaluateIds(Integer evaluateId);
 
     /**
      * 删除评价信息
@@ -59,4 +59,6 @@ public interface IEvaluateService
      * @return 结果
      */
     public int deleteEvaluateByEvaluateId(Integer evaluateId);
+
+    Evaluate selectEvaluateBySkillsId(Integer skillsId);
 }

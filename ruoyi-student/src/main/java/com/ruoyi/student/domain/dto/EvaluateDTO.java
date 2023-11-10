@@ -17,6 +17,8 @@ public class EvaluateDTO {
     @Excel(name = "目标id")
     private Integer skillsId;
 
+    private Integer evaluateId;
+
     /** 评价内容 */
     @Excel(name = "评价内容")
     private String content;

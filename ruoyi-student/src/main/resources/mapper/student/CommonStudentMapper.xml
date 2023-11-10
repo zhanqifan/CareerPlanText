@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.CommonStudentMapper">
+    
+    <resultMap type="CommonStudent" id="CommonStudentResult">
+        <result property="sId"    column="s_id"    />
+        <result property="collegeCode"    column="college_code"    />
+        <result property="campusName"    column="campus_name"    />
+        <result property="campusCode"    column="campus_code"    />
+        <result property="sex"    column="sex"    />
+        <result property="professional"    column="professional"    />
+        <result property="classname"    column="classname"    />
+        <result property="sNum"    column="s_num"    />
+        <result property="phone"    column="phone"    />
+        <result property="name"    column="name"    />
+        <result property="college"    column="college"    />
+        <result property="politics"    column="politics"    />
+        <result property="grade"    column="grade"    />
+        <result property="cultivationLevel"    column="cultivation_level"    />
+        <result property="classCode"    column="class_code"    />
+        <result property="userid"    column="userid"    />
+    </resultMap>
+
+    <sql id="selectCommonStudentVo">
+        select s_id, college_code, campus_name, campus_code, sex, professional, classname, s_num, phone, name, college, politics, grade, cultivation_level, class_code, userid from common_student
+    </sql>
+
+    <select id="selectCommonStudentList" parameterType="CommonStudent" resultMap="CommonStudentResult">
+        <include refid="selectCommonStudentVo"/>
+        <where>  
+            <if test="collegeCode != null  and collegeCode != ''"> and college_code = #{collegeCode}</if>
+            <if test="campusName != null  and campusName != ''"> and campus_name like concat('%', #{campusName}, '%')</if>
+            <if test="campusCode != null  and campusCode != ''"> and campus_code = #{campusCode}</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="professional != null  and professional != ''"> and professional = #{professional}</if>
+            <if test="classname != null  and classname != ''"> and classname like concat('%', #{classname}, '%')</if>
+            <if test="sNum != null  and sNum != ''"> and s_num = #{sNum}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="college != null  and college != ''"> and college = #{college}</if>
+            <if test="politics != null  and politics != ''"> and politics = #{politics}</if>
+            <if test="grade != null  and grade != ''"> and grade = #{grade}</if>
+            <if test="cultivationLevel != null  and cultivationLevel != ''"> and cultivation_level = #{cultivationLevel}</if>
+            <if test="classCode != null  and classCode != ''"> and class_code = #{classCode}</if>
+            <if test="userid != null "> and userid = #{userid}</if>
+        </where>
+    </select>
+    
+    <select id="selectCommonStudentBySId" parameterType="Long" resultMap="CommonStudentResult">
+        <include refid="selectCommonStudentVo"/>
+        where s_id = #{sId}
+    </select>
+
+
+    <select id="selectCommonStudentBySNum"  parameterType="string" resultMap="CommonStudentResult">
+        select * from common_student where s_num=#{SName}
+
+    </select>
+
+    <insert id="insertCommonStudent" parameterType="CommonStudent">
+        insert into common_student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sId != null">s_id,</if>
+            <if test="collegeCode != null">college_code,</if>
+            <if test="campusName != null">campus_name,</if>
+            <if test="campusCode != null">campus_code,</if>
+            <if test="sex != null">sex,</if>
+            <if test="professional != null">professional,</if>
+            <if test="classname != null">classname,</if>
+            <if test="sNum != null">s_num,</if>
+            <if test="phone != null">phone,</if>
+            <if test="name != null">name,</if>
+            <if test="college != null">college,</if>
+            <if test="politics != null">politics,</if>
+            <if test="grade != null">grade,</if>
+            <if test="cultivationLevel != null">cultivation_level,</if>
+            <if test="classCode != null">class_code,</if>
+            <if test="userid != null">userid,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sId != null">#{sId},</if>
+            <if test="collegeCode != null">#{collegeCode},</if>
+            <if test="campusName != null">#{campusName},</if>
+            <if test="campusCode != null">#{campusCode},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="professional != null">#{professional},</if>
+            <if test="classname != null">#{classname},</if>
+            <if test="sNum != null">#{sNum},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="name != null">#{name},</if>
+            <if test="college != null">#{college},</if>
+            <if test="politics != null">#{politics},</if>
+            <if test="grade != null">#{grade},</if>
+            <if test="cultivationLevel != null">#{cultivationLevel},</if>
+            <if test="classCode != null">#{classCode},</if>
+            <if test="userid != null">#{userid},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCommonStudent" parameterType="CommonStudent">
+        update common_student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="collegeCode != null">college_code = #{collegeCode},</if>
+            <if test="campusName != null">campus_name = #{campusName},</if>
+            <if test="campusCode != null">campus_code = #{campusCode},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="professional != null">professional = #{professional},</if>
+            <if test="classname != null">classname = #{classname},</if>
+            <if test="sNum != null">s_num = #{sNum},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="college != null">college = #{college},</if>
+            <if test="politics != null">politics = #{politics},</if>
+            <if test="grade != null">grade = #{grade},</if>
+            <if test="cultivationLevel != null">cultivation_level = #{cultivationLevel},</if>
+            <if test="classCode != null">class_code = #{classCode},</if>
+            <if test="userid != null">userid = #{userid},</if>
+        </trim>
+        where s_id = #{sId}
+    </update>
+
+    <delete id="deleteCommonStudentBySId" parameterType="Long">
+        delete from common_student where s_id = #{sId}
+    </delete>
+
+    <delete id="deleteCommonStudentBySIds" parameterType="String">
+        delete from common_student where s_id in 
+        <foreach item="sId" collection="array" open="(" separator="," close=")">
+            #{sId}
+        </foreach>
+    </delete>
+</mapper>

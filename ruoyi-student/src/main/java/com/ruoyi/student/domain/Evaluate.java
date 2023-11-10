@@ -22,8 +22,8 @@ public class Evaluate extends BaseEntity
     @Excel(name = "评价内容")
     private String content;
 
-    /** 评价类型（students：学生自评，teacher:教师批阅） */
-    @Excel(name = "评价类型", readConverterExp = "s=tudents：学生自评，teacher:教师批阅")
+    /** 评价类型（students：学生自评，mapper:教师批阅） */
+    @Excel(name = "评价类型", readConverterExp = "s=tudents：学生自评，mapper:教师批阅")
     private String type;
 
     /** 目标id */

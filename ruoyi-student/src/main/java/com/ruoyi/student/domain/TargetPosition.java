@@ -3,6 +3,10 @@ package com.ruoyi.student.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -12,6 +16,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author lh
  * @date 2023-11-07
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TargetPosition extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -41,72 +48,5 @@ public class TargetPosition extends BaseEntity
 
 
 
-    public void setPositionId(String positionId)
-    {
-        this.positionId = positionId;
-    }
 
-    public String getPositionId()
-    {
-        return positionId;
-    }
-    public void setPositionName(String positionName)
-    {
-        this.positionName = positionName;
-    }
-
-    public String getPositionName()
-    {
-        return positionName;
-    }
-    public void setState(Integer state) 
-    {
-        this.state = state;
-    }
-
-    public Integer getState() 
-    {
-        return state;
-    }
-    public void setIsMain(Integer isMain) 
-    {
-        this.isMain = isMain;
-    }
-
-    public Integer getIsMain() 
-    {
-        return isMain;
-    }
-    public void setModificationsNumber(Integer modificationsNumber) 
-    {
-        this.modificationsNumber = modificationsNumber;
-    }
-
-    public Integer getModificationsNumber() 
-    {
-        return modificationsNumber;
-    }
-    public void setReviewsNumber(Integer reviewsNumber) 
-    {
-        this.reviewsNumber = reviewsNumber;
-    }
-
-    public Integer getReviewsNumber() 
-    {
-        return reviewsNumber;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-            .append("positionId", getPositionId())
-            .append("positionName", getPositionName())
-            .append("state", getState())
-            .append("isMain", getIsMain())
-            .append("modificationsNumber", getModificationsNumber())
-            .append("reviewsNumber", getReviewsNumber())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .toString();
-    }
 }

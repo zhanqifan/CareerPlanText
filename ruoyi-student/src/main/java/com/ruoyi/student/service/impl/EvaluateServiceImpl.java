@@ -70,7 +70,6 @@ public class EvaluateServiceImpl implements IEvaluateService
         skillsInfo.setCompletionStatus(evaluateDTO.getCompletionStatus());
         skillsInfo.setEvaluateState(1);
         skillsInfo.setCompleteTime(evaluateDTO.getCompleteTime());
-        System.out.println(skillsInfo);
         skillsInfoService.updateSkillsInfo(skillsInfo);
         //存储自评内容
         Evaluate evaluate = new Evaluate();
@@ -85,12 +84,15 @@ public class EvaluateServiceImpl implements IEvaluateService
     /**
      * 修改评价
      * 
-     * @param evaluate 评价
+     * @param evaluateDTO 评价
      * @return 结果
      */
     @Override
-    public int updateEvaluate(Evaluate evaluate)
+    public int updateEvaluate(EvaluateDTO evaluateDTO)
     {
+        Evaluate evaluate = new Evaluate();
+        evaluate.setEvaluateId(evaluateDTO.getEvaluateId());
+        evaluate.setContent(evaluateDTO.getContent());
         evaluate.setUpdateTime(DateUtils.getNowDate());
         return evaluateMapper.updateEvaluate(evaluate);
     }
@@ -102,8 +104,16 @@ public class EvaluateServiceImpl implements IEvaluateService
      * @return 结果
      */
     @Override
-    public int deleteEvaluateByEvaluateIds(Integer[] evaluateIds)
+    @Transactional
+    public int deleteEvaluateByEvaluateIds(Integer evaluateIds)
     {
+        //修改目标自评状态
+        Evaluate evaluate = evaluateMapper.selectEvaluateBySkillsId(evaluateIds);
+        SkillsInfo skillsInfo = new SkillsInfo();
+        skillsInfo.setEvaluateState(0);
+        skillsInfo.setId(evaluate.getSkillsId());
+        skillsInfoService.updateSkillsInfo(skillsInfo);
+        //删除自评
         return evaluateMapper.deleteEvaluateByEvaluateIds(evaluateIds);
     }
 
@@ -117,5 +127,16 @@ public class EvaluateServiceImpl implements IEvaluateService
     public int deleteEvaluateByEvaluateId(Integer evaluateId)
     {
         return evaluateMapper.deleteEvaluateByEvaluateId(evaluateId);
+    }
+
+    /**
+     * 根据目标id查询自评内容
+     * @param skillsId
+     * @return
+     */
+    @Override
+    public Evaluate selectEvaluateBySkillsId(Integer skillsId) {
+
+        return evaluateMapper.selectEvaluateBySkillsId(skillsId);
     }
 }

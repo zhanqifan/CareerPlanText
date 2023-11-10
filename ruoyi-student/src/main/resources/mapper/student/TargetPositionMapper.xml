@@ -38,7 +38,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectTargetPositionVo"/>
         where position_id = #{positionId}
     </select>
-        
+
+    <select id="selectTargetPositionListByUserName" parameterType="string" resultMap="TargetPositionResult" >
+        <include refid="selectTargetPositionVo"/>
+        where create_by=#{createBy}
+    </select>
+
+    <select id="selectgetAbandonedTargetByStudentId" parameterType="string" resultMap="TargetPositionResult">
+        <include refid="selectTargetPositionVo"/>
+        where create_by=#{studentId} and `state`=0
+    </select>
+
     <insert id="insertTargetPosition" parameterType="com.ruoyi.student.domain.TargetPosition" useGeneratedKeys="true" keyProperty="positionId">
         insert into target_position
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -67,12 +77,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update target_position
         <trim prefix="SET" suffixOverrides=",">
             <if test="positionName != null and positionName != ''">position_name = #{positionName},</if>
-            <if test="state != null">state = #{state},</if>
+            <if test="state != null">`state` = #{state},</if>
             <if test="isMain != null">is_main = #{isMain},</if>
             <if test="modificationsNumber != null">modifications_number = #{modificationsNumber},</if>
             <if test="reviewsNumber != null">reviews_number = #{reviewsNumber},</if>
-            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
         </trim>
         where position_id = #{positionId}
     </update>

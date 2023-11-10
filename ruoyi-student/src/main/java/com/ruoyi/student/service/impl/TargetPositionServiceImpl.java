@@ -2,14 +2,11 @@ package com.ruoyi.student.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
-import com.ruoyi.student.domain.Ctatlogue;
+
 import com.ruoyi.student.domain.SkillsInfo;
 import com.ruoyi.student.domain.dto.TargetPositionDTO;
 import com.ruoyi.student.domain.vo.SecondaryCtatlogue;
@@ -122,15 +119,47 @@ public class TargetPositionServiceImpl implements ITargetPositionService
         return skillsInfoService.updateSkillsInfo(skillsInfo);
     }
 
+
+
     /**
-     * 学生自评
-     * @param skillsInfo
+     * 废止目标
+     * @param positionId
      * @return
      */
     @Override
-    public int evaluateskills(SkillsInfo skillsInfo) {
-//        return skillsInfoService.evaluateskills(skillsInfo);
-        return 0;
+    public int repealPositionId(String positionId) {
+        List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionListByUserId(SecurityUtils.getUserId().toString());
+        //判断是否只有两个岗位
+        if (targetPositions.size()==2){
+            for (TargetPosition targetPosition:targetPositions){
+                //更改另一个目标的状态
+                if(!targetPosition.getPositionId().equals(positionId)){
+                    System.out.println(targetPosition);
+                    targetPosition.setIsMain(1);
+                    targetPositionMapper.updateTargetPosition(targetPosition);
+                }
+            }
+        }
+        TargetPosition targetPosition = new TargetPosition();
+        targetPosition.setPositionId(positionId);
+        targetPosition.setState(0);
+        targetPosition.setIsMain(0);
+        return targetPositionMapper.updateTargetPosition(targetPosition);
+    }
+
+    @Override
+    public List<TargetPosition> selectTargetPositionListByUserName(String createBy) {
+        return targetPositionMapper.selectTargetPositionListByUserName(createBy);
+    }
+
+    /**
+     * 查看学生废弃目标
+     * @param studentId
+     * @return
+     */
+    @Override
+    public List<TargetPosition> selectgetAbandonedTargetByStudentId(String studentId) {
+        return targetPositionMapper.selectgetAbandonedTargetByStudentId(studentId);
     }
 
     /**
@@ -142,6 +171,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Override
     public List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition)
     {
+
         return targetPositionMapper.selectTargetPositionListByUserId(SecurityUtils.getUserId().toString());
     }
 
@@ -179,7 +209,8 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Override
     public int deleteTargetPositionByPositionIds(Long[] positionIds)
     {
-        return targetPositionMapper.deleteTargetPositionByPositionIds(positionIds);
+//        return targetPositionMapper.deleteTargetPositionByPositionIds(positionIds);
+        return 0;
     }
 
     /**

@@ -65,10 +65,10 @@ public class EvaluateController extends BaseController
      * 获取评价详细信息
      */
     @PreAuthorize("@ss.hasPermi('students:evaluate:query')")
-    @GetMapping(value = "/{evaluateId}")
-    public AjaxResult getInfo(@PathVariable("evaluateId") Integer evaluateId)
+    @GetMapping(value = "/{skillsId}")
+    public AjaxResult getInfo(@PathVariable("skillsId") Integer skillsId)
     {
-        return success(evaluateService.selectEvaluateByEvaluateId(evaluateId));
+        return success(evaluateService.selectEvaluateBySkillsId(skillsId));
     }
 
     /**
@@ -88,9 +88,9 @@ public class EvaluateController extends BaseController
     @PreAuthorize("@ss.hasPermi('students:evaluate:edit')")
     @Log(title = "评价", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Evaluate evaluate)
+    public AjaxResult edit(@RequestBody EvaluateDTO evaluateDTO)
     {
-        return toAjax(evaluateService.updateEvaluate(evaluate));
+        return toAjax(evaluateService.updateEvaluate(evaluateDTO));
     }
 
     /**
@@ -98,9 +98,9 @@ public class EvaluateController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('students:evaluate:remove')")
     @Log(title = "评价", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{evaluateIds}")
-    public AjaxResult remove(@PathVariable Integer[] evaluateIds)
+	@DeleteMapping("/{evaluateId}")
+    public AjaxResult remove(@PathVariable Integer evaluateId)
     {
-        return toAjax(evaluateService.deleteEvaluateByEvaluateIds(evaluateIds));
+        return toAjax(evaluateService.deleteEvaluateByEvaluateIds(evaluateId));
     }
 }
