@@ -50,8 +50,6 @@ public class TeacherClassServiceImpl implements TeacherClassService {
     public List<StudentVO> selectStudent(StudentDTO studentDTO) {
         //使用学院，专业，年级查询
         ArrayList<StudentVO> studentVOS = new ArrayList<>();
-        System.out.println("前端传的值："+studentDTO);
-        System.out.println("学号/姓名：" + studentDTO.getUserName());
         if (StringUtils.isNull(studentDTO.getUserName())) {
             TeacherClass teacherClass = new TeacherClass();
 
@@ -61,9 +59,7 @@ public class TeacherClassServiceImpl implements TeacherClassService {
             teacherClass.setClassId(studentDTO.getClassId());
             teacherClass.setGrade(studentDTO.getGrade());
             //根据筛选参数查询教师教的班级
-            System.out.println(teacherClass);
             List<TeacherClass> teacherClasses = teacherClassMapper.selectTeacherClassList(teacherClass);
-            System.out.println("老师绑定的班级：" + teacherClasses);
             //查询该班级下的学生
             for (TeacherClass teacherClass1 : teacherClasses) {
                 SysUser sysUser = new SysUser();
@@ -71,7 +67,6 @@ public class TeacherClassServiceImpl implements TeacherClassService {
                 List<SysUser> sysUsers = sysUserService.selectUserList(sysUser);
                 for (SysUser sysUser1 : sysUsers) {
                     CommonStudent commonStudent = commonStudentService.selectCommonStudentBySNum(sysUser1.getUserName());
-                    System.out.println("班级里的学生：" + commonStudent);
                     StudentVO studentVO = this.EncapsulateStudentInfo(commonStudent);
                     studentVOS.add(studentVO);
                 }
@@ -87,7 +82,6 @@ public class TeacherClassServiceImpl implements TeacherClassService {
             }else {
                 sysUser.setNickName(sNumberOrStudentName);
             }
-            System.out.println(sysUser);
             List<SysUser> sysUsers = sysUserService.selectUserList(sysUser);
             //查询这个学生是否是在该教师所教授的班级中
             for (TeacherClass teacherClass1 : teacherClass) {

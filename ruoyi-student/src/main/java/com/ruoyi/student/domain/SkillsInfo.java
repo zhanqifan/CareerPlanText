@@ -25,8 +25,11 @@ public class SkillsInfo extends BaseEntity
     /** id */
     private Integer id;
 
-    /** 目录id */
-    @Excel(name = "目录id")
+    /**父目录id*/
+    private Long firstId;
+
+    /** 二级目录id */
+    @Excel(name = "二级目录id")
     private Long ctatlogueId;
 
     /** 技能名称 */

@@ -13,7 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 public class TargetPositionDTO{
 
-    /** 岗位id */
+
+    /**一级目录*/
+    private Long firstId;
+
+    /** 二级目录id */
     private Long positionId;
 
     /** 岗位名称 */

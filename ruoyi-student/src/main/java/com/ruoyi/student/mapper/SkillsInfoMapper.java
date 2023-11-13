@@ -60,4 +60,6 @@ public interface SkillsInfoMapper
     public int deleteSkillsInfoByIds(Integer[] ids);
 
     List<SkillsInfo> selectSkillsInfoByPositionId(String id);
+
+    List<SkillsInfo> selectSkillsInfoByUnfinished(String positionId);
 }

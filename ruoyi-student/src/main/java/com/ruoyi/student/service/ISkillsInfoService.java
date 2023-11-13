@@ -60,4 +60,10 @@ public interface ISkillsInfoService
     public int deleteSkillsInfoById(Integer id);
 
     List<SkillsInfo> selectSkillsInfoByPositionId(String id);
+
+    List<SkillsInfo> selectSkillsInfoByUnfinished(String positionId);
+
+    List<SkillsInfo> selectSkillsInfoByCompletions(String positionId);
+
+    void AnalyzeCatalogData(String positionId);
 }

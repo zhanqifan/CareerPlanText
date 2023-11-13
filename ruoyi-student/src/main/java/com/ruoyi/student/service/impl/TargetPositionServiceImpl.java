@@ -90,9 +90,9 @@ public class TargetPositionServiceImpl implements ITargetPositionService
         if(targetPositionMapper.insertTargetPosition(targetPosition)==1){
             List<SkillsInfo> skillsInfoList = targetPositionDTO.getSkillsInfoList();
             for (SkillsInfo skillsInfo:skillsInfoList){
+                skillsInfo.setFirstId(targetPositionDTO.getFirstId());
                 skillsInfo.setTargetPositionId(positionId);
                 skillsInfo.setCreateBy(userId);
-
                 skillsInfoService.insertSkillsInfo(skillsInfo);
             }
             return 1;

@@ -102,4 +102,25 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
     public List<SkillsInfo> selectSkillsInfoByPositionId(String id) {
         return skillsInfoMapper.selectSkillsInfoByPositionId(id);
     }
+
+    @Override
+    public List<SkillsInfo> selectSkillsInfoByUnfinished(String positionId) {
+        SkillsInfo skillsInfo = new SkillsInfo();
+        skillsInfo.setTargetPositionId(positionId);
+        skillsInfo.setCompletionStatus(0);
+        return skillsInfoMapper.selectSkillsInfoList(skillsInfo);
+    }
+
+    @Override
+    public List<SkillsInfo> selectSkillsInfoByCompletions(String positionId) {
+        SkillsInfo skillsInfo = new SkillsInfo();
+        skillsInfo.setTargetPositionId(positionId);
+        skillsInfo.setCompletionStatus(1);
+        return skillsInfoMapper.selectSkillsInfoList(skillsInfo);
+    }
+
+    @Override
+    public void AnalyzeCatalogData(String positionId) {
+
+    }
 }

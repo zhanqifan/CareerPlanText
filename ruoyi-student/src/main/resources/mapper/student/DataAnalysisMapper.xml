@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.DataAnalysisMapper">
+    
+    <resultMap type="DataAnalysis" id="DataAnalysisResult">
+        <result property="id"    column="id"    />
+        <result property="positionId"    column="position_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="targetNum"    column="target_num"    />
+        <result property="completionRate"    column="completion_rate"    />
+        <result property="deadlineDate"    column="deadline_date"    />
+        <result property="releaseDuration"    column="release_duration"    />
+        <result property="yearClose"    column="year_close"    />
+        <result property="moonClose"    column="moon_close"    />
+        <result property="yearCompletionRate"    column="year_completion_rate"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="completionsNum"    column="completions_num"    />
+        <result property="unfinishedNum"    column="unfinished_num"    />
+        <result property="timeoutCompletionsNum"    column="timeout_completions_num"    />
+        <result property="beforeCompletionsNum"    column="before_completions_num"    />
+        <result property="justCompletionsNum"    column="just_completions_num"    />
+        <result property="expiredTargetNum"    column="expired_target_num"    />
+        <result property="notExpiredTargetNum"    column="not_expired_target_num"    />
+    </resultMap>
+
+    <sql id="selectDataAnalysisVo">
+        select id, position_id, create_by, target_num, completion_rate, deadline_date, release_duration, year_close, moon_close, year_completion_rate, create_time, completions_num, unfinished_num, timeout_completions_num, before_completions_num, just_completions_num, expired_target_num, not_expired_target_num from data_analysis
+    </sql>
+
+    <select id="selectDataAnalysisList" parameterType="DataAnalysis" resultMap="DataAnalysisResult">
+        <include refid="selectDataAnalysisVo"/>
+        <where>  
+            <if test="positionId != null  and positionId != ''"> and position_id = #{positionId}</if>
+            <if test="targetNum != null "> and target_num = #{targetNum}</if>
+            <if test="completionRate != null  and completionRate != ''"> and completion_rate = #{completionRate}</if>
+            <if test="deadlineDate != null "> and deadline_date = #{deadlineDate}</if>
+            <if test="releaseDuration != null  and releaseDuration != ''"> and release_duration = #{releaseDuration}</if>
+            <if test="yearClose != null  and yearClose != ''"> and year_close = #{yearClose}</if>
+            <if test="moonClose != null  and moonClose != ''"> and moon_close = #{moonClose}</if>
+            <if test="yearCompletionRate != null  and yearCompletionRate != ''"> and year_completion_rate = #{yearCompletionRate}</if>
+            <if test="completionsNum != null "> and completions_num = #{completionsNum}</if>
+            <if test="unfinishedNum != null "> and unfinished_num = #{unfinishedNum}</if>
+            <if test="timeoutCompletionsNum != null "> and timeout_completions_num = #{timeoutCompletionsNum}</if>
+            <if test="beforeCompletionsNum != null "> and before_completions_num = #{beforeCompletionsNum}</if>
+            <if test="justCompletionsNum != null "> and just_completions_num = #{justCompletionsNum}</if>
+            <if test="expiredTargetNum != null "> and expired_target_num = #{expiredTargetNum}</if>
+            <if test="notExpiredTargetNum != null "> and not_expired_target_num = #{notExpiredTargetNum}</if>
+        </where>
+    </select>
+    
+    <select id="selectDataAnalysisById" parameterType="Long" resultMap="DataAnalysisResult">
+        <include refid="selectDataAnalysisVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertDataAnalysis" parameterType="DataAnalysis" useGeneratedKeys="true" keyProperty="id">
+        insert into data_analysis
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="positionId != null and positionId != ''">position_id,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="targetNum != null">target_num,</if>
+            <if test="completionRate != null and completionRate != ''">completion_rate,</if>
+            <if test="deadlineDate != null">deadline_date,</if>
+            <if test="releaseDuration != null and releaseDuration != ''">release_duration,</if>
+            <if test="yearClose != null and yearClose != ''">year_close,</if>
+            <if test="moonClose != null and moonClose != ''">moon_close,</if>
+            <if test="yearCompletionRate != null and yearCompletionRate != ''">year_completion_rate,</if>
+            create_time,
+            <if test="completionsNum != null">completions_num,</if>
+            <if test="unfinishedNum != null">unfinished_num,</if>
+            <if test="timeoutCompletionsNum != null">timeout_completions_num,</if>
+            <if test="beforeCompletionsNum != null">before_completions_num,</if>
+            <if test="justCompletionsNum != null">just_completions_num,</if>
+            <if test="expiredTargetNum != null">expired_target_num,</if>
+            <if test="notExpiredTargetNum != null">not_expired_target_num,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="positionId != null and positionId != ''">#{positionId},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="targetNum != null">#{targetNum},</if>
+            <if test="completionRate != null and completionRate != ''">#{completionRate},</if>
+            <if test="deadlineDate != null">#{deadlineDate},</if>
+            <if test="releaseDuration != null and releaseDuration != ''">#{releaseDuration},</if>
+            <if test="yearClose != null and yearClose != ''">#{yearClose},</if>
+            <if test="moonClose != null and moonClose != ''">#{moonClose},</if>
+            <if test="yearCompletionRate != null and yearCompletionRate != ''">#{yearCompletionRate},</if>
+            sysdate(),
+            <if test="completionsNum != null">#{completionsNum},</if>
+            <if test="unfinishedNum != null">#{unfinishedNum},</if>
+            <if test="timeoutCompletionsNum != null">#{timeoutCompletionsNum},</if>
+            <if test="beforeCompletionsNum != null">#{beforeCompletionsNum},</if>
+            <if test="justCompletionsNum != null">#{justCompletionsNum},</if>
+            <if test="expiredTargetNum != null">#{expiredTargetNum},</if>
+            <if test="notExpiredTargetNum != null">#{notExpiredTargetNum},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDataAnalysis" parameterType="DataAnalysis">
+        update data_analysis
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="positionId != null and positionId != ''">position_id = #{positionId},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="targetNum != null">target_num = #{targetNum},</if>
+            <if test="completionRate != null and completionRate != ''">completion_rate = #{completionRate},</if>
+            <if test="deadlineDate != null">deadline_date = #{deadlineDate},</if>
+            <if test="releaseDuration != null and releaseDuration != ''">release_duration = #{releaseDuration},</if>
+            <if test="yearClose != null and yearClose != ''">year_close = #{yearClose},</if>
+            <if test="moonClose != null and moonClose != ''">moon_close = #{moonClose},</if>
+            <if test="yearCompletionRate != null and yearCompletionRate != ''">year_completion_rate = #{yearCompletionRate},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="completionsNum != null">completions_num = #{completionsNum},</if>
+            <if test="unfinishedNum != null">unfinished_num = #{unfinishedNum},</if>
+            <if test="timeoutCompletionsNum != null">timeout_completions_num = #{timeoutCompletionsNum},</if>
+            <if test="beforeCompletionsNum != null">before_completions_num = #{beforeCompletionsNum},</if>
+            <if test="justCompletionsNum != null">just_completions_num = #{justCompletionsNum},</if>
+            <if test="expiredTargetNum != null">expired_target_num = #{expiredTargetNum},</if>
+            <if test="notExpiredTargetNum != null">not_expired_target_num = #{notExpiredTargetNum},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDataAnalysisById" parameterType="Long">
+        delete from data_analysis where id = #{id}
+    </delete>
+
+    <delete id="deleteDataAnalysisByIds" parameterType="String">
+        delete from data_analysis where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="SkillsInfo" id="SkillsInfoResult">
         <result property="id"    column="id"    />
         <result property="ctatlogueId"    column="ctatlogue_id"    />
+        <result property="firstId"    column="first_id"    />
         <result property="skillsName"    column="skills_name"    />
         <result property="targetPositionId"    column="target_position_id"    />
         <result property="createBy"    column="create_by"    />
@@ -22,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <sql id="selectSkillsInfoVo">
-        select id, ctatlogue_id, skills_name,modifications_number,complete_time,evaluate_state, completion_status,target_position_id, create_by, end_time, start_time, create_time from skills_info
+        select id, first_id,ctatlogue_id, skills_name,modifications_number,complete_time,evaluate_state, completion_status,target_position_id, create_by, end_time, start_time, create_time from skills_info
     </sql>
 
     <select id="selectSkillsInfoList" parameterType="SkillsInfo" resultMap="SkillsInfoResult">
@@ -32,6 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="skillsName != null  and skillsName != ''"> and skills_name like concat('%', #{skillsName}, '%')</if>
             <if test="targetPositionId != null "> and target_position_id = #{targetPositionId}</if>
             <if test="endTime != null "> and end_time = #{endTime}</if>
+            <if test="completionStatus != null "> and completion_status = #{completionStatus}</if>
             <if test="startTime != null "> and start_time = #{startTime}</if>
         </where>
     </select>
@@ -46,10 +48,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where target_position_id=#{id}
     </select>
 
+    <select id="selectSkillsInfoByUnfinished" resultMap="SkillsInfoResult" parameterType="SkillsInfo">
+        <include refid="selectSkillsInfoVo"/>
+        where target_position_id=#{id} and completion_status=#{completionStatus}
+    </select>
+
     <insert id="insertSkillsInfo" parameterType="SkillsInfo" useGeneratedKeys="true" keyProperty="id">
         insert into skills_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="ctatlogueId != null">ctatlogue_id,</if>
+            <if test="firstId != null">first_id,</if>
             <if test="skillsName != null and skillsName != ''">skills_name,</if>
             <if test="targetPositionId != null">target_position_id,</if>
             <if test="createBy != null">create_by,</if>
@@ -59,6 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="ctatlogueId != null">#{ctatlogueId},</if>
+            <if test="firstId != null">#{firstId},</if>
             <if test="skillsName != null and skillsName != ''">#{skillsName},</if>
             <if test="targetPositionId != null">#{targetPositionId},</if>
             <if test="createBy != null">#{createBy},</if>
