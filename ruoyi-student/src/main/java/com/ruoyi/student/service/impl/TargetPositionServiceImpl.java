@@ -160,16 +160,21 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     }
 
     /**
-     * 查询岗位管理列表
+     * 根据学生id查询岗位列表
      * 
-     * @param targetPosition 岗位管理
      * @return 岗位管理
      */
     @Override
-    public List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition)
-    {
+    public List<TargetPosition> selectTargetPositionListByUserId(String UserId) {
+        return targetPositionMapper.selectTargetPositionListByUserId(UserId);
+    }
 
-        return targetPositionMapper.selectTargetPositionListByUserId(SecurityUtils.getUsername());
+    /**
+     * 查询所有岗位列表
+     */
+    @Override
+    public List<TargetPosition> selectTargetPositionList() {
+        return targetPositionMapper.selectTargetPositionList();
     }
 
     /**

@@ -24,14 +24,6 @@ public interface ITargetPositionService
     public TargetPositionInfoVO selectTargetPositionByPositionId(String positionId);
 
     /**
-     * 查询岗位管理列表
-     * 
-     * @param targetPosition 岗位管理
-     * @return 岗位管理集合
-     */
-    public List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition);
-
-    /**
      * 新增岗位管理
      * 
      * @param targetPosition 岗位管理
@@ -67,11 +59,19 @@ public interface ITargetPositionService
 
     int updateskillsInfo(SkillsInfo skillsInfo);
 
-
-
     int repealPositionId(String positionId);
 
     List<TargetPosition> selectTargetPositionListByUserName(String createBy);
 
     List<TargetPosition> selectgetAbandonedTargetByStudentId(String studentId);
+
+    /**
+     * 根据学生id查询岗位列表
+     * */
+    List<TargetPosition> selectTargetPositionListByUserId(String studentId);
+
+    /**
+     * 查询所有岗位
+     * */
+    List<TargetPosition> selectTargetPositionList();
 }

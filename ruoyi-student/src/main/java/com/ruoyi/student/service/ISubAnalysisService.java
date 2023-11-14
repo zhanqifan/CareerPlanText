@@ -30,7 +30,7 @@ public interface ISubAnalysisService
     /**
      * 新增目录分析
      * 
-     * @param subAnalysis 目录分析
+     * @param
      * @return 结果
      */
     public int insertSubAnalysis(String positionId);

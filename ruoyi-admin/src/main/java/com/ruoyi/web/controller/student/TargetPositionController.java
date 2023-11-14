@@ -9,6 +9,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.student.domain.SkillsInfo;
 import com.ruoyi.student.domain.dto.TargetPositionDTO;
@@ -48,7 +49,7 @@ public class TargetPositionController extends BaseController
     public TableDataInfo list(TargetPosition targetPosition)
     {
         startPage();
-        List<TargetPosition> list = targetPositionService.selectTargetPositionList(targetPosition);
+        List<TargetPosition> list = targetPositionService.selectTargetPositionListByUserId(SecurityUtils.getUsername());
         List<TargetPositionVO> collect = list.stream().map(target -> {
             TargetPositionVO targetPositionVO = new TargetPositionVO();
             BeanUtils.copyProperties(target, targetPositionVO);
@@ -98,17 +99,17 @@ public class TargetPositionController extends BaseController
     }
 
 
-    /**
-     * 导出岗位管理列表
-     */
-    @Log(title = "岗位管理", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, TargetPosition targetPosition)
-    {
-        List<TargetPosition> list = targetPositionService.selectTargetPositionList(targetPosition);
-        ExcelUtil<TargetPosition> util = new ExcelUtil<TargetPosition>(TargetPosition.class);
-        util.exportExcel(response, list, "岗位管理数据");
-    }
+//    /**
+//     * 导出岗位管理列表
+//     */
+//    @Log(title = "岗位管理", businessType = BusinessType.EXPORT)
+//    @PostMapping("/export")
+//    public void export(HttpServletResponse response, TargetPosition targetPosition)
+//    {
+//        List<TargetPosition> list = targetPositionService.selectTargetPositionList(targetPosition);
+//        ExcelUtil<TargetPosition> util = new ExcelUtil<TargetPosition>(TargetPosition.class);
+//        util.exportExcel(response, list, "岗位管理数据");
+//    }
 
 
     /**

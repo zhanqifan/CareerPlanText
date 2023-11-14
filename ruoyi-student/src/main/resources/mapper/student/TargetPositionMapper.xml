@@ -30,6 +30,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createby != null "> and create_by = #{createby}</if>
         </where>
     </select>
+
+
     <select id="selectTargetPositionListByUserId" resultMap="TargetPositionResult" parameterType="String">
         <include refid="selectTargetPositionVo"/> where create_by =#{createby}
     </select>

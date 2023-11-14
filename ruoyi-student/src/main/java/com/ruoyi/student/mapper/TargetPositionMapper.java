@@ -22,11 +22,14 @@ public interface TargetPositionMapper
     /**
      * 查询岗位管理列表
      * 
-     * @param targetPosition 岗位管理
      * @return 岗位管理集合
      */
-    public List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition);
+    public List<TargetPosition> selectTargetPositionList();
+    /**
+     * 根据学生id查询岗位列表
+     * */
     public List<TargetPosition> selectTargetPositionListByUserId(String userId);
+
 
     /**
      * 新增岗位管理
