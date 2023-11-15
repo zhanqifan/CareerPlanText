@@ -2,6 +2,7 @@ package com.ruoyi.student.service;
 
 import java.util.List;
 import com.ruoyi.student.domain.DataAnalysis;
+import com.ruoyi.student.domain.vo.DataAnalysisVO;
 
 /**
  * 学生数据分析Service接口
@@ -58,4 +59,10 @@ public interface IDataAnalysisService
      * @return 结果
      */
     public int deleteDataAnalysisById(Long id);
+
+    /**
+     * 学生查看本人数据分析结果
+     */
+    DataAnalysisVO getDataAnalysis(String userId);
+
 }

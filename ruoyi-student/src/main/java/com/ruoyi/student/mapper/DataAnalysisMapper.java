@@ -60,4 +60,11 @@ public interface DataAnalysisMapper
      * @return 结果
      */
     public int deleteDataAnalysisByIds(Long[] ids);
+
+    /**
+     * 根据岗位id查询统计结果
+     * @param positionId
+     * @return
+     */
+    DataAnalysis selectDataAnalysisListByPositionId(String positionId);
 }

@@ -30,7 +30,6 @@ public interface IFirstAnalysisService
     /**
      * 新增一级目录分析
      * 
-     * @param firstAnalysis 一级目录分析
      * @return 结果
      */
     public int insertFirstAnalysis(String positionId);
@@ -58,4 +57,6 @@ public interface IFirstAnalysisService
      * @return 结果
      */
     public int deleteFirstAnalysisById(Long id);
+
+    List<FirstAnalysis> selectFirstAnalysisByPositionId(String positionId);
 }

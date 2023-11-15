@@ -21,6 +21,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectFirstAnalysisVo"/>
         <where>  
             <if test="firstId != null "> and first_id = #{firstId}</if>
+            <if test="postitionId != null "> and postition_id = #{postitionId}</if>
+            <if test="deadlineDate != null "> and deadline_date = #{deadlineDate}</if>
             <if test="firstName != null  and firstName != ''"> and first_name like concat('%', #{firstName}, '%')</if>
             <if test="firstCompletionRate != null  and firstCompletionRate != ''"> and first_completion_rate = #{firstCompletionRate}</if>
         </where>
@@ -38,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             a.first_id,
             ctatlogue.catalogue_name AS first_name,
             a.secondary_completion_rate,
-            sysdate() as deadline_date
+            DATE_SUB(CURDATE(), INTERVAL 1 DAY)  as deadline_date
         FROM
             (SELECT
                  #{positionId} AS postition_id,

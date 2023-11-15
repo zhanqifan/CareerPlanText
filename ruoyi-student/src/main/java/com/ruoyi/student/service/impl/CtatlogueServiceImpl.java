@@ -121,4 +121,9 @@ public class CtatlogueServiceImpl implements ICtatlogueService
     public List<SecondaryCtatlogue> selectSecondaryCtatlogueList() {
         return ctatlogueMapper.selectSecondaryCtatlogueList();
     }
+
+    @Override
+    public List<Ctatlogue> selectCtatlogue(Object o) {
+        return ctatlogueMapper.selectCtatlogueList(null);
+    }
 }

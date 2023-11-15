@@ -24,6 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="postitionId != null  and postitionId != ''"> and postition_id = #{postitionId}</if>
             <if test="secondaryId != null "> and secondary_id = #{secondaryId}</if>
+            <if test="deadlineDate != null "> and deadline_date = #{deadlineDate}</if>
             <if test="secondaryTargetNum != null "> and secondary_target_num = #{secondaryTargetNum}</if>
             <if test="secondaryCompletionNum != null "> and secondary_completion_num = #{secondaryCompletionNum}</if>
             <if test="secondaryCompletionRate != null  and secondaryCompletionRate != ''"> and secondary_completion_rate = #{secondaryCompletionRate}</if>
@@ -44,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             a.secondary_target_num,
             a.secondary_completion_num,
             a.secondary_completion_rate,
-            sysdate() as deadline_date
+            DATE_SUB(CURDATE(), INTERVAL 1 DAY)   as deadline_date
         FROM
             (SELECT
                  #{positionId}AS postition_id,

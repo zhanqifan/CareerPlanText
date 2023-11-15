@@ -43,7 +43,7 @@ public class timingCalculation {
 
     // 每天凌晨1点执行
 //    @Scheduled(cron = "0 0 1 * * ?")
-    /* 每两秒执行一次 */
+    /* 每5秒执行一次 */
 //    @Scheduled(cron = "0/5 * * * * ?")
     @Transactional
     public void TimingStatistics(){
@@ -67,7 +67,13 @@ public class timingCalculation {
             long days = duration.toDays();
             dataAnalysis.setReleaseDuration(Long.toString(days));
             //统计截至日期
-            dataAnalysis.setDeadlineDate(new Date());
+            LocalDate currentDate = LocalDate.now();
+            //获取前一天日期
+            LocalDate previousDay = currentDate.minusDays(1);
+            // 转换为java.util.Date
+            Date previousDayDate = Date.from(previousDay.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            dataAnalysis.setDeadlineDate(previousDayDate);
+            //dataAnalysis.setDeadlineDate(new Date());
             //查询每个岗位的目标数
             List<SkillsInfo> skillsInfoList = skillsInfoService.selectSkillsInfoByPositionId(positionId);
             int AllSize = skillsInfoList.size();
@@ -83,8 +89,7 @@ public class timingCalculation {
             //岗位总完成率
             if(CompletionsSkillsInfosSize!=0){
                 double CompletionRate = ((double) CompletionsSkillsInfosSize / AllSize) * 100;
-
-                dataAnalysis.setCompletionRate(String.valueOf(CompletionRate));
+                dataAnalysis.setCompletionRate( String.format("%.2f", CompletionRate));
             }else {
                 dataAnalysis.setCompletionRate("0");
             }
@@ -122,7 +127,7 @@ public class timingCalculation {
                  totalTasks = skillsInfoList.size();
                 // 计算年度完成率
                 completionRate = (double) completedTasks / totalTasks * 100;
-                dataAnalysis.setYearCompletionRate(String.valueOf(completionRate));
+                dataAnalysis.setYearCompletionRate(String.format("%.2f", completionRate));
             }else {
                 dataAnalysis.setYearClose(String.valueOf(yearCount));
                 dataAnalysis.setMoonClose(String.valueOf(monthCount));

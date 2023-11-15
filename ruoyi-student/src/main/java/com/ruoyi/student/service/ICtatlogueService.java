@@ -61,4 +61,6 @@ public interface ICtatlogueService
     public int deleteCtatlogueByCatalogueId(Long catalogueId);
 
     List<SecondaryCtatlogue> selectSecondaryCtatlogueList();
+
+    List<Ctatlogue> selectCtatlogue(Object o);
 }

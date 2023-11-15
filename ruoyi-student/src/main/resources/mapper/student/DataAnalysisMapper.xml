@@ -54,7 +54,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectDataAnalysisVo"/>
         where id = #{id}
     </select>
-        
+
+    <select id="selectDataAnalysisListByPositionId" parameterType="string" resultMap="DataAnalysisResult">
+        <include refid="selectDataAnalysisVo"/>
+        where position_id = #{positionId}
+    </select>
+
     <insert id="insertDataAnalysis" parameterType="DataAnalysis" useGeneratedKeys="true" keyProperty="id">
         insert into data_analysis
         <trim prefix="(" suffix=")" suffixOverrides=",">

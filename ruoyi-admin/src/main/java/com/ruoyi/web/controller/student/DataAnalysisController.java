@@ -31,7 +31,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * @date 2023-11-12
  */
 @RestController
-@RequestMapping("/student/DataAnalysis")
+@RequestMapping("/student/analysis")
 public class DataAnalysisController extends BaseController
 {
     @Autowired
@@ -41,10 +41,10 @@ public class DataAnalysisController extends BaseController
     /**
      * 学生查看本人数据分析结果
      */
-//    @GetMapping
-//    public AjaxResult getDataAnalysis(){
-//        return success(dataAnalysisService.getDataAnalysis(SecurityUtils.getUserId()));
-//    }
+    @GetMapping
+    public AjaxResult getDataAnalysis(){
+        return success(dataAnalysisService.getDataAnalysis(SecurityUtils.getUsername()));
+    }
 
     /**
      * 查询学生数据分析列表

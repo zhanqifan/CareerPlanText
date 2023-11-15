@@ -1,5 +1,8 @@
 package com.ruoyi.student.service.impl;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,9 +48,7 @@ public class FirstAnalysisServiceImpl implements IFirstAnalysisService
 
     /**
      * 新增一级目录分析
-     *
-     * @return 结果
-     */
+     * */
     @Override
     public int insertFirstAnalysis(String positionId)
     {
@@ -88,5 +89,18 @@ public class FirstAnalysisServiceImpl implements IFirstAnalysisService
     public int deleteFirstAnalysisById(Long id)
     {
         return firstAnalysisMapper.deleteFirstAnalysisById(id);
+    }
+
+    @Override
+    public List<FirstAnalysis> selectFirstAnalysisByPositionId(String positionId) {
+        FirstAnalysis firstAnalysis = new FirstAnalysis();
+        LocalDate currentDate = LocalDate.now();
+        //获取前一天日期
+        LocalDate previousDay = currentDate.minusDays(1);
+        // 转换为java.util.Date
+        Date previousDayDate = Date.from(previousDay.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        firstAnalysis.setPostitionId(positionId);
+        firstAnalysis.setDeadlineDate(previousDayDate);
+        return firstAnalysisMapper.selectFirstAnalysisList(firstAnalysis);
     }
 }
