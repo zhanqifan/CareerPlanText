@@ -116,4 +116,6 @@ public interface SysDeptMapper
      * @return 结果
      */
     public int deleteDeptById(Long deptId);
+
+    List<SysDept> selectProfessionalList();
 }

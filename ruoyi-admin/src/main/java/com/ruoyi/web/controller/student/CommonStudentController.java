@@ -34,6 +34,14 @@ public class CommonStudentController extends BaseController
     @Autowired
     private ICommonStudentService commonStudentService;
 
+
+    @GetMapping("/test")
+    public AjaxResult test(){
+        return success(commonStudentService.BuildDepartment());
+    }
+
+
+
     /**
      * 查询公用 学生信息列表
      */

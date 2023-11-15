@@ -11,9 +11,14 @@ import com.ruoyi.student.domain.CommonStudent;
  */
 public interface ICommonStudentService 
 {
+
+
+
+    public String BuildDepartment();
+
     /**
      * 查询公用 学生信息
-     * 
+     *
      * @param sId 公用 学生信息主键
      * @return 公用 学生信息
      */
@@ -21,7 +26,7 @@ public interface ICommonStudentService
 
     /**
      * 查询公用 学生信息列表
-     * 
+     *
      * @param commonStudent 公用 学生信息
      * @return 公用 学生信息集合
      */
@@ -29,7 +34,7 @@ public interface ICommonStudentService
 
     /**
      * 新增公用 学生信息
-     * 
+     *
      * @param commonStudent 公用 学生信息
      * @return 结果
      */
@@ -37,7 +42,7 @@ public interface ICommonStudentService
 
     /**
      * 修改公用 学生信息
-     * 
+     *
      * @param commonStudent 公用 学生信息
      * @return 结果
      */
@@ -45,7 +50,7 @@ public interface ICommonStudentService
 
     /**
      * 批量删除公用 学生信息
-     * 
+     *
      * @param sIds 需要删除的公用 学生信息主键集合
      * @return 结果
      */
@@ -53,7 +58,7 @@ public interface ICommonStudentService
 
     /**
      * 删除公用 学生信息信息
-     * 
+     *
      * @param sId 公用 学生信息主键
      * @return 结果
      */

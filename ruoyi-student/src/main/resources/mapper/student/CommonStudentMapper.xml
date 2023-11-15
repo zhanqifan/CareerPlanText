@@ -27,9 +27,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select s_id, college_code, campus_name, campus_code, sex, professional, classname, s_num, phone, name, college, politics, grade, cultivation_level, class_code, userid from common_student
     </sql>
 
-    <select id="selectCommonStudentList" parameterType="CommonStudent" resultMap="CommonStudentResult">
+    <select id="selectCommonStudentList" parameterType="com.ruoyi.student.domain.CommonStudent" resultMap="CommonStudentResult">
         <include refid="selectCommonStudentVo"/>
-        <where>  
+        <where>
             <if test="collegeCode != null  and collegeCode != ''"> and college_code = #{collegeCode}</if>
             <if test="campusName != null  and campusName != ''"> and campus_name like concat('%', #{campusName}, '%')</if>
             <if test="campusCode != null  and campusCode != ''"> and campus_code = #{campusCode}</if>
@@ -45,8 +45,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cultivationLevel != null  and cultivationLevel != ''"> and cultivation_level = #{cultivationLevel}</if>
             <if test="classCode != null  and classCode != ''"> and class_code = #{classCode}</if>
             <if test="userid != null "> and userid = #{userid}</if>
-        </where>
-    </select>
+
+            </where>
+
+        </select>
     
     <select id="selectCommonStudentBySId" parameterType="Long" resultMap="CommonStudentResult">
         <include refid="selectCommonStudentVo"/>
@@ -56,8 +58,43 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectCommonStudentBySNum"  parameterType="string" resultMap="CommonStudentResult">
         select * from common_student where s_num=#{SName}
-
     </select>
+
+    <select id="selectCollege" resultMap="CommonStudentResult">
+        SELECT
+            college_code, college
+        FROM
+            common_student
+        GROUP BY
+            college_code,college
+    </select>
+
+    <select id="selectProfessional" resultType="com.ruoyi.student.domain.CommonStudent">
+        SELECT
+            college,professional
+        FROM
+            common_student
+        GROUP BY
+            college,professional
+    </select>
+
+    <select id="selectClassList" resultMap="CommonStudentResult">
+        SELECT  college_code ,professional,class_code,classname
+        FROM  common_student
+        GROUP BY college_code,professional,class_code,classname
+        ORDER BY college_code;
+    </select>
+
+
+    <!--    <select id="BuildDepartment" resultMap="CommonStudentResult">-->
+<!--        SELECT-->
+<!--            college_code, college,professional, class_code,classname-->
+<!--        FROM-->
+<!--            common_student-->
+<!--        GROUP BY-->
+<!--            college_code,college, professional, class_code,classname-->
+<!--            LIMIT 100-->
+<!--    </select>-->
 
     <insert id="insertCommonStudent" parameterType="CommonStudent">
         insert into common_student

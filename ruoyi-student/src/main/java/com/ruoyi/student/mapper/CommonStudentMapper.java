@@ -2,6 +2,7 @@ package com.ruoyi.student.mapper;
 
 import java.util.List;
 import com.ruoyi.student.domain.CommonStudent;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 公用 学生信息Mapper接口
@@ -9,6 +10,7 @@ import com.ruoyi.student.domain.CommonStudent;
  * @author lihong
  * @date 2023-11-09
  */
+@Mapper
 public interface CommonStudentMapper 
 {
     /**
@@ -60,4 +62,10 @@ public interface CommonStudentMapper
     public int deleteCommonStudentBySIds(Long[] sIds);
 
     CommonStudent selectCommonStudentBySNum(String SName);
+
+    List<CommonStudent> selectCollege();
+
+    List<CommonStudent> selectProfessional();
+
+    List<CommonStudent> selectClassList();
 }
