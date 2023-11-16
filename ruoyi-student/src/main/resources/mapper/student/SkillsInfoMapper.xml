@@ -9,6 +9,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="ctatlogueId"    column="ctatlogue_id"    />
         <result property="firstId"    column="first_id"    />
         <result property="skillsName"    column="skills_name"    />
+        <result property="takeRole"    column="take_role"    />
         <result property="targetPositionId"    column="target_position_id"    />
         <result property="createBy"    column="create_by"    />
         <result property="modificationsNumber"    column="modifications_number"    />
@@ -23,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <sql id="selectSkillsInfoVo">
-        select id, first_id,ctatlogue_id, skills_name,modifications_number,complete_time,evaluate_state, completion_status,target_position_id, create_by, end_time, start_time, create_time from skills_info
+        select id, first_id,ctatlogue_id, skills_name,take_role,modifications_number,complete_time,evaluate_state, completion_status,target_position_id, create_by, end_time, start_time, create_time from skills_info
     </sql>
 
     <select id="selectSkillsInfoList" parameterType="SkillsInfo" resultMap="SkillsInfoResult">
@@ -53,12 +54,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where target_position_id=#{id} and completion_status=#{completionStatus}
     </select>
 
-    <insert id="insertSkillsInfo" parameterType="SkillsInfo" useGeneratedKeys="true" keyProperty="id">
+    <select id="selectSkillsInfoBycreateBy" resultType="com.ruoyi.student.domain.SkillsInfo">
+        <include refid="selectSkillsInfoVo"/>
+        where create_by=#{sNum} and
+    </select>
+
+    <insert id="insertSkillsInfo" parameterType="SkillsInfo" >
         insert into skills_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
             <if test="ctatlogueId != null">ctatlogue_id,</if>
             <if test="firstId != null">first_id,</if>
             <if test="skillsName != null and skillsName != ''">skills_name,</if>
+            <if test="takeRole != null and takeRole != ''">take_role,</if>
             <if test="targetPositionId != null">target_position_id,</if>
             <if test="createBy != null">create_by,</if>
             <if test="endTime != null">end_time,</if>
@@ -66,9 +74,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
             <if test="ctatlogueId != null">#{ctatlogueId},</if>
             <if test="firstId != null">#{firstId},</if>
             <if test="skillsName != null and skillsName != ''">#{skillsName},</if>
+            <if test="takeRole != null and takeRole != ''">#{takeRole},</if>
             <if test="targetPositionId != null">#{targetPositionId},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="endTime != null">#{endTime},</if>

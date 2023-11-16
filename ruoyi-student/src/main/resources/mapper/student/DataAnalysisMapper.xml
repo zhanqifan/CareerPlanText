@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="DataAnalysis" id="DataAnalysisResult">
         <result property="id"    column="id"    />
         <result property="positionId"    column="position_id"    />
+        <result property="isMain"    column="is_main"    />
         <result property="createBy"    column="create_by"    />
         <result property="targetNum"    column="target_num"    />
         <result property="completionRate"    column="completion_rate"    />
@@ -26,13 +27,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectDataAnalysisVo">
-        select id, position_id, create_by, target_num, completion_rate, deadline_date, release_duration, year_close, moon_close, year_completion_rate, create_time, completions_num, unfinished_num, timeout_completions_num, before_completions_num, just_completions_num, expired_target_num, not_expired_target_num from data_analysis
+        select id, position_id, is_main,create_by, target_num, completion_rate, deadline_date, release_duration, year_close, moon_close, year_completion_rate, create_time, completions_num, unfinished_num, timeout_completions_num, before_completions_num, just_completions_num, expired_target_num, not_expired_target_num from data_analysis
     </sql>
 
     <select id="selectDataAnalysisList" parameterType="DataAnalysis" resultMap="DataAnalysisResult">
         <include refid="selectDataAnalysisVo"/>
         <where>  
             <if test="positionId != null  and positionId != ''"> and position_id = #{positionId}</if>
+            <if test="isMain != null"> and is_main = #{isMain}</if>
             <if test="targetNum != null "> and target_num = #{targetNum}</if>
             <if test="completionRate != null  and completionRate != ''"> and completion_rate = #{completionRate}</if>
             <if test="deadlineDate != null "> and deadline_date = #{deadlineDate}</if>
@@ -59,11 +61,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectDataAnalysisVo"/>
         where position_id = #{positionId}
     </select>
+    <select id="selectIsMainDataAnalyByUserName" parameterType="string" resultMap="DataAnalysisResult">
+        <include refid="selectDataAnalysisVo"/>
+        where create_by = #{sNum} and is_main=1
+    </select>
 
     <insert id="insertDataAnalysis" parameterType="DataAnalysis" useGeneratedKeys="true" keyProperty="id">
         insert into data_analysis
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="positionId != null and positionId != ''">position_id,</if>
+            <if test="isMain != null">is_main,</if>
             <if test="createBy != null and createBy != ''">create_by,</if>
             <if test="targetNum != null">target_num,</if>
             <if test="completionRate != null and completionRate != ''">completion_rate,</if>
@@ -83,6 +90,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="positionId != null and positionId != ''">#{positionId},</if>
+            <if test="isMain != null">#{isMain},</if>
             <if test="createBy != null and createBy != ''">#{createBy},</if>
             <if test="targetNum != null">#{targetNum},</if>
             <if test="completionRate != null and completionRate != ''">#{completionRate},</if>

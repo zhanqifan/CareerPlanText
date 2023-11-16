@@ -28,6 +28,9 @@ public class DataAnalysis extends BaseEntity
     @Excel(name = "岗位id")
     private String positionId;
 
+    /**是否是主目标（1：主目标，0：非主目标）*/
+    private Integer isMain;
+
     /** 目标数 */
     @Excel(name = "目标数")
     private Long targetNum;

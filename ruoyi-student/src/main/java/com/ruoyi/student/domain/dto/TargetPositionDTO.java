@@ -1,6 +1,7 @@
 package com.ruoyi.student.domain.dto;
 
 import com.ruoyi.common.annotation.Excel;
+import com.ruoyi.student.domain.InternshipContent;
 import com.ruoyi.student.domain.SkillsInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class TargetPositionDTO{
 
     /**技能详情列表*/
     private List<SkillsInfo> skillsInfoList;
+
 
 
 }

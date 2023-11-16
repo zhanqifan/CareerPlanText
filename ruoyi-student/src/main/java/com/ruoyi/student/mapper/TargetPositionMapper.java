@@ -58,4 +58,6 @@ public interface TargetPositionMapper
     List<TargetPosition> selectTargetPositionListByUserName(String createBy);
 
     List<TargetPosition> selectgetAbandonedTargetByStudentId(String studentId);
+
+    TargetPosition selectMainTargetPositionListByUserName(String sNum);
 }

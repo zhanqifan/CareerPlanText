@@ -51,6 +51,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where create_by=#{studentId} and `state`=0
     </select>
 
+
+    <select id="selectMainTargetPositionListByUserName" resultMap="TargetPositionResult" parameterType="string">
+        <include refid="selectTargetPositionVo"/>
+        where create_by=#{studentId} and `state`=1
+    </select>
+
     <insert id="insertTargetPosition" parameterType="com.ruoyi.student.domain.TargetPosition" useGeneratedKeys="true" keyProperty="positionId">
         insert into target_position
         <trim prefix="(" suffix=")" suffixOverrides=",">

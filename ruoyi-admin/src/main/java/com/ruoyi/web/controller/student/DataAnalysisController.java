@@ -41,28 +41,14 @@ public class DataAnalysisController extends BaseController
     /**
      * 学生查看本人数据分析结果
      */
-    @GetMapping
-    public AjaxResult getDataAnalysis(){
-        return success(dataAnalysisService.getDataAnalysis(SecurityUtils.getUsername()));
-    }
-
-    /**
-     * 查询学生数据分析列表
-     */
-    @PreAuthorize("@ss.hasPermi('student:DataAnalysis:list')")
-    @GetMapping("/list")
-    public TableDataInfo list(DataAnalysis dataAnalysis)
-    {
-        startPage();
-        List<DataAnalysis> list = dataAnalysisService.selectDataAnalysisList(dataAnalysis);
-        return getDataTable(list);
+    @GetMapping("/{positionId}")
+    public AjaxResult getDataAnalysis(@PathVariable("positionId") String positionId){
+        return success(dataAnalysisService.getDataAnalysis(SecurityUtils.getUsername(),positionId));
     }
 
     /**
      * 导出学生数据分析列表
      */
-    @PreAuthorize("@ss.hasPermi('student:DataAnalysis:export')")
-    @Log(title = "学生数据分析", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, DataAnalysis dataAnalysis)
     {
@@ -71,46 +57,5 @@ public class DataAnalysisController extends BaseController
         util.exportExcel(response, list, "学生数据分析数据");
     }
 
-    /**
-     * 获取学生数据分析详细信息
-     */
-    @PreAuthorize("@ss.hasPermi('student:DataAnalysis:query')")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
-        return success(dataAnalysisService.selectDataAnalysisById(id));
-    }
 
-    /**
-     * 新增学生数据分析
-     */
-    @PreAuthorize("@ss.hasPermi('student:DataAnalysis:add')")
-    @Log(title = "学生数据分析", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@RequestBody DataAnalysis dataAnalysis)
-    {
-        return toAjax(dataAnalysisService.insertDataAnalysis(dataAnalysis));
-    }
-
-    /**
-     * 修改学生数据分析
-     */
-    @PreAuthorize("@ss.hasPermi('student:DataAnalysis:edit')")
-    @Log(title = "学生数据分析", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody DataAnalysis dataAnalysis)
-    {
-        return toAjax(dataAnalysisService.updateDataAnalysis(dataAnalysis));
-    }
-
-    /**
-     * 删除学生数据分析
-     */
-    @PreAuthorize("@ss.hasPermi('student:DataAnalysis:remove')")
-    @Log(title = "学生数据分析", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        return toAjax(dataAnalysisService.deleteDataAnalysisByIds(ids));
-    }
 }

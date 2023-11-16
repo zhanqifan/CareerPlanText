@@ -28,7 +28,7 @@ public class Evaluate extends BaseEntity
 
     /** 目标id */
     @Excel(name = "目标id")
-    private Integer skillsId;
+    private String skillsId;
 
     public void setEvaluateId(Integer evaluateId) 
     {
@@ -57,12 +57,12 @@ public class Evaluate extends BaseEntity
     {
         return type;
     }
-    public void setSkillsId(Integer skillsId) 
+    public void setSkillsId(String skillsId)
     {
         this.skillsId = skillsId;
     }
 
-    public Integer getSkillsId() 
+    public String getSkillsId()
     {
         return skillsId;
     }

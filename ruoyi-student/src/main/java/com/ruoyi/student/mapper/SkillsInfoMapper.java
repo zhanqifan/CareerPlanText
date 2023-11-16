@@ -62,4 +62,6 @@ public interface SkillsInfoMapper
     List<SkillsInfo> selectSkillsInfoByPositionId(String id);
 
     List<SkillsInfo> selectSkillsInfoByUnfinished(String positionId);
+
+    SkillsInfo selectSkillsInfoBycreateBy(String sNum);
 }

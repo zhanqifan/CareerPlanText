@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.student.mapper.InternshipContentMapper">
+    
+    <resultMap type="InternshipContent" id="InternshipContentResult">
+        <result property="id"    column="id"    />
+        <result property="skillsId"    column="skills_id"    />
+        <result property="content"    column="content"    />
+    </resultMap>
+
+    <sql id="selectInternshipContentVo">
+        select id, skills_id, content from internship_content
+    </sql>
+
+    <select id="selectInternshipContentList" parameterType="InternshipContent" resultMap="InternshipContentResult">
+        <include refid="selectInternshipContentVo"/>
+        <where>  
+            <if test="skillsId != null "> and skills_id = #{skillsId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+        </where>
+    </select>
+    
+    <select id="selectInternshipContentById" parameterType="Long" resultMap="InternshipContentResult">
+        <include refid="selectInternshipContentVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectInternshipContentBySkillsInfoId" parameterType="string" resultMap="InternshipContentResult">
+        <include refid="selectInternshipContentVo"/>
+        where skills_id = #{id}
+    </select>
+
+    <insert id="insertInternshipContent" parameterType="InternshipContent">
+        insert into internship_content
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="skillsId != null">skills_id,</if>
+            <if test="content != null and content != ''">content,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="skillsId != null">#{skillsId},</if>
+            <if test="content != null and content != ''">#{content},</if>
+         </trim>
+    </insert>
+
+    <update id="updateInternshipContent" parameterType="InternshipContent">
+        update internship_content
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="content != null and content != ''">content = #{content},</if>
+        </trim>
+        where skills_id = #{skillsId}
+    </update>
+
+    <delete id="deleteInternshipContentById" parameterType="Long">
+        delete from internship_content where id = #{id}
+    </delete>
+
+    <delete id="deleteInternshipContentByIds" parameterType="String">
+        delete from internship_content where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -16,9 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 public class DataAnalysisVO extends DataAnalysis {
 
-    /**岗位列表*/
-    private List<TargetPosition> targetPositionList;
-
     /**一级目录统计结果*/
     private List<FirstAnalysis> firstAnalysisList;
 

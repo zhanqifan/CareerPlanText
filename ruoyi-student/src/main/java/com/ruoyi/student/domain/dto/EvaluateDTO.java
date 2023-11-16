@@ -15,7 +15,7 @@ public class EvaluateDTO {
 
     /** 目标id */
     @Excel(name = "目标id")
-    private Integer skillsId;
+    private String skillsId;
 
     private Integer evaluateId;
 

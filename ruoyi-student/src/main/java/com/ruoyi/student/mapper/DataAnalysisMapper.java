@@ -67,4 +67,6 @@ public interface DataAnalysisMapper
      * @return
      */
     DataAnalysis selectDataAnalysisListByPositionId(String positionId);
+
+    DataAnalysis selectIsMainDataAnalyByUserName(String sNum);
 }

@@ -8,6 +8,8 @@ import com.ruoyi.student.mapper.SkillsInfoMapper;
 import com.ruoyi.student.domain.SkillsInfo;
 import com.ruoyi.student.service.ISkillsInfoService;
 
+import javax.annotation.Resource;
+
 /**
  * 技能详情Service业务层处理
  * 
@@ -17,7 +19,7 @@ import com.ruoyi.student.service.ISkillsInfoService;
 @Service
 public class SkillsInfoServiceImpl implements ISkillsInfoService 
 {
-    @Autowired
+    @Resource
     private SkillsInfoMapper skillsInfoMapper;
 
     /**
@@ -54,6 +56,7 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
     public int insertSkillsInfo(SkillsInfo skillsInfo)
     {
         skillsInfo.setCreateTime(DateUtils.getNowDate());
+        System.out.println(skillsInfo);
         return skillsInfoMapper.insertSkillsInfo(skillsInfo);
     }
 
@@ -122,5 +125,10 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
     @Override
     public void AnalyzeCatalogData(String positionId) {
 
+    }
+
+    @Override
+    public SkillsInfo selectSkillsInfoBycreateBy(String sNum) {
+        return skillsInfoMapper.selectSkillsInfoBycreateBy(sNum);
     }
 }

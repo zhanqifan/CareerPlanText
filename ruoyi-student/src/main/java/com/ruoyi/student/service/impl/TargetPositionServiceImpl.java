@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
 
+import com.ruoyi.student.domain.InternshipContent;
 import com.ruoyi.student.domain.SkillsInfo;
 import com.ruoyi.student.domain.dto.TargetPositionDTO;
 import com.ruoyi.student.domain.vo.SecondaryCtatlogue;
@@ -14,11 +16,15 @@ import com.ruoyi.student.domain.vo.TargetPositionInfoVO;
 import com.ruoyi.student.mapper.TargetPositionMapper;
 import com.ruoyi.student.domain.TargetPosition;
 import com.ruoyi.student.service.ICtatlogueService;
+import com.ruoyi.student.service.IInternshipContentService;
 import com.ruoyi.student.service.ISkillsInfoService;
 import com.ruoyi.student.service.ITargetPositionService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 /**
  * 岗位管理Service业务层处理
@@ -29,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TargetPositionServiceImpl implements ITargetPositionService 
 {
-    @Autowired
+    @Resource
     private TargetPositionMapper targetPositionMapper;
 
     @Autowired
@@ -37,6 +43,9 @@ public class TargetPositionServiceImpl implements ITargetPositionService
 
     @Autowired
     private ICtatlogueService ctatlogueService;
+
+    @Resource
+    private IInternshipContentService iInternshipContentService;
     /**
      * 查询岗位管理
      * 
@@ -47,13 +56,11 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     public TargetPositionInfoVO selectTargetPositionByPositionId(String positionId)
     {
         TargetPositionInfoVO targetPositionInfoVO = new TargetPositionInfoVO();
-
         TargetPosition targetPosition = targetPositionMapper.selectTargetPositionByPositionId(positionId);
         String id = targetPosition.getPositionId();
         targetPositionInfoVO.setPositionName(targetPosition.getPositionName());
         targetPositionInfoVO.setPositionId(id);
         targetPositionInfoVO.setState(targetPosition.getState());
-
         //岗位目标所属二级目录
         List<SecondaryCtatlogue> selectSecondaryCtatlogueList = ctatlogueService.selectSecondaryCtatlogueList();
         //具体岗位目标
@@ -62,6 +69,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
             ArrayList<SkillsInfo> skillsInfos = new ArrayList<>();
             for (SkillsInfo skillsInfo:skillsInfoList){
                 if(secondaryCtatlogue.getCatalogueId().equals(skillsInfo.getCtatlogueId())){
+                    skillsInfo.setContent(iInternshipContentService.selectInternshipContentBySkillsInfoId(skillsInfo.getId()).getContent());
                     skillsInfos.add(skillsInfo);
                 }
             }
@@ -90,17 +98,28 @@ public class TargetPositionServiceImpl implements ITargetPositionService
         if(targetPositionMapper.insertTargetPosition(targetPosition)==1){
             List<SkillsInfo> skillsInfoList = targetPositionDTO.getSkillsInfoList();
             for (SkillsInfo skillsInfo:skillsInfoList){
-                skillsInfo.setFirstId(targetPositionDTO.getFirstId());
+                //添加技能详情
+                String skillsInfoId = IdUtils.fastSimpleUUID();
+                skillsInfo.setId(skillsInfoId);
+                skillsInfo.setFirstId(skillsInfo.getFirstId());
                 skillsInfo.setTargetPositionId(positionId);
+                skillsInfo.setTakeRole(skillsInfo.getTakeRole());
                 skillsInfo.setCreateBy(userId);
+                //添加实习/实践内容
+                if(StringUtils.isNotNull(skillsInfo.getContent())){
+                    InternshipContent internshipContent = new InternshipContent();
+                    internshipContent.setSkillsId(skillsInfoId);
+                    internshipContent.setContent(skillsInfo.getContent());
+                    iInternshipContentService.insertInternshipContent(internshipContent);
+                }
                 skillsInfoService.insertSkillsInfo(skillsInfo);
             }
             return 1;
         }
         return 0;
     }
-
     @Override
+    @Transactional
     public int updateskillsInfo(SkillsInfo skillsInfo) {
         //判断是否发布
         String targetPositionId = skillsInfo.getTargetPositionId();
@@ -111,9 +130,15 @@ public class TargetPositionServiceImpl implements ITargetPositionService
                 return 0;
             }
             skillsInfo.setModificationsNumber(1);
+            //修改实习/实践内容
+            String id = skillsInfo.getId();
+            InternshipContent internshipContent = new InternshipContent();
+            internshipContent.setSkillsId(id);
+            internshipContent.setContent(skillsInfo.getContent());
+            iInternshipContentService.updateInternshipContent(internshipContent);
             return skillsInfoService.updateSkillsInfo(skillsInfo);
         }
-        return skillsInfoService.updateSkillsInfo(skillsInfo);
+        return 0;
     }
 
 
@@ -175,6 +200,11 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Override
     public List<TargetPosition> selectTargetPositionList() {
         return targetPositionMapper.selectTargetPositionList();
+    }
+
+    @Override
+    public TargetPosition selectMainTargetPositionListByUserName(String sNum) {
+        return targetPositionMapper.selectMainTargetPositionListByUserName(sNum);
     }
 
     /**

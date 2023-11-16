@@ -53,6 +53,8 @@ public class timingCalculation {
         for (TargetPosition targetPosition:targetPositions){
             DataAnalysis dataAnalysis = new DataAnalysis();
             String positionId = targetPosition.getPositionId();
+            //是否是主目标
+            dataAnalysis.setIsMain(targetPosition.getIsMain());
             //统计一级/二级目录的数据
             this.SubAnalysis(positionId);
             //岗位id
@@ -155,7 +157,6 @@ public class timingCalculation {
                 dataAnalysis.setJustCompletionsNum(onTimeCount);
                 dataAnalysis.setTimeoutCompletionsNum(overdueCount);
             }else {
-
                 dataAnalysis.setBeforeCompletionsNum(aheadCount);
                 dataAnalysis.setJustCompletionsNum(onTimeCount);
                 dataAnalysis.setTimeoutCompletionsNum(overdueCount);

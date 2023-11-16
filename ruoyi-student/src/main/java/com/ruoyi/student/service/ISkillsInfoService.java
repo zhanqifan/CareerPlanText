@@ -66,4 +66,6 @@ public interface ISkillsInfoService
     List<SkillsInfo> selectSkillsInfoByCompletions(String positionId);
 
     void AnalyzeCatalogData(String positionId);
+
+    SkillsInfo selectSkillsInfoBycreateBy(String sNum);
 }

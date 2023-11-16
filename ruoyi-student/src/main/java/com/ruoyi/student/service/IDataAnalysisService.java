@@ -63,6 +63,6 @@ public interface IDataAnalysisService
     /**
      * 学生查看本人数据分析结果
      */
-    DataAnalysisVO getDataAnalysis(String userId);
+    DataAnalysisVO getDataAnalysis(String userId,String positionId);
 
 }
