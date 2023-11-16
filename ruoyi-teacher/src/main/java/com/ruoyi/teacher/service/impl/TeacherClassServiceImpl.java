@@ -53,7 +53,7 @@ public class TeacherClassServiceImpl implements TeacherClassService {
         if (StringUtils.isNull(studentDTO.getUserName())) {
             TeacherClass teacherClass = new TeacherClass();
 
-            teacherClass.setTeacherId(SecurityUtils.getUserId());
+            teacherClass.setTeacherId(Long.parseLong(SecurityUtils.getUsername()));
             teacherClass.setCollegeId(studentDTO.getCollegeId());
             teacherClass.setProfessionalId(studentDTO.getProfessionalId());
             teacherClass.setClassId(studentDTO.getClassId());

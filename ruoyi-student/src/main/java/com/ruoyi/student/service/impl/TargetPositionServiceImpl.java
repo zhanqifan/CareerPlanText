@@ -150,7 +150,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
      */
     @Override
     public int repealPositionId(String positionId) {
-        List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionListByUserId(SecurityUtils.getUserId().toString());
+        List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionListByUserId(SecurityUtils.getUsername().toString());
         //判断是否只有两个岗位
         if (targetPositions.size()==2){
             for (TargetPosition targetPosition:targetPositions){

@@ -76,7 +76,7 @@ public class EvaluateServiceImpl implements IEvaluateService
         evaluate.setType(EvaluateTypeConstants.STUDENTS);
         evaluate.setSkillsId(evaluateDTO.getSkillsId());
         evaluate.setContent(evaluateDTO.getContent());
-        evaluate.setCreateBy(SecurityUtils.getUserId().toString());
+        evaluate.setCreateBy(SecurityUtils.getUsername());
         evaluate.setCreateTime(DateUtils.getNowDate());
         return evaluateMapper.insertEvaluate(evaluate);
     }
