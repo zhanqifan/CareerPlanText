@@ -2,12 +2,12 @@ package com.ruoyi.web.controller.teacher;
 
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.student.service.IDataAnalysisService;
+import com.ruoyi.teacher.domain.dto.CollegeAnalysisDTO;
+import com.ruoyi.teacher.service.TeacherDataAnalysisService;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -17,6 +17,11 @@ public class TeacherDataAnalysisController extends BaseController {
 
     @Resource
     private IDataAnalysisService dataAnalysisService;
+
+    @Resource
+    private TeacherDataAnalysisService teacherDataAnalysisService;
+
+
 
 
     /**
@@ -32,8 +37,11 @@ public class TeacherDataAnalysisController extends BaseController {
         return success(dataAnalysisService.getDataAnalysis(studentId,positionId));
     }
 
+    /**
+     *查询学院分析结构
+     */
     @PostMapping
-    public AjaxResult getCollegeAnalysis(){
-        return success();
+    public AjaxResult getCollegeAnalysis(@RequestBody  CollegeAnalysisDTO collegeAnalysisDTO){
+        return success(teacherDataAnalysisService.getCollegeAnalysis(collegeAnalysisDTO));
     }
 }

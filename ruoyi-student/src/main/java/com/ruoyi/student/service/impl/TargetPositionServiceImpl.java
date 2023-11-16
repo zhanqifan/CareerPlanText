@@ -88,12 +88,12 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Override
     @Transactional
     public int addTargetPosition(TargetPositionDTO targetPositionDTO) {
-        String userId = SecurityUtils.getUserId().toString();
+        String username = SecurityUtils.getUsername();
         String positionId = IdUtils.fastSimpleUUID();
         TargetPosition targetPosition = new TargetPosition();
         targetPosition.setPositionId(positionId);
         targetPosition.setPositionName(targetPositionDTO.getPositionName());
-        targetPosition.setCreateBy(userId);
+        targetPosition.setCreateBy(username);
         targetPosition.setState(targetPositionDTO.getState());
         if(targetPositionMapper.insertTargetPosition(targetPosition)==1){
             List<SkillsInfo> skillsInfoList = targetPositionDTO.getSkillsInfoList();
@@ -104,7 +104,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
                 skillsInfo.setFirstId(skillsInfo.getFirstId());
                 skillsInfo.setTargetPositionId(positionId);
                 skillsInfo.setTakeRole(skillsInfo.getTakeRole());
-                skillsInfo.setCreateBy(userId);
+                skillsInfo.setCreateBy(username);
                 //添加实习/实践内容
                 if(StringUtils.isNotNull(skillsInfo.getContent())){
                     InternshipContent internshipContent = new InternshipContent();
@@ -198,8 +198,8 @@ public class TargetPositionServiceImpl implements ITargetPositionService
      * 查询所有岗位列表
      */
     @Override
-    public List<TargetPosition> selectTargetPositionList() {
-        return targetPositionMapper.selectTargetPositionList();
+    public List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition) {
+        return targetPositionMapper.selectTargetPositionList(targetPosition);
     }
 
     @Override

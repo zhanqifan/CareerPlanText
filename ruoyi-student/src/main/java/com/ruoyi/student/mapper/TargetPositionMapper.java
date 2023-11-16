@@ -24,7 +24,7 @@ public interface TargetPositionMapper
      * 
      * @return 岗位管理集合
      */
-    public List<TargetPosition> selectTargetPositionList();
+    public List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition);
     /**
      * 根据学生id查询岗位列表
      * */

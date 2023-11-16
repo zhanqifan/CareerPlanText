@@ -69,4 +69,6 @@ public interface DataAnalysisMapper
     DataAnalysis selectDataAnalysisListByPositionId(String positionId);
 
     DataAnalysis selectIsMainDataAnalyByUserName(String sNum);
+
+    List<DataAnalysis> selectDataAnalysisListByCreateBy(String sNum);
 }

@@ -49,7 +49,7 @@ public class timingCalculation {
     public void TimingStatistics(){
         System.out.println("=============统计任务开始执行=============");
         //查询出岗位列表
-        List<TargetPosition> targetPositions = targetPositionService.selectTargetPositionList();
+        List<TargetPosition> targetPositions = targetPositionService.selectTargetPositionList(null);
         for (TargetPosition targetPosition:targetPositions){
             DataAnalysis dataAnalysis = new DataAnalysis();
             String positionId = targetPosition.getPositionId();

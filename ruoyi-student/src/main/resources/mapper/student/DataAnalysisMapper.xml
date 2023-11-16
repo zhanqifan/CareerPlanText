@@ -66,6 +66,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where create_by = #{sNum} and is_main=1
     </select>
 
+    <select id="selectDataAnalysisListByCreateBy" parameterType="string" resultMap="DataAnalysisResult">
+        <include refid="selectDataAnalysisVo"/>
+        where create_by = #{sNum}
+    </select>
+
     <insert id="insertDataAnalysis" parameterType="DataAnalysis" useGeneratedKeys="true" keyProperty="id">
         insert into data_analysis
         <trim prefix="(" suffix=")" suffixOverrides=",">

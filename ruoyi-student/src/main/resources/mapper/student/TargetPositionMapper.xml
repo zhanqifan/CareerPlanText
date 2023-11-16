@@ -23,11 +23,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectTargetPositionVo"/>
         <where>  
             <if test="positionName != null  and positionName != ''"> and position_name like concat('%', #{positionName}, '%')</if>
-            <if test="state != null "> and state = #{state}</if>
+            <if test="state != null "> and `state` = #{state}</if>
             <if test="isMain != null "> and is_main = #{isMain}</if>
             <if test="modificationsNumber != null "> and modifications_number = #{modificationsNumber}</if>
             <if test="reviewsNumber != null "> and reviews_number = #{reviewsNumber}</if>
-            <if test="createby != null "> and create_by = #{createby}</if>
+            <if test="createBy != null "> and create_by = #{createBy}</if>
         </where>
     </select>
 

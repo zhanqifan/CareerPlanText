@@ -35,8 +35,6 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
     @Autowired
     private DataAnalysisMapper dataAnalysisMapper;
 
-    @Autowired
-    private ITargetPositionService targetPositionService;
 
     @Autowired
     private ISkillsInfoService skillsInfoService;
@@ -58,27 +56,12 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
 
     @Resource
     private ISubAnalysisService subAnalysisService;
-    /**
-     * 查询学生数据分析
-     * 
-     * @param id 学生数据分析主键
-     * @return 学生数据分析
-     */
-    @Override
-    public DataAnalysis selectDataAnalysisById(Long id)
-    {
-        return dataAnalysisMapper.selectDataAnalysisById(id);
-    }
 
-
-    /**
-     * 定时计算学生数据分析
-     */
 
 
     /**
      * 查询学生数据分析列表
-     * 
+     *
      * @param dataAnalysis 学生数据分析
      * @return 学生数据分析
      */
@@ -88,54 +71,7 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
         return dataAnalysisMapper.selectDataAnalysisList(dataAnalysis);
     }
 
-    /**
-     * 新增学生数据分析
-     * 
-     * @param dataAnalysis 学生数据分析
-     * @return 结果
-     */
-    @Override
-    public int insertDataAnalysis(DataAnalysis dataAnalysis)
-    {
-        dataAnalysis.setCreateTime(DateUtils.getNowDate());
-        return dataAnalysisMapper.insertDataAnalysis(dataAnalysis);
-    }
 
-    /**
-     * 修改学生数据分析
-     * 
-     * @param dataAnalysis 学生数据分析
-     * @return 结果
-     */
-    @Override
-    public int updateDataAnalysis(DataAnalysis dataAnalysis)
-    {
-        return dataAnalysisMapper.updateDataAnalysis(dataAnalysis);
-    }
-
-    /**
-     * 批量删除学生数据分析
-     * 
-     * @param ids 需要删除的学生数据分析主键
-     * @return 结果
-     */
-    @Override
-    public int deleteDataAnalysisByIds(Long[] ids)
-    {
-        return dataAnalysisMapper.deleteDataAnalysisByIds(ids);
-    }
-
-    /**
-     * 删除学生数据分析信息
-     * 
-     * @param id 学生数据分析主键
-     * @return 结果
-     */
-    @Override
-    public int deleteDataAnalysisById(Long id)
-    {
-        return dataAnalysisMapper.deleteDataAnalysisById(id);
-    }
 
     /**
      * 学生查看本人的数据分析结果
@@ -145,17 +81,12 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
         DataAnalysisVO dataAnalysisVO = new DataAnalysisVO();
         TargetPosition targetPosition = new TargetPosition();
         targetPosition.setCreateBy(userId);
-//        List<TargetPosition> targetPositions = targetPositionService.selectTargetPositionListByUserId(userId);
-//        dataAnalysisVO.setTargetPositionList(targetPositions);
-//        for (TargetPosition position:targetPositions){
         //设置主目标详情
-//            if(position.getIsMain()==1){
         LocalDate currentDate = LocalDate.now();
         //获取前一天日期
         LocalDate previousDay = currentDate.minusDays(1);
         // 转换为java.util.Date
         Date previousDayDate = Date.from(previousDay.atStartOfDay(ZoneId.systemDefault()).toInstant());
-//                String positionId = position.getPositionId();
         //统计月完成目标数
         List<MoonCloseCompletionsNumVO> moonCloseCompletionsNumVOS = this.moonCloseCompletionsNum(positionId);
         dataAnalysisVO.setMoonCloseCompletionsNumVOS(moonCloseCompletionsNumVOS);
@@ -197,6 +128,11 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
         dataAnalysisVO.setFirstAnalysisList(firstAnalysisArrayList);
         dataAnalysisVO.setSubAnalysisList(subAnalysisArrayList);
         return dataAnalysisVO;
+    }
+
+    @Override
+    public List<DataAnalysis> selectDataAnalysisListByCreateBy(String sNum) {
+        return dataAnalysisMapper.selectDataAnalysisListByCreateBy(sNum);
     }
 
     /***

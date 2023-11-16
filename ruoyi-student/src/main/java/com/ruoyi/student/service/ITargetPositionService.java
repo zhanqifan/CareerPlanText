@@ -73,7 +73,7 @@ public interface ITargetPositionService
     /**
      * 查询所有岗位
      * */
-    List<TargetPosition> selectTargetPositionList();
+    List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition);
 
     TargetPosition selectMainTargetPositionListByUserName(String sNum);
 }
