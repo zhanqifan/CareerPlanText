@@ -69,7 +69,9 @@ public class TargetPositionServiceImpl implements ITargetPositionService
             ArrayList<SkillsInfo> skillsInfos = new ArrayList<>();
             for (SkillsInfo skillsInfo:skillsInfoList){
                 if(secondaryCtatlogue.getCatalogueId().equals(skillsInfo.getCtatlogueId())){
-                    skillsInfo.setContent(iInternshipContentService.selectInternshipContentBySkillsInfoId(skillsInfo.getId()).getContent());
+                    if(StringUtils.isNotNull(iInternshipContentService.selectInternshipContentBySkillsInfoId(skillsInfo.getId()))){
+                        skillsInfo.setContent(iInternshipContentService.selectInternshipContentBySkillsInfoId(skillsInfo.getId()).getContent());
+                    }
                     skillsInfos.add(skillsInfo);
                 }
             }

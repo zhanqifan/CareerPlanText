@@ -23,8 +23,5 @@ public class SecondaryCtatlogue {
 
     private List<SkillsInfo> skillsInfoList;
 
-    public void addSkillsInfo(SkillsInfo skillsInfo){
-        this.skillsInfoList.add(skillsInfo);
-    }
 
 }
