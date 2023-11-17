@@ -19,13 +19,14 @@ import com.ruoyi.teacher.service.TeacherClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class TeacherClassServiceImpl implements TeacherClassService {
 
-    @Autowired
+    @Resource
     private TeacherClassMapper teacherClassMapper;
 
     @Autowired

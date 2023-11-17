@@ -10,16 +10,14 @@ import com.ruoyi.student.service.ITargetPositionService;
 import com.ruoyi.student.system.service.ISysDeptService;
 import com.ruoyi.teacher.domain.dto.CollegeAnalysisDTO;
 import com.ruoyi.teacher.domain.vo.CollegeAnalysisVO;
+import com.ruoyi.teacher.domain.vo.CompletionRateRange;
 import com.ruoyi.teacher.service.TeacherDataAnalysisService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,17 +41,21 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
     @Override
     public CollegeAnalysisVO getCollegeAnalysis(CollegeAnalysisDTO collegeAnalysisDTO) {
         //发布人数(ok)
-        long numberPublishers = 0L;
+        long numberPublishers = 0;
         //发布率（ok）
-        double publishingRate = 0.00;
+        double publishingRate ;
         //人均项目数（ok）
-        long NumberProjectsPerCapita = 0L;
-        //平均完成率
-        Double averageCompletionRate = 0.00;
-        //年度平均项目数
-        Long AnnualAverageNumberProjects = 0L;
-        //年度完成率
-        Double AnnualCompletionRate = 0.00;
+        long numberProjectsPerCapita ;
+        //平均完成率(ok)
+        double averageCompletionRate ;
+        //年度平均项目数(ok)
+        long annualAverageNumberProjects;
+        //年度完成率(od)
+        double annualAverageCompletionRate;
+        //完成率分布
+        List<CompletionRateRange> completionRateRanges = null;
+        //完成数
+        long completionsNum=0L;
         //统计截至日期(ok)
         Date deadlineDate;
         CollegeAnalysisVO collegeAnalysisVO = new CollegeAnalysisVO();
@@ -62,9 +64,25 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         LocalDate previousDay = currentDate.minusDays(1);
         deadlineDate = Date.from(previousDay.atStartOfDay(ZoneId.systemDefault()).toInstant());
         //学生总数
-        long TotalNumberStudents = 0L;
+        long totalNumberStudents = 0L;
         //项目总数
-        long TotalNumberProjects = 0L;
+        long totalNumberProjects = 0L;
+        //年度项目数
+        long annualNumberProjects=0L;
+        //总完成率
+        double totalCompletionRate=0.00;
+        //年度总完成率
+        double annualTotalCompletionRate=0.00;
+        // 获取当前年份
+        int targetYear = LocalDate.now().getYear();
+        // 获取今年的开始日期和结束日期
+        // 获取今年的开始日期和结束日期
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        calendar.set(year, Calendar.JANUARY, 1, 0, 0, 0);
+        Date startDate = calendar.getTime();
+        calendar.set(year, Calendar.DECEMBER, 31, 23, 59, 59);
+        Date endDate = calendar.getTime();
         // 创建 DecimalFormat 对象，
         //设置截至日期
         collegeAnalysisVO.setDeadlineDate(deadlineDate);
@@ -79,106 +97,170 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                 commonStudent.setCollegeCode(String.format("%03d", collegeId));
                 List<CommonStudent> commonStudentList = commonStudentService.selectCommonStudentList(commonStudent);
                 //学生总数
-                TotalNumberStudents += commonStudentList.size();
+                totalNumberStudents += commonStudentList.size();
                 for (CommonStudent student : commonStudentList) {
                     String sNum = student.getSNum();
                     //查询学生所发布的目标数
                     TargetPosition targetPosition = new TargetPosition();
                     targetPosition.setCreateBy(sNum);
                     targetPosition.setState(1);
-                    List<TargetPosition> targetPositions = targetPositionService.selectTargetPositionList(targetPosition);
-                    if (targetPositions != null && !targetPositions.isEmpty()) {
-                        //这个学生有发布 所以 目标发布人数+1
+                    List<TargetPosition> targetPositionList = targetPositionService.selectTargetPositionList(targetPosition);
+                    if (targetPositionList != null && !targetPositionList.isEmpty()) {
+                        //目标发布人数+1
                         numberPublishers++;
-                        //统计项目数
-                        TotalNumberProjects += targetPositions.size();
+                        //统计已发布项目数
+                        totalNumberProjects += targetPositionList.size();
+                        //统计年度项目数
+                        List<TargetPosition> thisYearPositions = targetPositionList.stream()
+                                .filter(tp -> tp.getCreateTime().after(startDate) && tp.getCreateTime().before(endDate))
+                                .collect(Collectors.toList());
+                        annualNumberProjects+=thisYearPositions.size();
+                        //统计年度总完成率
+                        annualTotalCompletionRate = this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate, thisYearPositions);
+                        //统计总完成率
+                        totalCompletionRate = this.getTotalCompletionRate(deadlineDate, totalCompletionRate, targetPositionList);
+                        //统计完成率分布
+                        completionRateRanges = this.completionRateRanges(targetPositionList, deadlineDate);
+                        //平均时效性分析
+
                     }
                 }
             }
         }
         //发布率:发布人数/学生总人数
-        publishingRate = Math.round(((double) numberPublishers / TotalNumberStudents) * 100.0) / 100.0;
+        publishingRate = Math.round(((double) numberPublishers / totalNumberStudents) * 100.0) / 100.0;
         //人均项目数:项目总数/学生总人数
-        NumberProjectsPerCapita = TotalNumberProjects / TotalNumberStudents;
-
-
-
+        numberProjectsPerCapita = totalNumberProjects / totalNumberStudents;
+        //年度平均项目数:年度项目数/学生总人数
+        annualAverageNumberProjects=annualNumberProjects / totalNumberStudents;
+        //平均完成率
+        averageCompletionRate = Math.round((totalCompletionRate/totalNumberStudents)*100.0)/100.0;
+        //年度平均完成率
+        annualAverageCompletionRate=Math.round((annualTotalCompletionRate/totalNumberStudents)*100.0)/100.0;
         //封装返回值
         collegeAnalysisVO.setPublishingRate(publishingRate);
         collegeAnalysisVO.setNumberPublishers(numberPublishers);
-        collegeAnalysisVO.setNumberProjectsPerCapita(NumberProjectsPerCapita);
-
-
-//            for (Long collegeId : collegeIdList) {
-//                CommonStudent commonStudent = new CommonStudent();
-//                commonStudent.setCollegeCode(String.format("%03d", collegeId));
-//                List<CommonStudent> commonStudentList = commonStudentService.selectCommonStudentList(commonStudent);
-//                studentNum += commonStudentList.size();
-//                for (CommonStudent student : commonStudentList) {
-//                    String sNum = student.getSNum();
-//                    TargetPosition targetPosition = new TargetPosition();
-//                    targetPosition.setCreateBy(sNum);
-//                    targetPosition.setState(1);
-//                    List<TargetPosition> targetPositions = targetPositionService.selectTargetPositionList(targetPosition);
-//                    DataAnalysis dataAnalysis1 = new DataAnalysis();
-//                    dataAnalysis1.setCreateBy(sNum);
-//                    dataAnalysis1.setDeadlineDate(previousDayDate);
-//                    List<DataAnalysis> dataAnalysisList = dataAnalysisService.selectDataAnalysisList(dataAnalysis1);
-//                    if (!dataAnalysisList.isEmpty()) {
-//                        //统计发布人数
-//                        publishersPersonNum++;
-//                        //统计发布目标
-//                        perCapitaNum += dataAnalysisList.size();
-//                        //统计目标完成率
-//                        for (DataAnalysis dataAnalysis : dataAnalysisList) {
-//                            completionRateS += Double.parseDouble(dataAnalysis.getCompletionRate());
-//                        }
-//                    }
-//                    publishingNum += targetPositions.size();
-//                    yearNum += targetPositions.stream()
-//                            .map(TargetPosition::getCreateTime)
-//                            .map(date -> date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-//                            .filter(localDate -> localDate.getYear() == targetYear)
-//                            .count();
-//                    for (TargetPosition targetPosition1 : targetPositions) {
-//                        LocalDate createTime = targetPosition1.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//                        if (createTime.isAfter(startOfYear) && createTime.isBefore(endOfYear)) {
-//                            String positionId = targetPosition1.getPositionId();
-//                            DataAnalysis dataAnalysis = getDataAnalysisByPositionId(dataAnalysisList, positionId);
-//                            if (dataAnalysis != null) {
-//                                totalCompletionRate += Double.parseDouble(dataAnalysis.getCompletionRate());
-//                                projectCount++;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            publishingRate = String.valueOf((double) publishersPersonNum / studentNum);
-//            perCapitaNum = publishersPersonNum == 0 ? 0 : publishingNum / publishersPersonNum;
-//            // 创建 DecimalFormat 对象，定义格式
-//            DecimalFormat decimalFormat = new DecimalFormat("#.##");
-//            // 格式化 double 值，保留两位小数
-//            averageCompletionRate = decimalFormat.format((publishersPersonNum == 0 ? 0 : completionRateS / publishersPersonNum));
-//
-//            collegeAnalysisVO.setPublishersNum(publishersPersonNum);
-//            collegeAnalysisVO.setPerPublishNum(perCapitaNum);
-//            collegeAnalysisVO.setPublishingRate(publishingRate);
-//            collegeAnalysisVO.setYearNum(yearNum);
-//            collegeAnalysisVO.setAverageCompletionRate(averageCompletionRate);
-//            collegeAnalysisVO.setYearCompletionRate(String.valueOf(projectCount));
-//        } else {
-//            List<DataAnalysis> dataAnalyses = dataAnalysisService.selectDataAnalysisList(null);
-//        }
-//        return collegeAnalysisVO;
-//    }
-//
-//    private static DataAnalysis getDataAnalysisByPositionId(List<DataAnalysis> dataAnalysisList, String positionId) {
-//        return dataAnalysisList.stream()
-//                .filter(dataAnalysis -> dataAnalysis.getPositionId().equals(positionId))
-//                .findFirst()
-//                .orElse(null);
-//    }
-
+        collegeAnalysisVO.setNumberProjectsPerCapita(numberProjectsPerCapita);
+        collegeAnalysisVO.setAnnualAverageNumberProjects(annualAverageNumberProjects);
+        collegeAnalysisVO.setAverageCompletionRate(averageCompletionRate);
+        collegeAnalysisVO.setAnnualAverageCompletionRate(annualAverageCompletionRate);
+        collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges);
         return collegeAnalysisVO;
     }
+
+    /**
+     * 平均时效性分析
+     */
+    private CollegeAnalysisVO averageTimeAnalysis(long totalNumberProjects,Date deadlineDate,List<TargetPosition> targetPositionList){
+        // 完成数
+         long completionsNum = 0;
+        // 未完成数
+        long unfinishedNum;
+        // 超时完成数
+        long timeoutCompletionsNum;
+        // 提前完成数
+        long beforeCompletionsNum = 0;
+        // 按时完成数
+        long justCompletionsNum;
+        //未完成过期数
+        long expiredTargetNum;
+        //未完成未过期数
+        long notExpiredTargetNum;
+
+        CollegeAnalysisVO collegeAnalysisVO = new CollegeAnalysisVO();
+        for(TargetPosition targetPosition:targetPositionList){
+            String positionId = targetPosition.getPositionId();
+            DataAnalysis dataAnalysis = new DataAnalysis();
+            dataAnalysis.setPositionId(positionId);
+            dataAnalysis.setDeadlineDate(deadlineDate);
+            dataAnalysis.setState(1);
+            //一个学生所发布的一个的岗位分析列表
+            List<DataAnalysis> dataAnalyses = dataAnalysisService.selectDataAnalysisList(dataAnalysis);
+            DataAnalysis dataAnalysis1 = dataAnalyses.get(0);
+            if(StringUtils.isNotNull(dataAnalysis1.getCompletionTime())){
+                completionsNum++;
+                //提前完成
+                if(dataAnalysis1.getCompletionTime().getTime()<dataAnalysis1.getCreateTime().getTime()){
+                    beforeCompletionsNum++;
+                }
+            }
+
+        }
+        //未完成数
+        unfinishedNum=totalNumberProjects-completionsNum;
+        return collegeAnalysisVO;
+    }
+
+    /**
+     * 计算完成率
+     * @return
+     */
+    private double getTotalCompletionRate(Date deadlineDate, double totalCompletionRate, List<TargetPosition> targetPositionList) {
+        for(TargetPosition position:targetPositionList){
+            String positionId = position.getPositionId();
+            DataAnalysis dataAnalysis = new DataAnalysis();
+            dataAnalysis.setPositionId(positionId);
+            dataAnalysis.setDeadlineDate(deadlineDate);
+            dataAnalysis.setState(1);
+            //查询已经发布的岗位
+            List<DataAnalysis> dataAnalyses = dataAnalysisService.selectDataAnalysisList(dataAnalysis);
+            if(!dataAnalyses.isEmpty()){
+                //总完成率
+                totalCompletionRate += Double.parseDouble(dataAnalyses.get(0).getCompletionRate());
+            }
+        }
+        return totalCompletionRate;
+    }
+
+    /**
+     * 统计完成率分布
+     * @return
+     */
+    private List<CompletionRateRange> completionRateRanges(List<TargetPosition> targetPositionList,Date deadlineDate){
+        ArrayList<CompletionRateRange> completionRateRanges = new ArrayList<>();
+        // 创建 Map 用于存储不同 completionRate 范围的创建者数量
+        Map<String, Integer> CompletionRateRange = new HashMap<>();
+        CompletionRateRange.put("0-20", 0);
+        CompletionRateRange.put("21-40", 0);
+        CompletionRateRange.put("41-60", 0);
+        CompletionRateRange.put("61-80", 0);
+        CompletionRateRange.put("81-100", 0);
+        for(TargetPosition position:targetPositionList){
+            String positionId = position.getPositionId();
+            DataAnalysis analysis = new DataAnalysis();
+            analysis.setPositionId(positionId);
+            analysis.setDeadlineDate(deadlineDate);
+            analysis.setState(1);
+            //查询已经发布的岗位
+            List<DataAnalysis> dataAnalysisList = dataAnalysisService.selectDataAnalysisList(analysis);
+            // 遍历 DataAnalysis 列表，进行统计
+            for (DataAnalysis dataAnalysis : dataAnalysisList) {
+                double completionRate = Double.parseDouble(dataAnalysis.getCompletionRate());
+                if (completionRate >= 0 && completionRate <= 20) {
+                    updateMap(CompletionRateRange, "0-20");
+                } else if (completionRate >= 21 && completionRate <= 40) {
+                    updateMap(CompletionRateRange, "21-40");
+                } else if (completionRate >= 41 && completionRate <= 60) {
+                    updateMap(CompletionRateRange, "41-60");
+                } else if (completionRate >= 61 && completionRate <= 80) {
+                    updateMap(CompletionRateRange, "61-80");
+                } else if (completionRate >= 81 && completionRate <= 100) {
+                    updateMap(CompletionRateRange, "81-100");
+                }
+            }
+        }
+        for (Map.Entry<String, Integer> entry : CompletionRateRange.entrySet()) {
+            CompletionRateRange completionRateRange = new CompletionRateRange();
+            completionRateRange.setRange(entry.getKey());
+            completionRateRange.setPeopleNum(Long.valueOf(entry.getValue()));
+            completionRateRanges.add(completionRateRange);
+        }
+        return completionRateRanges;
+    }
+
+    static void updateMap(Map<String, Integer> map, String key) {
+        // 更新 Map 中指定 key 的值
+        map.put(key, map.get(key) + 1);
+    }
+
 }

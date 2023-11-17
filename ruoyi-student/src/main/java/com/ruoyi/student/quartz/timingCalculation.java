@@ -55,6 +55,8 @@ public class timingCalculation {
             String positionId = targetPosition.getPositionId();
             //是否是主目标
             dataAnalysis.setIsMain(targetPosition.getIsMain());
+            //目标状态
+            dataAnalysis.setState(targetPosition.getState());
             //统计一级/二级目录的数据
             this.SubAnalysis(positionId);
             //岗位id
@@ -92,6 +94,9 @@ public class timingCalculation {
             if(CompletionsSkillsInfosSize!=0){
                 double CompletionRate = ((double) CompletionsSkillsInfosSize / AllSize) * 100;
                 dataAnalysis.setCompletionRate( String.format("%.2f", CompletionRate));
+                if(CompletionRate==100.00){
+                    dataAnalysis.setCompletionTime(new Date());
+                }
             }else {
                 dataAnalysis.setCompletionRate("0");
             }

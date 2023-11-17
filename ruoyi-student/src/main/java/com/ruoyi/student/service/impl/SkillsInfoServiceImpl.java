@@ -1,7 +1,12 @@
 package com.ruoyi.student.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.student.domain.vo.TargetPositionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.student.mapper.SkillsInfoMapper;
@@ -56,7 +61,6 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
     public int insertSkillsInfo(SkillsInfo skillsInfo)
     {
         skillsInfo.setCreateTime(DateUtils.getNowDate());
-        System.out.println(skillsInfo);
         return skillsInfoMapper.insertSkillsInfo(skillsInfo);
     }
 
@@ -130,5 +134,68 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
     @Override
     public SkillsInfo selectSkillsInfoBycreateBy(String sNum) {
         return skillsInfoMapper.selectSkillsInfoBycreateBy(sNum);
+    }
+
+    @Override
+    public TargetPositionVO CalculationCompletionRate(String positionId) {
+        List<SkillsInfo> skillsInfoList = skillsInfoMapper.selectSkillsInfoByPositionId(positionId);
+        //总体完成率
+        TargetPositionVO targetPositionVO = new TargetPositionVO();
+        double completionRate = 0;
+        double a=0.00;
+        if(!skillsInfoList.isEmpty()){
+            for (SkillsInfo skillsInfo:skillsInfoList){
+                a+=skillsInfo.getCompletionStatus();
+            }
+            completionRate=a/skillsInfoList.size();
+        }
+        targetPositionVO.setCompletionRate(completionRate);
+        // 获取当前日期
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        Date currentDate = calendar.getTime();
+        // 计算1-6月和7-12月的截止和完成情况
+        int projects1To6 = 0;
+        int completedProjects1To6 = 0;
+        int projects7To12 = 0;
+        int completedProjects7To12 = 0;
+        for (SkillsInfo skillsInfo : skillsInfoList) {
+            // 获取项目的结束时间和完成时间
+            Date endTime = skillsInfo.getEndTime();
+            Date completeTime = skillsInfo.getCompleteTime();
+            // 检查是否为本年度的项目
+            calendar.setTime(endTime);
+            int projectYear = calendar.get(Calendar.YEAR);
+            if (projectYear == currentYear) {
+                if (calendar.get(Calendar.MONTH) < 6) {
+                    // 1-6月的项目
+                    projects1To6++;
+                    if (completeTime != null) {
+                        completedProjects1To6++;
+                    }
+                } else {
+                    // 7-12月的项目
+                    projects7To12++;
+                    if (completeTime != null) {
+                        completedProjects7To12++;
+                    }
+                }
+            }
+        }
+        // 计算完成率
+        double completionRate1To6 = calculateCompletionRate(projects1To6, completedProjects1To6);
+        double completionRate7To12 = calculateCompletionRate(projects7To12, completedProjects7To12);
+        targetPositionVO.setCompletedQuantity1((long) projects1To6);
+        targetPositionVO.setCompletionRate1(completionRate1To6);
+        targetPositionVO.setCompletedQuantity2((long) projects7To12);
+        targetPositionVO.setCompletionRate2(completionRate7To12);
+        return targetPositionVO;
+    }
+
+    private static double calculateCompletionRate(int totalProjects, int completedProjects) {
+        if (totalProjects == 0) {
+            return 0.0;
+        }
+        return (double) completedProjects / totalProjects;
     }
 }

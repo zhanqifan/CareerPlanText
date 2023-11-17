@@ -2,6 +2,7 @@ package com.ruoyi.teacher.mapper;
 
 import java.util.List;
 import com.ruoyi.teacher.domain.TeacherClass;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 教师所教的班级Mapper接口
@@ -9,6 +10,7 @@ import com.ruoyi.teacher.domain.TeacherClass;
  * @author ruoyi
  * @date 2023-11-10
  */
+@Mapper
 public interface TeacherClassMapper 
 {
     /**

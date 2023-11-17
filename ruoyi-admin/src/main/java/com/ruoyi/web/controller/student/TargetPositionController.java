@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.student;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.annotation.Log;
@@ -14,6 +15,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.student.domain.SkillsInfo;
 import com.ruoyi.student.domain.dto.TargetPositionDTO;
 import com.ruoyi.student.domain.vo.TargetPositionVO;
+import com.ruoyi.student.service.ISkillsInfoService;
 import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +44,9 @@ public class TargetPositionController extends BaseController
     @Autowired
     private ITargetPositionService targetPositionService;
 
+    @Resource
+    private ISkillsInfoService skillsInfoService;
+
     /**
      * 查询岗位管理列表
      */
@@ -52,8 +57,15 @@ public class TargetPositionController extends BaseController
         List<TargetPosition> list = targetPositionService.selectTargetPositionListByUserId(SecurityUtils.getUsername());
         List<TargetPositionVO> collect = list.stream().map(target -> {
             TargetPositionVO targetPositionVO = new TargetPositionVO();
-            BeanUtils.copyProperties(target, targetPositionVO);
-            //TODO 完成率计算
+            TargetPositionVO positionVO = skillsInfoService.CalculationCompletionRate(target.getPositionId());
+            BeanUtils.copyProperties(positionVO, targetPositionVO);
+            targetPositionVO.setPositionId(target.getPositionId());
+            targetPositionVO.setPositionName(target.getPositionName());
+            targetPositionVO.setIsMain(target.getIsMain());
+            targetPositionVO.setReviewsNumber(target.getReviewsNumber());
+            targetPositionVO.setState(target.getState());
+            targetPositionVO.setModificationsNumber(target.getModificationsNumber());
+            targetPositionVO.setCreateBy(target.getCreateBy());
             return targetPositionVO;
         }).collect(Collectors.toList());
         return getDataTable(collect);
@@ -116,7 +128,7 @@ public class TargetPositionController extends BaseController
      * 删除岗位管理
      */
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{positionIds}")
+    @DeleteMapping("/{positionIds}")
     public AjaxResult remove(@PathVariable Long[] positioIds)
     {
         return toAjax(targetPositionService.deleteTargetPositionByPositionIds(positioIds));

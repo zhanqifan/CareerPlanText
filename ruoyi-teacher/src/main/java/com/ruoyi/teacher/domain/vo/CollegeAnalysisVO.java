@@ -31,11 +31,14 @@ public class CollegeAnalysisVO {
     private Long  AnnualAverageNumberProjects;
 
     /**年度完成率*/
-    private Double  AnnualCompletionRate;
+    private Double  annualAverageCompletionRate;
 
     /** 统计截至日期 */
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date deadlineDate;
+
+    /**完成率分布*/
+    private List<CompletionRateRange> completionRateRangeList;
 
     /**全校数据*/
     private   List<FirstAnalysis> schoolData;

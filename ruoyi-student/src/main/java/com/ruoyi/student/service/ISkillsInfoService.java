@@ -2,6 +2,7 @@ package com.ruoyi.student.service;
 
 import java.util.List;
 import com.ruoyi.student.domain.SkillsInfo;
+import com.ruoyi.student.domain.vo.TargetPositionVO;
 
 /**
  * 技能详情Service接口
@@ -68,4 +69,6 @@ public interface ISkillsInfoService
     void AnalyzeCatalogData(String positionId);
 
     SkillsInfo selectSkillsInfoBycreateBy(String sNum);
+
+    TargetPositionVO CalculationCompletionRate(String positionId);
 }

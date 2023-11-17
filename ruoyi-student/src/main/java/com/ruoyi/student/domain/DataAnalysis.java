@@ -31,6 +31,9 @@ public class DataAnalysis extends BaseEntity
     /**是否是主目标（1：主目标，0：非主目标）*/
     private Integer isMain;
 
+    /**目标状态(1:已发布，0:已废止，2:草稿)*/
+    private Integer state;
+
     /** 目标数 */
     @Excel(name = "目标数")
     private Long targetNum;
@@ -38,6 +41,10 @@ public class DataAnalysis extends BaseEntity
     /** 完成率 */
     @Excel(name = "完成率")
     private String completionRate;
+
+    /** 完成时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date completionTime;
 
     /** 统计截至日期 */
     @JsonFormat(pattern = "yyyy-MM-dd")
