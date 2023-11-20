@@ -58,7 +58,7 @@ public class timingCalculation {
             //目标状态
             dataAnalysis.setState(targetPosition.getState());
             //统计一级/二级目录的数据
-            this.SubAnalysis(positionId);
+            this.SubAnalysis(targetPosition.getCreateBy(),positionId);
             //岗位id
             dataAnalysis.setPositionId(positionId);
             //创建者id
@@ -184,11 +184,12 @@ public class timingCalculation {
     }
 
     //目录分析
-    private void SubAnalysis(String positionId){
+    private void SubAnalysis(String userId,String positionId){
+        //一级目录分析
+        firstAnalysisService.insertFirstAnalysis(userId,positionId);
         //二级目录分析
         subAnalysisService.insertSubAnalysis(positionId);
-        //一级目录分析
-        firstAnalysisService.insertFirstAnalysis(positionId);
+
     }
 
 }

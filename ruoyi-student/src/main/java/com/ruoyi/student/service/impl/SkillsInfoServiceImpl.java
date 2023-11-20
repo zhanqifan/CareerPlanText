@@ -60,7 +60,6 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
     @Override
     public int insertSkillsInfo(SkillsInfo skillsInfo)
     {
-        skillsInfo.setCreateTime(DateUtils.getNowDate());
         return skillsInfoMapper.insertSkillsInfo(skillsInfo);
     }
 

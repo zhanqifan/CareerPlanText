@@ -41,6 +41,10 @@ public class Ctatlogue
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    public Ctatlogue(String parentId){
+        this.parentId=parentId;
+    }
+
 
 
 }

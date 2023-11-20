@@ -14,7 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectFirstAnalysisVo">
-        select id, postition_id, first_id, first_name, first_completion_rate,deadline_date from first_analysis
+        select id, postition_id, create_by,first_id, first_name, first_completion_rate,deadline_date from first_analysis
     </sql>
 
     <select id="selectFirstAnalysisList" parameterType="FirstAnalysis" resultMap="FirstAnalysisResult">
@@ -34,9 +34,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
         
     <insert id="insertFirstAnalysis" parameterType="string">
-        INSERT into first_analysis (postition_id,first_id,first_name,first_completion_rate,deadline_date)
+        INSERT into first_analysis (postition_id, create_by,first_id,first_name,first_completion_rate,deadline_date)
         SELECT
             a.postition_id,
+            a.create_by,
             a.first_id,
             ctatlogue.catalogue_name AS first_name,
             a.secondary_completion_rate,
@@ -44,6 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM
             (SELECT
                  #{positionId} AS postition_id,
+                 #{userId} as create_by,
                  first_id AS first_id,
                  ROUND(AVG(completion_status), 3) AS secondary_completion_rate
              FROM

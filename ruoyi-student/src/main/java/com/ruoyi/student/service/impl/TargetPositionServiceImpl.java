@@ -2,6 +2,7 @@ package com.ruoyi.student.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -108,7 +109,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
                 skillsInfo.setTakeRole(skillsInfo.getTakeRole());
                 skillsInfo.setCreateBy(username);
                 //添加实习/实践内容
-                if(StringUtils.isNotNull(skillsInfo.getContent())){
+                if(Objects.equals(skillsInfo.getContent(), " ") ||skillsInfo.getContent()==null){
                     InternshipContent internshipContent = new InternshipContent();
                     internshipContent.setSkillsId(skillsInfoId);
                     internshipContent.setContent(skillsInfo.getContent());

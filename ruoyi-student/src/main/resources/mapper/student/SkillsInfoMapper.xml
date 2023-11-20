@@ -71,7 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createBy != null">create_by,</if>
             <if test="endTime != null">end_time,</if>
             <if test="startTime != null">start_time,</if>
-            <if test="createTime != null">create_time,</if>
+           create_time,
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -83,7 +83,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createBy != null">#{createBy},</if>
             <if test="endTime != null">#{endTime},</if>
             <if test="startTime != null">#{startTime},</if>
-            <if test="createTime != null">#{createTime},</if>
+            sysdate()
          </trim>
     </insert>
 

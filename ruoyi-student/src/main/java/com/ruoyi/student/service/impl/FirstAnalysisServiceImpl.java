@@ -48,11 +48,11 @@ public class FirstAnalysisServiceImpl implements IFirstAnalysisService
 
     /**
      * 新增一级目录分析
-     * */
+     */
     @Override
-    public int insertFirstAnalysis(String positionId)
+    public void insertFirstAnalysis(String userId, String positionId)
     {
-        return firstAnalysisMapper.insertFirstAnalysis(positionId);
+        firstAnalysisMapper.insertFirstAnalysis(userId, positionId);
     }
 
     /**

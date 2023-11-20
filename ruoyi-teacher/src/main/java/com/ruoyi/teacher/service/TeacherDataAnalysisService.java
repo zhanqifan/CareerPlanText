@@ -7,7 +7,7 @@ import com.ruoyi.teacher.domain.vo.CollegeAnalysisVO;
 public interface TeacherDataAnalysisService {
 
     /**
-     *查询学院分析结构
+     *查询学院分析
      */
     CollegeAnalysisVO getCollegeAnalysis(CollegeAnalysisDTO collegeAnalysisDTO);
 

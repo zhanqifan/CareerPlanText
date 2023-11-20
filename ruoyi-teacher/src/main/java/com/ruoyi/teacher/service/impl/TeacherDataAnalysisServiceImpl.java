@@ -1,16 +1,14 @@
 package com.ruoyi.teacher.service.impl;
 
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.student.domain.CommonStudent;
-import com.ruoyi.student.domain.DataAnalysis;
-import com.ruoyi.student.domain.TargetPosition;
-import com.ruoyi.student.service.ICommonStudentService;
-import com.ruoyi.student.service.IDataAnalysisService;
-import com.ruoyi.student.service.ITargetPositionService;
+import com.ruoyi.common.utils.bean.BeanUtils;
+import com.ruoyi.student.domain.*;
+import com.ruoyi.student.service.*;
 import com.ruoyi.student.system.service.ISysDeptService;
 import com.ruoyi.teacher.domain.dto.CollegeAnalysisDTO;
 import com.ruoyi.teacher.domain.vo.CollegeAnalysisVO;
 import com.ruoyi.teacher.domain.vo.CompletionRateRange;
+import com.ruoyi.teacher.domain.vo.FirstAnalysisVO;
 import com.ruoyi.teacher.service.TeacherDataAnalysisService;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +31,12 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
     private IDataAnalysisService dataAnalysisService;
 
     @Resource
+    private ICtatlogueService ctatlogueService;
+
+    @Resource
     private ICommonStudentService commonStudentService;
+    @Resource
+    private IFirstAnalysisService firstAnalysisService;
 
     /**
      * 查询学院分析结构
@@ -75,6 +78,9 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         double annualTotalCompletionRate=0.00;
         // 获取当前年份
         int targetYear = LocalDate.now().getYear();
+        CollegeAnalysisVO analysis =new CollegeAnalysisVO();
+        //所选学生一级目录分析
+        ArrayList<FirstAnalysisVO> firstAnalysisVOS = new ArrayList<>();
         // 获取今年的开始日期和结束日期
         // 获取今年的开始日期和结束日期
         Calendar calendar = Calendar.getInstance();
@@ -122,7 +128,10 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                         //统计完成率分布
                         completionRateRanges = this.completionRateRanges(targetPositionList, deadlineDate);
                         //平均时效性分析
-
+                        analysis = this.averageTimeAnalysis(deadlineDate, targetPositionList);
+                        //todo  统计近6月完成人次数
+                        //todo 统计分类平均完成率明细
+                        firstAnalysisVOS.addAll(this.averageCompletionRateOfClassification(deadlineDate, targetPositionList));
                     }
                 }
             }
@@ -137,7 +146,12 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         averageCompletionRate = Math.round((totalCompletionRate/totalNumberStudents)*100.0)/100.0;
         //年度平均完成率
         annualAverageCompletionRate=Math.round((annualTotalCompletionRate/totalNumberStudents)*100.0)/100.0;
+        //统计所选学生的一级目录分析
+        List<FirstAnalysisVO>  studentData= this.firstNameTotalCompletionRate(firstAnalysisVOS,numberPublishers);
+        //统计全校学生的一级目录分析
+        List<FirstAnalysisVO> schoolData = this.AllStudents(deadlineDate);
         //封装返回值
+        BeanUtils.copyProperties(analysis,collegeAnalysisVO);//设置平均时效性分析
         collegeAnalysisVO.setPublishingRate(publishingRate);
         collegeAnalysisVO.setNumberPublishers(numberPublishers);
         collegeAnalysisVO.setNumberProjectsPerCapita(numberProjectsPerCapita);
@@ -145,27 +159,82 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         collegeAnalysisVO.setAverageCompletionRate(averageCompletionRate);
         collegeAnalysisVO.setAnnualAverageCompletionRate(annualAverageCompletionRate);
         collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges);
+        collegeAnalysisVO.setDeadlineDate(deadlineDate);
+        collegeAnalysisVO.setStudentData(studentData);
+        collegeAnalysisVO.setSchoolData(schoolData);
         return collegeAnalysisVO;
+    }
+
+
+    /**
+     *统计分类平均完成率明细
+     */
+    public List<FirstAnalysisVO> averageCompletionRateOfClassification(Date deadlineDat,List<TargetPosition> targetPositionList){
+        // 查询一级目录
+        List<Ctatlogue> ctatlogueList = ctatlogueService.selectCtatlogueList(new Ctatlogue("0"));
+        List<FirstAnalysisVO> studentData = ctatlogueList.stream()
+                .map(ctatlogue1 -> new FirstAnalysisVO(ctatlogue1.getCatalogueName(), 0.00))
+                .collect(Collectors.toCollection(ArrayList::new));
+        // 统计每个学生发布岗位的一级目录完成率的数据
+        List<FirstAnalysis> firstAnalysisList = targetPositionList.stream()
+                .flatMap(position -> firstAnalysisService.selectFirstAnalysisList(
+                        new FirstAnalysis(position.getPositionId(),deadlineDat)).stream())
+                .collect(Collectors.toList());
+        // 更新学生数据的完成率
+        for (FirstAnalysisVO studentDatum : studentData) {
+            double averageCompletionRate = firstAnalysisList.stream()
+                    .filter(firstAnalysis -> studentDatum.getFirstName().equals(firstAnalysis.getFirstName()))
+                    .mapToDouble(firstAnalysis -> Double.parseDouble(firstAnalysis.getFirstCompletionRate()))
+                    .average()
+                    .orElse(0.00);
+            studentDatum.setFirstAverageCompletionRate(averageCompletionRate);
+        }
+        return studentData;
+    }
+
+    /**
+     * 全校学生一级目录分析结果
+     */
+    public List<FirstAnalysisVO>  AllStudents(Date deadlineDat){
+        TargetPosition targetPosition = new TargetPosition();
+        targetPosition.setState(1);
+        List<TargetPosition> targetPositionList = targetPositionService.selectTargetPositionList(targetPosition);
+        // 使用流和集合操作获取不同的 CreateBy 值
+        Set<String> uniqueCreateByValues = targetPositionList.stream()
+                .map(TargetPosition::getCreateBy)
+                .collect(Collectors.toSet());
+        List<FirstAnalysisVO> firstAnalysisVOS = this.averageCompletionRateOfClassification(deadlineDat, targetPositionList);
+        return this.firstNameTotalCompletionRate(firstAnalysisVOS,uniqueCreateByValues.size());
+    }
+
+    private List<FirstAnalysisVO> firstNameTotalCompletionRate(List<FirstAnalysisVO> firstAnalysisVOList,long numberPublishers){
+
+        Map<String, Double> firstNameTotalCompletionRate = firstAnalysisVOList.stream()
+                .collect(Collectors.groupingBy(FirstAnalysisVO::getFirstName,
+                        Collectors.summingDouble((FirstAnalysisVO::getFirstAverageCompletionRate))));
+        return firstNameTotalCompletionRate.entrySet().stream()
+                .map(entry -> new FirstAnalysisVO(entry.getKey(), entry.getValue()/numberPublishers))
+                .collect(Collectors.toList());
     }
 
     /**
      * 平均时效性分析
      */
-    private CollegeAnalysisVO averageTimeAnalysis(long totalNumberProjects,Date deadlineDate,List<TargetPosition> targetPositionList){
+    private CollegeAnalysisVO averageTimeAnalysis(Date deadlineDate,List<TargetPosition> targetPositionList){
         // 完成数
          long completionsNum = 0;
         // 未完成数
-        long unfinishedNum;
+        long unfinishedNum=0;
         // 超时完成数
-        long timeoutCompletionsNum;
+        long timeoutCompletionsNum=0;
         // 提前完成数
         long beforeCompletionsNum = 0;
         // 按时完成数
-        long justCompletionsNum;
+        long justCompletionsNum = 0;
         //未完成过期数
-        long expiredTargetNum;
+        long expiredTargetNum=0;
         //未完成未过期数
-        long notExpiredTargetNum;
+        long notExpiredTargetNum=0;
 
         CollegeAnalysisVO collegeAnalysisVO = new CollegeAnalysisVO();
         for(TargetPosition targetPosition:targetPositionList){
@@ -177,23 +246,36 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
             //一个学生所发布的一个的岗位分析列表
             List<DataAnalysis> dataAnalyses = dataAnalysisService.selectDataAnalysisList(dataAnalysis);
             DataAnalysis dataAnalysis1 = dataAnalyses.get(0);
-            if(StringUtils.isNotNull(dataAnalysis1.getCompletionTime())){
-                completionsNum++;
-                //提前完成
-                if(dataAnalysis1.getCompletionTime().getTime()<dataAnalysis1.getCreateTime().getTime()){
-                    beforeCompletionsNum++;
-                }
+            if(StringUtils.isNotNull(dataAnalysis1)){
+                //统计提前完成
+                beforeCompletionsNum += dataAnalysis1.getBeforeCompletionsNum();
+                //统计按时完成数
+                justCompletionsNum += dataAnalysis1.getJustCompletionsNum();
+                //统计超时完成数
+                timeoutCompletionsNum+=dataAnalysis1.getTimeoutCompletionsNum();
+                //统计未完成过期数
+                expiredTargetNum+=dataAnalysis1.getExpiredTargetNum();
+                //统计未完成未过期数
+                notExpiredTargetNum+=dataAnalysis1.getNotExpiredTargetNum();
+                //统计未完成数
+                unfinishedNum+=dataAnalysis1.getUnfinishedNum();
+                //完成数
+                completionsNum+=dataAnalysis1.getCompletionsNum();
             }
-
         }
         //未完成数
-        unfinishedNum=totalNumberProjects-completionsNum;
+        collegeAnalysisVO.setBeforeCompletionsNum(beforeCompletionsNum);
+        collegeAnalysisVO.setCompletionsNum(completionsNum);
+        collegeAnalysisVO.setJustCompletionsNum(justCompletionsNum);
+        collegeAnalysisVO.setTimeoutCompletionsNum(timeoutCompletionsNum);
+        collegeAnalysisVO.setUnfinishedNum(unfinishedNum);
+        collegeAnalysisVO.setExpiredTargetNum(expiredTargetNum);
+        collegeAnalysisVO.setNotExpiredTargetNum(notExpiredTargetNum);
         return collegeAnalysisVO;
     }
 
     /**
      * 计算完成率
-     * @return
      */
     private double getTotalCompletionRate(Date deadlineDate, double totalCompletionRate, List<TargetPosition> targetPositionList) {
         for(TargetPosition position:targetPositionList){
@@ -236,6 +318,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
             // 遍历 DataAnalysis 列表，进行统计
             for (DataAnalysis dataAnalysis : dataAnalysisList) {
                 double completionRate = Double.parseDouble(dataAnalysis.getCompletionRate());
+                System.out.println("completionRate:"+completionRate);
                 if (completionRate >= 0 && completionRate <= 20) {
                     updateMap(CompletionRateRange, "0-20");
                 } else if (completionRate >= 21 && completionRate <= 40) {
@@ -262,5 +345,6 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         // 更新 Map 中指定 key 的值
         map.put(key, map.get(key) + 1);
     }
+
 
 }

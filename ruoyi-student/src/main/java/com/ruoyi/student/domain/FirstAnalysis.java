@@ -44,5 +44,9 @@ public class FirstAnalysis extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date deadlineDate;
 
+    public FirstAnalysis(String positionId, Date deadlineDate) {
+        this.postitionId = positionId;
+        this.deadlineDate = deadlineDate;
+    }
 
 }

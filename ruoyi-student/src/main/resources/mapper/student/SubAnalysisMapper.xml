@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
         
     <insert id="insertSubAnalysis" parameterType="string" >
-        INSERT INTO sub_analysis ( postition_id, secondary_id,secondary_name, secondary_target_num, secondary_completion_num, secondary_completion_rate ,deadline_date)
+        INSERT INTO sub_analysis ( postition_id,secondary_id,secondary_name, secondary_target_num, secondary_completion_num, secondary_completion_rate ,deadline_date)
         SELECT
             a.postition_id,
             a.secondary_id,

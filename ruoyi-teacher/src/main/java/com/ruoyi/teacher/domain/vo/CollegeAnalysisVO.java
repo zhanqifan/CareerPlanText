@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class CollegeAnalysisVO {
 
     /**发布人数*/
@@ -41,10 +42,10 @@ public class CollegeAnalysisVO {
     private List<CompletionRateRange> completionRateRangeList;
 
     /**全校数据*/
-    private   List<FirstAnalysis> schoolData;
+    private   List<FirstAnalysisVO> schoolData;
 
     /**所选学生数据*/
-    private List<FirstAnalysis>  studentData;
+    private List<FirstAnalysisVO>  studentData;
 
     /** 完成数 */
     private Long completionsNum;

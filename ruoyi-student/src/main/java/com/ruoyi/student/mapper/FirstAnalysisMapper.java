@@ -3,6 +3,7 @@ package com.ruoyi.student.mapper;
 import java.util.List;
 import com.ruoyi.student.domain.FirstAnalysis;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 一级目录分析Mapper接口
@@ -34,7 +35,7 @@ public interface FirstAnalysisMapper
      * 
      * @return 结果
      */
-    public int insertFirstAnalysis(String positionId);
+    public int insertFirstAnalysis(@Param("userId") String userId,@Param("positionId") String positionId);
 
     /**
      * 修改一级目录分析

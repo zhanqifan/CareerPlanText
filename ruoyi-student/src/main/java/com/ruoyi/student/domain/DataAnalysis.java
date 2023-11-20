@@ -95,4 +95,5 @@ public class DataAnalysis extends BaseEntity
     @Excel(name = "未完成未过期数")
     private Long notExpiredTargetNum;
 
+
 }
