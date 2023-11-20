@@ -54,7 +54,9 @@ public class TargetPositionController extends BaseController
     public TableDataInfo list(TargetPosition targetPosition)
     {
         startPage();
-        List<TargetPosition> list = targetPositionService.selectTargetPositionListByUserId(SecurityUtils.getUsername());
+        targetPosition.setCreateBy(SecurityUtils.getUsername());
+
+        List<TargetPosition> list = targetPositionService.selectTargetPositionList(targetPosition);
         List<TargetPositionVO> collect = list.stream().map(target -> {
             TargetPositionVO targetPositionVO = new TargetPositionVO();
             TargetPositionVO positionVO = skillsInfoService.CalculationCompletionRate(target.getPositionId());
