@@ -1,5 +1,6 @@
 package com.ruoyi.teacher.service.impl;
 
+import cn.hutool.extra.tokenizer.engine.analysis.AnalysisResult;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.student.domain.*;
 import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
@@ -17,6 +18,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -91,14 +95,15 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         //年度项目数
         long annualNumberProjects = 0L;
         //总完成率
-        double totalCompletionRate = 0.00;
+        AtomicReference<Double> totalCompletionRate = new AtomicReference<>(0.00);
         //年度总完成率
-        double annualTotalCompletionRate = 0.00;
+        AtomicReference<Double> annualTotalCompletionRate = new AtomicReference<>(0.00);
         // 获取当前年份
         int targetYear = LocalDate.now().getYear();
         CollegeAnalysisVO analysis = new CollegeAnalysisVO();
         //所选学生一级目录分析
         ArrayList<FirstAnalysisVO> firstAnalysisVOS = new ArrayList<>();
+
         // 获取今年的开始日期和结束日期
         // 获取今年的开始日期和结束日期
         Calendar calendar = Calendar.getInstance();
@@ -118,6 +123,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
             TargetPosition targetPosition = new TargetPosition();
             targetPosition.setCreateBy(sNum);
             targetPosition.setState(1);
+            targetPosition.setIsMain(isMain);
             //todo  统计近6月完成人次数
             List<DataAnalysis> dataAnalyses = this.numberCompletedMonths(student, deadlineDate);
             if (dataAnalyses.size() != 0) {
@@ -134,23 +140,65 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                         .filter(tp -> tp.getCreateTime().after(startDate) && tp.getCreateTime().before(endDate))
                         .collect(Collectors.toList());
                 annualNumberProjects += thisYearPositions.size();
-                //统计年度总完成率
-                annualTotalCompletionRate += this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate, thisYearPositions);
-                //统计总完成率
-                totalCompletionRate += this.getTotalCompletionRate(deadlineDate, totalCompletionRate, targetPositionList);
-                //统计完成率分布
-                completionRateRangeArrayList.addAll(this.completionRateRanges(targetPositionList, deadlineDate));
-                //平均时效性分析
-                analysis = this.averageTimeAnalysis(deadlineDate, targetPositionList);
-                completionsNum += analysis.getCompletionsNum();
-                unfinishedNum += analysis.getUnfinishedNum();
-                timeoutCompletionsNum += analysis.getTimeoutCompletionsNum();
-                justCompletionsNum += analysis.getJustCompletionsNum();
-                beforeCompletionsNum += analysis.getBeforeCompletionsNum();
-                expiredTargetNum += analysis.getExpiredTargetNum();
-                notExpiredTargetNum += analysis.getNotExpiredTargetNum();
-                //todo 统计分类平均完成率明细
-                firstAnalysisVOS.addAll(this.averageCompletionRateOfClassification(deadlineDate, targetPositionList));
+                // 使用 CompletableFuture 开启异步执行
+                CompletableFuture<Void> asyncTask = CompletableFuture.runAsync(() -> {
+                    // 统计年度总完成率
+                    annualTotalCompletionRate.updateAndGet(v -> new Double((double) (v + this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate.get(), thisYearPositions))));
+                    // 统计总完成率
+                    totalCompletionRate.updateAndGet(v -> new Double((double) (v + this.getTotalCompletionRate(deadlineDate, totalCompletionRate.get(), targetPositionList))));
+                    // 统计完成率分布
+                    completionRateRangeArrayList.addAll(this.completionRateRanges(targetPositionList, deadlineDate));
+                });
+
+                // 平均时效性分析异步执行
+                CompletableFuture<CollegeAnalysisVO> analysisTask = CompletableFuture.supplyAsync(() -> {
+                    return this.averageTimeAnalysis(deadlineDate, targetPositionList);
+                });
+
+                // 统计分类平均完成率明细异步执行
+                CompletableFuture<List<FirstAnalysisVO>> classificationTask = CompletableFuture.supplyAsync(() -> {
+                    return this.averageCompletionRateOfClassification(deadlineDate, targetPositionList);
+                });
+
+                try {
+                    // 等待所有异步任务完成
+                    CompletableFuture.allOf(asyncTask, analysisTask, classificationTask).join();
+
+                    // 获取异步任务的结果
+                    CollegeAnalysisVO analysisResult = analysisTask.get();
+                    List<FirstAnalysisVO> firstAnalysisVOList = classificationTask.get();
+
+                    // 处理异步任务的结果
+                    completionsNum += analysisResult.getCompletionsNum();
+                    unfinishedNum += analysisResult.getUnfinishedNum();
+                    timeoutCompletionsNum += analysisResult.getTimeoutCompletionsNum();
+                    justCompletionsNum += analysisResult.getJustCompletionsNum();
+                    beforeCompletionsNum += analysisResult.getBeforeCompletionsNum();
+                    expiredTargetNum += analysisResult.getExpiredTargetNum();
+                    notExpiredTargetNum += analysisResult.getNotExpiredTargetNum();
+                    // 处理分类平均完成率明细
+                    firstAnalysisVOS.addAll(this.averageCompletionRateOfClassification(deadlineDate, targetPositionList));
+
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace(); // 处理异常
+                }
+//                //统计年度总完成率
+//                annualTotalCompletionRate += this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate, thisYearPositions);
+//                //统计总完成率
+//                totalCompletionRate += this.getTotalCompletionRate(deadlineDate, totalCompletionRate, targetPositionList);
+//                //统计完成率分布
+//                completionRateRangeArrayList.addAll(this.completionRateRanges(targetPositionList, deadlineDate));
+//                //平均时效性分析
+//                analysis = this.averageTimeAnalysis(deadlineDate, targetPositionList);
+//                completionsNum += analysis.getCompletionsNum();
+//                unfinishedNum += analysis.getUnfinishedNum();
+//                timeoutCompletionsNum += analysis.getTimeoutCompletionsNum();
+//                justCompletionsNum += analysis.getJustCompletionsNum();
+//                beforeCompletionsNum += analysis.getBeforeCompletionsNum();
+//                expiredTargetNum += analysis.getExpiredTargetNum();
+//                notExpiredTargetNum += analysis.getNotExpiredTargetNum();
+//                //统计分类平均完成率明细
+//                firstAnalysisVOS.addAll(this.averageCompletionRateOfClassification(deadlineDate, targetPositionList));
             }
         }
         //发布率:发布人数/学生总人数
@@ -160,9 +208,9 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         //年度平均项目数:年度项目数/学生总人数
         annualAverageNumberProjects=annualNumberProjects / totalNumberStudents;
         //平均完成率
-        averageCompletionRate = Math.round((totalCompletionRate/totalNumberStudents)*100.0)/100.0;
+        averageCompletionRate = Math.round((totalCompletionRate.get() /totalNumberStudents)*100.0)/100.0;
         //年度平均完成率
-        annualAverageCompletionRate=Math.round((annualTotalCompletionRate/totalNumberStudents)*100.0)/100.0;
+        annualAverageCompletionRate=Math.round((annualTotalCompletionRate.get() /totalNumberStudents)*100.0)/100.0;
         //统计所选学生的一级目录分析
         List<FirstAnalysisVO>  studentData= this.firstNameTotalCompletionRate(firstAnalysisVOS,numberPublishers);
         //统计全校学生的一级目录分析
@@ -178,7 +226,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         collegeAnalysisVO.setAnnualAverageNumberProjects(annualAverageNumberProjects);
         collegeAnalysisVO.setAverageCompletionRate(averageCompletionRate);
         collegeAnalysisVO.setAnnualAverageCompletionRate(annualAverageCompletionRate);
-        collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges);
+//        collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges);
         collegeAnalysisVO.setBeforeCompletionsNum(beforeCompletionsNum);
         collegeAnalysisVO.setCompletionsNum(completionsNum);
         collegeAnalysisVO.setJustCompletionsNum(justCompletionsNum);
