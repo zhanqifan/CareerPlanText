@@ -110,7 +110,7 @@ public class EvaluateServiceImpl implements IEvaluateService
     public int deleteEvaluateByEvaluateIds(Integer evaluateIds)
     {
         //修改目标自评状态
-        Evaluate evaluate = evaluateMapper.selectEvaluateBySkillsId(String.valueOf(evaluateIds));
+        Evaluate evaluate = evaluateMapper.selectEvaluateByEvaluateId(evaluateIds);
         SkillsInfo skillsInfo = new SkillsInfo();
         skillsInfo.setEvaluateState(0);
         skillsInfo.setId(evaluate.getSkillsId());
