@@ -15,6 +15,8 @@ import com.ruoyi.student.domain.Evaluate;
 import com.ruoyi.student.service.IEvaluateService;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+
 /**
  * 评价Service业务层处理
  * 
@@ -24,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class EvaluateServiceImpl implements IEvaluateService 
 {
-    @Autowired
+    @Resource
     private EvaluateMapper evaluateMapper;
 
     @Autowired
@@ -108,7 +110,7 @@ public class EvaluateServiceImpl implements IEvaluateService
     public int deleteEvaluateByEvaluateIds(Integer evaluateIds)
     {
         //修改目标自评状态
-        Evaluate evaluate = evaluateMapper.selectEvaluateBySkillsId(evaluateIds);
+        Evaluate evaluate = evaluateMapper.selectEvaluateBySkillsId(String.valueOf(evaluateIds));
         SkillsInfo skillsInfo = new SkillsInfo();
         skillsInfo.setEvaluateState(0);
         skillsInfo.setId(evaluate.getSkillsId());
@@ -135,8 +137,7 @@ public class EvaluateServiceImpl implements IEvaluateService
      * @return
      */
     @Override
-    public Evaluate selectEvaluateBySkillsId(Integer skillsId) {
-
+    public Evaluate selectEvaluateBySkillsId(String skillsId) {
         return evaluateMapper.selectEvaluateBySkillsId(skillsId);
     }
 }

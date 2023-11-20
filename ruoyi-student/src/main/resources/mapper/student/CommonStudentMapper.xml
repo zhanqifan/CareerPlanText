@@ -45,10 +45,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cultivationLevel != null  and cultivationLevel != ''"> and cultivation_level = #{cultivationLevel}</if>
             <if test="classCode != null  and classCode != ''"> and class_code = #{classCode}</if>
             <if test="userid != null "> and userid = #{userid}</if>
-
             </where>
 
         </select>
+
+    <select id="selectCommonStudentListByCollegeAnalysis" resultType="CollegeAnalysisDTO" resultMap="CommonStudentResult">
+        <include refid="selectCommonStudentVo"/>
+        <where>
+            <if test="college != null and !college.isEmpty()">
+                and TRIM(college) in
+                <foreach item="item" collection="college" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test=" professionalName != null and !professionalName.isEmpty()">
+                and professional in
+                <foreach item="item" collection="professionalName" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+             </if>
+            <if test="grade != null and !grade.isEmpty()">
+                and grade in
+                <foreach item="item" collection="grade" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cultivationLevel != null  and cultivationLevel != ''"> and cultivation_level = #{cultivationLevel}</if>
+        </where>
+    </select>
     
     <select id="selectCommonStudentBySId" parameterType="Long" resultMap="CommonStudentResult">
         <include refid="selectCommonStudentVo"/>
@@ -86,15 +110,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
-    <!--    <select id="BuildDepartment" resultMap="CommonStudentResult">-->
-<!--        SELECT-->
-<!--            college_code, college,professional, class_code,classname-->
-<!--        FROM-->
-<!--            common_student-->
-<!--        GROUP BY-->
-<!--            college_code,college, professional, class_code,classname-->
-<!--            LIMIT 100-->
-<!--    </select>-->
+
 
     <insert id="insertCommonStudent" parameterType="CommonStudent">
         insert into common_student

@@ -71,4 +71,6 @@ public interface DataAnalysisMapper
     DataAnalysis selectIsMainDataAnalyByUserName(String sNum);
 
     List<DataAnalysis> selectDataAnalysisListByCreateBy(String sNum);
+
+    List<DataAnalysis> selectDataAnalysisListByCompleted(DataAnalysis dataAnalysis);
 }

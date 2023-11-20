@@ -2,6 +2,7 @@ package com.ruoyi.student.mapper;
 
 import java.util.List;
 import com.ruoyi.student.domain.Evaluate;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 评价Mapper接口
@@ -9,6 +10,7 @@ import com.ruoyi.student.domain.Evaluate;
  * @author lihong
  * @date 2023-11-08
  */
+@Mapper
 public interface EvaluateMapper 
 {
     /**
@@ -59,6 +61,6 @@ public interface EvaluateMapper
      */
     public int deleteEvaluateByEvaluateIds(Integer evaluateIds);
 
-    Evaluate selectEvaluateBySkillsId(Integer skillsId);
+    Evaluate selectEvaluateBySkillsId(String skillsId);
 
 }

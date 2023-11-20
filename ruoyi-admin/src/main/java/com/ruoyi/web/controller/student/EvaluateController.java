@@ -63,7 +63,7 @@ public class EvaluateController extends BaseController
      * 获取评价详细信息
      */
     @GetMapping(value = "/{skillsId}")
-    public AjaxResult getInfo(@PathVariable("skillsId") Integer skillsId)
+    public AjaxResult getInfo(@PathVariable("skillsId") String skillsId)
     {
         return success(evaluateService.selectEvaluateBySkillsId(skillsId));
     }

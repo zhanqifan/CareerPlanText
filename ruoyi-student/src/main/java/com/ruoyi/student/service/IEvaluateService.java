@@ -60,5 +60,5 @@ public interface IEvaluateService
      */
     public int deleteEvaluateByEvaluateId(Integer evaluateId);
 
-    Evaluate selectEvaluateBySkillsId(Integer skillsId);
+    Evaluate selectEvaluateBySkillsId(String skillsId);
 }

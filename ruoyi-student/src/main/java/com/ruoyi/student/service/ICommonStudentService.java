@@ -2,6 +2,7 @@ package com.ruoyi.student.service;
 
 import java.util.List;
 import com.ruoyi.student.domain.CommonStudent;
+import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
 
 /**
  * 公用 学生信息Service接口
@@ -65,4 +66,6 @@ public interface ICommonStudentService
     public int deleteCommonStudentBySId(Long sId);
 
     CommonStudent selectCommonStudentBySNum(String userName);
+
+    List<CommonStudent> selectCommonStudentListByCollegeAnalysis(CollegeAnalysisDTO commonStudent);
 }

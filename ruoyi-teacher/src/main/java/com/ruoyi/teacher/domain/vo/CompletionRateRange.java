@@ -12,6 +12,6 @@ public class CompletionRateRange {
     private String range;
 
     /**人数*/
-    private Long peopleNum;
+    private Integer peopleNum;
 
 }

@@ -1,18 +1,19 @@
 package com.ruoyi.teacher.service.impl;
 
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.utils.bean.BeanUtils;
 import com.ruoyi.student.domain.*;
+import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
 import com.ruoyi.student.service.*;
 import com.ruoyi.student.system.service.ISysDeptService;
-import com.ruoyi.teacher.domain.dto.CollegeAnalysisDTO;
 import com.ruoyi.teacher.domain.vo.CollegeAnalysisVO;
 import com.ruoyi.teacher.domain.vo.CompletionRateRange;
 import com.ruoyi.teacher.domain.vo.FirstAnalysisVO;
+import com.ruoyi.teacher.domain.vo.MoonCompletionsNumVO;
 import com.ruoyi.teacher.service.TeacherDataAnalysisService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -43,14 +44,19 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
      */
     @Override
     public CollegeAnalysisVO getCollegeAnalysis(CollegeAnalysisDTO collegeAnalysisDTO) {
+        List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentListByCollegeAnalysis(collegeAnalysisDTO);
+        return this.test(commonStudents,collegeAnalysisDTO.getIsMain());
+    }
+
+    public CollegeAnalysisVO test(List<CommonStudent> commonStudentList,Integer isMain) {
         //发布人数(ok)
         long numberPublishers = 0;
         //发布率（ok）
-        double publishingRate ;
+        double publishingRate;
         //人均项目数（ok）
-        long numberProjectsPerCapita ;
+        long numberProjectsPerCapita;
         //平均完成率(ok)
-        double averageCompletionRate ;
+        double averageCompletionRate;
         //年度平均项目数(ok)
         long annualAverageNumberProjects;
         //年度完成率(od)
@@ -58,7 +64,19 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         //完成率分布
         List<CompletionRateRange> completionRateRanges = null;
         //完成数
-        long completionsNum=0L;
+        long completionsNum = 0L;
+        // 未完成数
+        long unfinishedNum = 0;
+        // 超时完成数
+        long timeoutCompletionsNum = 0;
+        // 提前完成数
+        long beforeCompletionsNum = 0;
+        // 按时完成数
+        long justCompletionsNum = 0;
+        //未完成过期数
+        long expiredTargetNum = 0;
+        //未完成未过期数
+        long notExpiredTargetNum = 0;
         //统计截至日期(ok)
         Date deadlineDate;
         CollegeAnalysisVO collegeAnalysisVO = new CollegeAnalysisVO();
@@ -71,14 +89,14 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         //项目总数
         long totalNumberProjects = 0L;
         //年度项目数
-        long annualNumberProjects=0L;
+        long annualNumberProjects = 0L;
         //总完成率
-        double totalCompletionRate=0.00;
+        double totalCompletionRate = 0.00;
         //年度总完成率
-        double annualTotalCompletionRate=0.00;
+        double annualTotalCompletionRate = 0.00;
         // 获取当前年份
         int targetYear = LocalDate.now().getYear();
-        CollegeAnalysisVO analysis =new CollegeAnalysisVO();
+        CollegeAnalysisVO analysis = new CollegeAnalysisVO();
         //所选学生一级目录分析
         ArrayList<FirstAnalysisVO> firstAnalysisVOS = new ArrayList<>();
         // 获取今年的开始日期和结束日期
@@ -89,51 +107,50 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         Date startDate = calendar.getTime();
         calendar.set(year, Calendar.DECEMBER, 31, 23, 59, 59);
         Date endDate = calendar.getTime();
-        // 创建 DecimalFormat 对象，
+        ArrayList<CompletionRateRange> completionRateRangeArrayList = new ArrayList<>();
+        ArrayList<DataAnalysis> dataAnalysisArrayList = new ArrayList<>();
         //设置截至日期
         collegeAnalysisVO.setDeadlineDate(deadlineDate);
-        if (StringUtils.isNotEmpty(collegeAnalysisDTO.getCollegeId())
-                && StringUtils.isEmpty(collegeAnalysisDTO.getProfessionalId())
-                && StringUtils.isEmpty(collegeAnalysisDTO.getGrade())
-                && StringUtils.isNull(collegeAnalysisDTO.getIsMain())
-                && StringUtils.isNull(collegeAnalysisDTO.getCultivationLevel())) {
-            List<Long> collegeIdList = collegeAnalysisDTO.getCollegeId();
-            for (Long collegeId : collegeIdList) {
-                CommonStudent commonStudent = new CommonStudent();
-                commonStudent.setCollegeCode(String.format("%03d", collegeId));
-                List<CommonStudent> commonStudentList = commonStudentService.selectCommonStudentList(commonStudent);
-                //学生总数
-                totalNumberStudents += commonStudentList.size();
-                for (CommonStudent student : commonStudentList) {
-                    String sNum = student.getSNum();
-                    //查询学生所发布的目标数
-                    TargetPosition targetPosition = new TargetPosition();
-                    targetPosition.setCreateBy(sNum);
-                    targetPosition.setState(1);
-                    List<TargetPosition> targetPositionList = targetPositionService.selectTargetPositionList(targetPosition);
-                    if (targetPositionList != null && !targetPositionList.isEmpty()) {
-                        //目标发布人数+1
-                        numberPublishers++;
-                        //统计已发布项目数
-                        totalNumberProjects += targetPositionList.size();
-                        //统计年度项目数
-                        List<TargetPosition> thisYearPositions = targetPositionList.stream()
-                                .filter(tp -> tp.getCreateTime().after(startDate) && tp.getCreateTime().before(endDate))
-                                .collect(Collectors.toList());
-                        annualNumberProjects+=thisYearPositions.size();
-                        //统计年度总完成率
-                        annualTotalCompletionRate = this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate, thisYearPositions);
-                        //统计总完成率
-                        totalCompletionRate = this.getTotalCompletionRate(deadlineDate, totalCompletionRate, targetPositionList);
-                        //统计完成率分布
-                        completionRateRanges = this.completionRateRanges(targetPositionList, deadlineDate);
-                        //平均时效性分析
-                        analysis = this.averageTimeAnalysis(deadlineDate, targetPositionList);
-                        //todo  统计近6月完成人次数
-                        //todo 统计分类平均完成率明细
-                        firstAnalysisVOS.addAll(this.averageCompletionRateOfClassification(deadlineDate, targetPositionList));
-                    }
-                }
+        totalNumberStudents += commonStudentList.size();
+        for (CommonStudent student : commonStudentList) {
+            String sNum = student.getSNum();
+            //查询学生所发布的目标数
+            TargetPosition targetPosition = new TargetPosition();
+            targetPosition.setCreateBy(sNum);
+            targetPosition.setState(1);
+            //todo  统计近6月完成人次数
+            List<DataAnalysis> dataAnalyses = this.numberCompletedMonths(student, deadlineDate);
+            if (dataAnalyses.size() != 0) {
+                dataAnalysisArrayList.addAll(dataAnalyses);
+            }
+            List<TargetPosition> targetPositionList = targetPositionService.selectTargetPositionList(targetPosition);
+            if (targetPositionList != null && !targetPositionList.isEmpty()) {
+                //目标发布人数+1
+                numberPublishers++;
+                //统计已发布项目数
+                totalNumberProjects += targetPositionList.size();
+                //统计年度项目数
+                List<TargetPosition> thisYearPositions = targetPositionList.stream()
+                        .filter(tp -> tp.getCreateTime().after(startDate) && tp.getCreateTime().before(endDate))
+                        .collect(Collectors.toList());
+                annualNumberProjects += thisYearPositions.size();
+                //统计年度总完成率
+                annualTotalCompletionRate += this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate, thisYearPositions);
+                //统计总完成率
+                totalCompletionRate += this.getTotalCompletionRate(deadlineDate, totalCompletionRate, targetPositionList);
+                //统计完成率分布
+                completionRateRangeArrayList.addAll(this.completionRateRanges(targetPositionList, deadlineDate));
+                //平均时效性分析
+                analysis = this.averageTimeAnalysis(deadlineDate, targetPositionList);
+                completionsNum += analysis.getCompletionsNum();
+                unfinishedNum += analysis.getUnfinishedNum();
+                timeoutCompletionsNum += analysis.getTimeoutCompletionsNum();
+                justCompletionsNum += analysis.getJustCompletionsNum();
+                beforeCompletionsNum += analysis.getBeforeCompletionsNum();
+                expiredTargetNum += analysis.getExpiredTargetNum();
+                notExpiredTargetNum += analysis.getNotExpiredTargetNum();
+                //todo 统计分类平均完成率明细
+                firstAnalysisVOS.addAll(this.averageCompletionRateOfClassification(deadlineDate, targetPositionList));
             }
         }
         //发布率:发布人数/学生总人数
@@ -150,8 +167,11 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         List<FirstAnalysisVO>  studentData= this.firstNameTotalCompletionRate(firstAnalysisVOS,numberPublishers);
         //统计全校学生的一级目录分析
         List<FirstAnalysisVO> schoolData = this.AllStudents(deadlineDate);
+        //统计完成率分布
+        List<CompletionRateRange> completionRateRanges1 = StatisticsCompletionRateRangeArrayList(completionRateRangeArrayList);
+        //统计近6月完成数
+        List<MoonCompletionsNumVO> moonCompletionsNumVOS = StatisticsMoonCloseCompletionsNumVO(dataAnalysisArrayList);
         //封装返回值
-        BeanUtils.copyProperties(analysis,collegeAnalysisVO);//设置平均时效性分析
         collegeAnalysisVO.setPublishingRate(publishingRate);
         collegeAnalysisVO.setNumberPublishers(numberPublishers);
         collegeAnalysisVO.setNumberProjectsPerCapita(numberProjectsPerCapita);
@@ -159,10 +179,52 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         collegeAnalysisVO.setAverageCompletionRate(averageCompletionRate);
         collegeAnalysisVO.setAnnualAverageCompletionRate(annualAverageCompletionRate);
         collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges);
+        collegeAnalysisVO.setBeforeCompletionsNum(beforeCompletionsNum);
+        collegeAnalysisVO.setCompletionsNum(completionsNum);
+        collegeAnalysisVO.setJustCompletionsNum(justCompletionsNum);
+        collegeAnalysisVO.setTimeoutCompletionsNum(timeoutCompletionsNum);
+        collegeAnalysisVO.setUnfinishedNum(unfinishedNum);
+        collegeAnalysisVO.setExpiredTargetNum(expiredTargetNum);
+        collegeAnalysisVO.setNotExpiredTargetNum(notExpiredTargetNum);
         collegeAnalysisVO.setDeadlineDate(deadlineDate);
         collegeAnalysisVO.setStudentData(studentData);
         collegeAnalysisVO.setSchoolData(schoolData);
+        collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges1);
+        collegeAnalysisVO.setMoonCompletionsNumVOList(moonCompletionsNumVOS);
         return collegeAnalysisVO;
+    }
+
+    /**
+     * 近6月完成项目数
+     */
+    public List<DataAnalysis> numberCompletedMonths(CommonStudent student, Date deadlineDate){
+        String sNum = student.getSNum();
+        //查询学生所发布的目标数
+        DataAnalysis dataAnalysis = new DataAnalysis();
+        dataAnalysis.setCreateBy(sNum);
+        dataAnalysis.setDeadlineDate(deadlineDate);
+        return dataAnalysisService.selectDataAnalysisListByCompleted(dataAnalysis);
+    }
+
+    private List<MoonCompletionsNumVO> StatisticsMoonCloseCompletionsNumVO(List<DataAnalysis> dataAnalysisList){
+        // 获取当前时间
+        Date currentDate = new Date();
+        // 创建月份和完成数量的映射
+        Map<String, Integer> monthCompletionsNumMap = new HashMap<>();
+        // 计算前6个月的时间范围
+        for (int i = 0; i < 6; i++) {
+            Date startDate = getFirstDayOfMonth(currentDate, -i);
+            Date endDate = getLastDayOfMonth(currentDate, -i);
+            // 统计每个月份的完成数量
+            int completionsNum = countCompletionsNum(dataAnalysisList, startDate, endDate);
+            // 将结果放入映射中
+            String month = formatDate(startDate);
+            monthCompletionsNumMap.put(month, completionsNum);
+        }
+        // 创建结果列表
+        return monthCompletionsNumMap.entrySet().stream()
+                .map(entry -> new MoonCompletionsNumVO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 
 
@@ -208,13 +270,22 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
     }
 
     private List<FirstAnalysisVO> firstNameTotalCompletionRate(List<FirstAnalysisVO> firstAnalysisVOList,long numberPublishers){
-
         Map<String, Double> firstNameTotalCompletionRate = firstAnalysisVOList.stream()
                 .collect(Collectors.groupingBy(FirstAnalysisVO::getFirstName,
                         Collectors.summingDouble((FirstAnalysisVO::getFirstAverageCompletionRate))));
         return firstNameTotalCompletionRate.entrySet().stream()
                 .map(entry -> new FirstAnalysisVO(entry.getKey(), entry.getValue()/numberPublishers))
                 .collect(Collectors.toList());
+    }
+
+    private List<CompletionRateRange> StatisticsCompletionRateRangeArrayList(List<CompletionRateRange> completionRateRangeArrayList){
+        Map<String, Integer> rangeTotalPeopleNum = completionRateRangeArrayList.stream()
+                .collect(Collectors.groupingBy(CompletionRateRange::getRange,
+                        Collectors.summingInt(CompletionRateRange::getPeopleNum)));
+        return rangeTotalPeopleNum.entrySet().stream()
+                .map(entry -> new CompletionRateRange(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
     }
 
     /**
@@ -318,7 +389,6 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
             // 遍历 DataAnalysis 列表，进行统计
             for (DataAnalysis dataAnalysis : dataAnalysisList) {
                 double completionRate = Double.parseDouble(dataAnalysis.getCompletionRate());
-                System.out.println("completionRate:"+completionRate);
                 if (completionRate >= 0 && completionRate <= 20) {
                     updateMap(CompletionRateRange, "0-20");
                 } else if (completionRate >= 21 && completionRate <= 40) {
@@ -335,7 +405,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         for (Map.Entry<String, Integer> entry : CompletionRateRange.entrySet()) {
             CompletionRateRange completionRateRange = new CompletionRateRange();
             completionRateRange.setRange(entry.getKey());
-            completionRateRange.setPeopleNum(Long.valueOf(entry.getValue()));
+            completionRateRange.setPeopleNum((entry.getValue()));
             completionRateRanges.add(completionRateRange);
         }
         return completionRateRanges;
@@ -346,5 +416,39 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         map.put(key, map.get(key) + 1);
     }
 
+    private static int countCompletionsNum(List<DataAnalysis> dataAnalysisList, Date startDate, Date endDate) {
+        // 使用流和集合操作，筛选在指定时间范围内的数据，并计算数量
+        return (int) dataAnalysisList.stream()
+                .filter(dataAnalysis -> {
+                    Date completionTime = dataAnalysis.getCompletionTime();
+                    return !completionTime.before(startDate) && !completionTime.after(endDate);
+                })
+                .count();
+    }
+
+    private static Date getFirstDayOfMonth(Date date, int monthsToAdd) {
+        // 获取指定月份的第一天
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(java.util.Calendar.MONTH, monthsToAdd);
+        cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+        return cal.getTime();
+    }
+
+    private static Date getLastDayOfMonth(Date date, int monthsToAdd) {
+        // 获取指定月份的最后一天
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(java.util.Calendar.MONTH, monthsToAdd + 1);
+        cal.set(java.util.Calendar.DAY_OF_MONTH, 1);
+        cal.add(java.util.Calendar.DAY_OF_MONTH, -1);
+        return cal.getTime();
+    }
+
+    private static String formatDate(Date date) {
+        // 使用 SimpleDateFormat 进行日期格式化
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+        return sdf.format(date);
+    }
 
 }

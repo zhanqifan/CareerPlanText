@@ -1,12 +1,10 @@
 package com.ruoyi.student.service.impl;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
 import com.ruoyi.student.system.service.ISysDeptService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -116,6 +114,11 @@ public class CommonStudentServiceImpl implements ICommonStudentService
     @Override
     public CommonStudent selectCommonStudentBySNum(String userName) {
         return commonStudentMapper.selectCommonStudentBySNum(userName);
+    }
+
+    @Override
+    public List<CommonStudent> selectCommonStudentListByCollegeAnalysis(CollegeAnalysisDTO commonStudent) {
+        return commonStudentMapper.selectCommonStudentListByCollegeAnalysis(commonStudent);
     }
 
     @Override

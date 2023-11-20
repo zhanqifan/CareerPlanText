@@ -31,4 +31,6 @@ public interface IDataAnalysisService
 
 
     List<DataAnalysis> selectDataAnalysisListByCreateBy(String sNum);
+
+    List<DataAnalysis> selectDataAnalysisListByCompleted(DataAnalysis dataAnalysis);
 }

@@ -2,6 +2,7 @@ package com.ruoyi.student.mapper;
 
 import java.util.List;
 import com.ruoyi.student.domain.CommonStudent;
+import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -68,4 +69,6 @@ public interface CommonStudentMapper
     List<CommonStudent> selectProfessional();
 
     List<CommonStudent> selectClassList();
+
+    List<CommonStudent> selectCommonStudentListByCollegeAnalysis(CollegeAnalysisDTO commonStudent);
 }

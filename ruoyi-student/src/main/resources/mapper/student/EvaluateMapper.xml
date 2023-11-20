@@ -32,7 +32,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where evaluate_id = #{evaluateId}
     </select>
 
-    <select id="selectEvaluateBySkillsId" parameterType="int" resultMap="EvaluateResult">
+    <select id="selectEvaluateBySkillsId" parameterType="string" resultMap="EvaluateResult">
         <include refid="selectEvaluateVo"/>
             where skills_id=#{skillsId}
     </select>

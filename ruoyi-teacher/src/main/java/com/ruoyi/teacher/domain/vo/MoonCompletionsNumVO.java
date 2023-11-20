@@ -13,5 +13,6 @@ public class MoonCompletionsNumVO {
     private String moon;
 
     /**月完成人数*/
-    private Long moonCompletionsPersonNum;
+    private Integer moonCompletionsPersonNum;
+
 }

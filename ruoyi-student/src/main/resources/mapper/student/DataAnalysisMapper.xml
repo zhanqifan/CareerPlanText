@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectDataAnalysisVo">
-        select id, position_id, is_main,state,create_by, target_num, completion_rate, deadline_date, release_duration, year_close, moon_close, year_completion_rate, create_time, completions_num, unfinished_num, timeout_completions_num, before_completions_num, just_completions_num, expired_target_num, not_expired_target_num from data_analysis
+        select id, position_id, is_main,state,create_by, target_num, completion_rate,completion_time, deadline_date, release_duration, year_close, moon_close, year_completion_rate, create_time, completions_num, unfinished_num, timeout_completions_num, before_completions_num, just_completions_num, expired_target_num, not_expired_target_num from data_analysis
     </sql>
 
     <select id="selectDataAnalysisList" parameterType="DataAnalysis" resultMap="DataAnalysisResult">
@@ -55,11 +55,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="notExpiredTargetNum != null "> and not_expired_target_num = #{notExpiredTargetNum}</if>
         </where>
     </select>
-    
+
     <select id="selectDataAnalysisById" parameterType="Long" resultMap="DataAnalysisResult">
         <include refid="selectDataAnalysisVo"/>
         where id = #{id}
     </select>
+
 
     <select id="selectDataAnalysisListByPositionId" parameterType="string" resultMap="DataAnalysisResult">
         <include refid="selectDataAnalysisVo"/>
@@ -73,6 +74,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectDataAnalysisListByCreateBy" parameterType="string" resultMap="DataAnalysisResult">
         <include refid="selectDataAnalysisVo"/>
         where create_by = #{sNum}
+    </select>
+
+    <select id="selectDataAnalysisListByCompleted" parameterType="DataAnalysis" resultMap="DataAnalysisResult">
+        <include refid="selectDataAnalysisVo"/>
+        where create_by=#{createBy} and deadline_date = #{deadlineDate} and completion_time IS NOT NULL
     </select>
 
     <insert id="insertDataAnalysis" parameterType="DataAnalysis" useGeneratedKeys="true" keyProperty="id">

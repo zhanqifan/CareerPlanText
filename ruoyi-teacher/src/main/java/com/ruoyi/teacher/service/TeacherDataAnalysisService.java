@@ -1,8 +1,10 @@
 package com.ruoyi.teacher.service;
 
-import com.ruoyi.common.core.domain.entity.SysDept;
-import com.ruoyi.teacher.domain.dto.CollegeAnalysisDTO;
+import com.ruoyi.student.domain.CommonStudent;
+import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
 import com.ruoyi.teacher.domain.vo.CollegeAnalysisVO;
+
+import java.util.List;
 
 public interface TeacherDataAnalysisService {
 

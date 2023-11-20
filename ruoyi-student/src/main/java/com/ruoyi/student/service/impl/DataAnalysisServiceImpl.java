@@ -135,6 +135,11 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
         return dataAnalysisMapper.selectDataAnalysisListByCreateBy(sNum);
     }
 
+    @Override
+    public List<DataAnalysis> selectDataAnalysisListByCompleted(DataAnalysis dataAnalysis) {
+        return dataAnalysisMapper.selectDataAnalysisListByCompleted(dataAnalysis);
+    }
+
     /***
      *统计一级目录分析结果
      */
