@@ -74,6 +74,9 @@ public class TargetPositionController extends BaseController
         return getDataTable(collect);
     }
 
+
+
+
     /**
      * 学生添加目标岗位
      * @param targetPositionDTO
@@ -113,27 +116,29 @@ public class TargetPositionController extends BaseController
         return toAjax(targetPositionService.repealPositionId(positionId));
     }
 
+    /**
+     * 设置主目标
+     */
+    @GetMapping("/setPrimaryTarget/{positionId}")
+    public AjaxResult setPrimaryTarget(@PathVariable("positionId") String positionId){
+        return toAjax(targetPositionService.setPrimaryTarget(positionId));
+    }
 
-//    /**
-//     * 导出岗位管理列表
-//     */
-//    @Log(title = "岗位管理", businessType = BusinessType.EXPORT)
-//    @PostMapping("/export")
-//    public void export(HttpServletResponse response, TargetPosition targetPosition)
-//    {
-//        List<TargetPosition> list = targetPositionService.selectTargetPositionList(targetPosition);
-//        ExcelUtil<TargetPosition> util = new ExcelUtil<TargetPosition>(TargetPosition.class);
-//        util.exportExcel(response, list, "岗位管理数据");
-//    }
-
+    /**
+     * 发布草稿岗位
+     */
+    @GetMapping("/publish/{positionId}")
+    public AjaxResult publishPosition(@PathVariable("positionId") String positionId){
+        return toAjax(targetPositionService.publishPosition(positionId));
+    }
 
     /**
      * 删除岗位管理
      */
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{positionIds}")
-    public AjaxResult remove(@PathVariable Long[] positioIds)
+    public AjaxResult remove(@PathVariable String positionIds)
     {
-        return toAjax(targetPositionService.deleteTargetPositionByPositionIds(positioIds));
+        return toAjax(targetPositionService.deleteTargetPositionByPositionId(positionIds));
     }
 }

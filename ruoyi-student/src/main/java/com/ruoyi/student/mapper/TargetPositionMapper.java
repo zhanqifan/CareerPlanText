@@ -1,6 +1,8 @@
 package com.ruoyi.student.mapper;
 
 import java.util.List;
+import java.util.LongSummaryStatistics;
+
 import com.ruoyi.student.domain.TargetPosition;
 
 /**
@@ -53,7 +55,7 @@ public interface TargetPositionMapper
      * @param positionId 岗位管理主键
      * @return 结果
      */
-    public int deleteTargetPositionByPositionId(Long positionId);
+    public int deleteTargetPositionByPositionId(String positionId);
 
     List<TargetPosition> selectTargetPositionListByUserName(String createBy);
 

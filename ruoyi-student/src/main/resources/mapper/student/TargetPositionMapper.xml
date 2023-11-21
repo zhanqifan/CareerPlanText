@@ -93,7 +93,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where position_id = #{positionId}
     </update>
 
-    <delete id="deleteTargetPositionByPositionId" parameterType="Long">
+    <delete id="deleteTargetPositionByPositionId" parameterType="string">
         delete from target_position where position_id = #{positionId}
     </delete>
 

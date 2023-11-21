@@ -28,8 +28,13 @@ public class TargetPositionDTO{
     /**岗位状态*/
     private Integer state;
 
+    /**是否更换主目标*/
+    private Boolean isUpdate;
+
     /**技能详情列表*/
     private List<SkillsInfo> skillsInfoList;
+
+
 
 
 

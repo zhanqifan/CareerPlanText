@@ -91,9 +91,20 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Override
     @Transactional
     public int addTargetPosition(TargetPositionDTO targetPositionDTO) {
+        Boolean isUpdate = targetPositionDTO.getIsUpdate();
+        if(isUpdate){
+            //更新主目标
+            TargetPosition targetPosition = new TargetPosition();
+            targetPosition.setCreateBy(SecurityUtils.getUsername());
+            targetPosition.setState(1);
+            List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionList(targetPosition);
+            TargetPosition position = targetPositions.get(0);
+            position.setIsMain(0);
+            targetPositionMapper.updateTargetPosition(position);
+        }
+        TargetPosition targetPosition = new TargetPosition();
         String username = SecurityUtils.getUsername();
         String positionId = IdUtils.fastSimpleUUID();
-        TargetPosition targetPosition = new TargetPosition();
         targetPosition.setPositionId(positionId);
         targetPosition.setPositionName(targetPositionDTO.getPositionName());
         targetPosition.setCreateBy(username);
@@ -211,6 +222,62 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     }
 
     /**
+     * 设置主目标
+     * @param positionId
+     * @return
+     */
+    @Override
+    public int setPrimaryTarget(String positionId) {
+        TargetPosition position = new TargetPosition();
+        position.setCreateBy(SecurityUtils.getUsername());
+        position.setState(1);
+        int res=0;
+        List<TargetPosition> targetPositionList = targetPositionMapper.selectTargetPositionList(position);
+        if(targetPositionList.size()>0){
+            for(TargetPosition targetPosition:targetPositionList){
+                position.setPositionId(targetPosition.getPositionId());
+                if(targetPosition.getPositionId().equals(positionId)){
+                    position.setIsMain(1);
+                }else {
+                    position.setIsMain(0);
+                }
+                res= targetPositionMapper.updateTargetPosition(position);
+            }
+        }else {
+            position.setPositionId(positionId);
+            position.setIsMain(1);
+           res = targetPositionMapper.updateTargetPosition(position);
+        }
+        return res;
+    }
+
+
+    /**
+     * 发布草稿岗位
+     * @param positionId
+     * @return
+     */
+    @Override
+    public int publishPosition(String positionId) {
+        TargetPosition position = new TargetPosition();
+        position.setCreateBy(SecurityUtils.getUsername());
+        position.setState(1);
+        List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionList(position);
+        TargetPosition targetPosition = new TargetPosition();
+        targetPosition.setState(1);
+        targetPosition.setPositionId(positionId);
+        int res = 0;
+        if(targetPositions.size()==0){
+            targetPosition.setIsMain(1);
+            res= targetPositionMapper.updateTargetPosition(targetPosition);
+        }
+        if(targetPositions.size()==1){
+            res= targetPositionMapper.updateTargetPosition(targetPosition);
+        }
+        return res;
+    }
+
+    /**
      * 新增岗位管理
      * 
      * @param targetPosition 岗位管理
@@ -255,9 +322,13 @@ public class TargetPositionServiceImpl implements ITargetPositionService
      * @return 结果
      */
     @Override
-    public int deleteTargetPositionByPositionId(Long positionId)
+    public int deleteTargetPositionByPositionId(String positionId)
     {
-        return targetPositionMapper.deleteTargetPositionByPositionId(positionId);
+        TargetPosition position = targetPositionMapper.selectTargetPositionByPositionId(positionId);
+        if(position.getState()!=1){
+            return targetPositionMapper.deleteTargetPositionByPositionId(positionId);
+        }
+       return 0;
     }
 
 }

@@ -53,7 +53,7 @@ public interface ITargetPositionService
      * @param positionId 岗位管理主键
      * @return 结果
      */
-    public int deleteTargetPositionByPositionId(Long positionId);
+    public int deleteTargetPositionByPositionId(String positionId);
 
     int addTargetPosition(TargetPositionDTO targetPositionDTO);
 
@@ -76,4 +76,13 @@ public interface ITargetPositionService
     List<TargetPosition> selectTargetPositionList(TargetPosition targetPosition);
 
     TargetPosition selectMainTargetPositionListByUserName(String sNum);
+
+    /**
+     * 设置主目标
+     * @param positionId
+     * @return
+     */
+    int setPrimaryTarget(String positionId);
+
+    int publishPosition(String positionId);
 }
