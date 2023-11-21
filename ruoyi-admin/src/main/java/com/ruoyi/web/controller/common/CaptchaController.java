@@ -10,13 +10,17 @@ import javax.servlet.http.HttpServletResponse;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.core.service.SMSVerificationService;
 import com.ruoyi.common.utils.sign.Base64;
 import com.ruoyi.common.utils.uuid.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.google.code.kaptcha.Producer;
 import com.ruoyi.student.system.service.ISysConfigService;
@@ -27,7 +31,7 @@ import com.ruoyi.student.system.service.ISysConfigService;
  * @author ruoyi
  */
 @RestController
-public class CaptchaController
+public class CaptchaController extends BaseController
 {
     @Resource(name = "captchaProducer")
     private Producer captchaProducer;
@@ -40,6 +44,21 @@ public class CaptchaController
     
     @Autowired
     private ISysConfigService configService;
+
+    @Resource
+    private SMSVerificationService smsVerificationService;
+
+
+    /**
+     * 获取短信验证码
+     * @return
+     */
+    @GetMapping
+    public AjaxResult sMSVerification(@PathVariable("phonenumber") String phonenumber){
+
+      return  toAjax(smsVerificationService.SendTextMessage(phonenumber));
+    }
+
     /**
      * 生成验证码
      */

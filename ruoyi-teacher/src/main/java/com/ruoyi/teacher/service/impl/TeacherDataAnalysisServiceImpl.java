@@ -49,10 +49,16 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
     @Override
     public CollegeAnalysisVO getCollegeAnalysis(CollegeAnalysisDTO collegeAnalysisDTO) {
         List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentListByCollegeAnalysis(collegeAnalysisDTO);
-        return this.test(commonStudents,collegeAnalysisDTO.getIsMain());
+        return this.statisticalCollegeData(commonStudents,collegeAnalysisDTO.getIsMain());
     }
 
-    public CollegeAnalysisVO test(List<CommonStudent> commonStudentList,Integer isMain) {
+    /***
+     * 统计学院数据
+     * @param commonStudentList
+     * @param isMain
+     * @return
+     */
+    public CollegeAnalysisVO statisticalCollegeData(List<CommonStudent> commonStudentList,Integer isMain) {
         //发布人数(ok)
         long numberPublishers = 0;
         //发布率（ok）
@@ -143,9 +149,9 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                 // 使用 CompletableFuture 开启异步执行
                 CompletableFuture<Void> asyncTask = CompletableFuture.runAsync(() -> {
                     // 统计年度总完成率
-                    annualTotalCompletionRate.updateAndGet(v -> new Double((double) (v + this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate.get(), thisYearPositions))));
+                    annualTotalCompletionRate.updateAndGet(v -> (v + this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate.get(), thisYearPositions)));
                     // 统计总完成率
-                    totalCompletionRate.updateAndGet(v -> new Double((double) (v + this.getTotalCompletionRate(deadlineDate, totalCompletionRate.get(), targetPositionList))));
+                    totalCompletionRate.updateAndGet(v ->  (v + this.getTotalCompletionRate(deadlineDate, totalCompletionRate.get(), targetPositionList)));
                     // 统计完成率分布
                     completionRateRangeArrayList.addAll(this.completionRateRanges(targetPositionList, deadlineDate));
                 });
@@ -177,7 +183,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                     expiredTargetNum += analysisResult.getExpiredTargetNum();
                     notExpiredTargetNum += analysisResult.getNotExpiredTargetNum();
                     // 处理分类平均完成率明细
-                    firstAnalysisVOS.addAll(this.averageCompletionRateOfClassification(deadlineDate, targetPositionList));
+                    firstAnalysisVOS.addAll(firstAnalysisVOList);
 
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace(); // 处理异常
@@ -226,7 +232,6 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         collegeAnalysisVO.setAnnualAverageNumberProjects(annualAverageNumberProjects);
         collegeAnalysisVO.setAverageCompletionRate(averageCompletionRate);
         collegeAnalysisVO.setAnnualAverageCompletionRate(annualAverageCompletionRate);
-//        collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges);
         collegeAnalysisVO.setBeforeCompletionsNum(beforeCompletionsNum);
         collegeAnalysisVO.setCompletionsNum(completionsNum);
         collegeAnalysisVO.setJustCompletionsNum(justCompletionsNum);

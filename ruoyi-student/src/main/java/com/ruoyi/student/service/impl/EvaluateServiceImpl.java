@@ -111,9 +111,13 @@ public class EvaluateServiceImpl implements IEvaluateService
     {
         //修改目标自评状态
         Evaluate evaluate = evaluateMapper.selectEvaluateByEvaluateId(evaluateIds);
+        SkillsInfo skillsInfo1 = skillsInfoService.selectSkillsInfoById(evaluate.getSkillsId());
         SkillsInfo skillsInfo = new SkillsInfo();
-        skillsInfo.setEvaluateState(0);
+        if(skillsInfo1.getCompletionStatus().equals(1)){
+            skillsInfo.setCompletionStatus(0);
+        }
         skillsInfo.setId(evaluate.getSkillsId());
+        skillsInfo.setEvaluateState(0);
         skillsInfoService.updateSkillsInfo(skillsInfo);
         //删除自评
         return evaluateMapper.deleteEvaluateByEvaluateIds(evaluateIds);

@@ -39,7 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
-    <select id="selectSkillsInfoById" parameterType="Integer" resultMap="SkillsInfoResult">
+    <select id="selectSkillsInfoById" parameterType="string" resultMap="SkillsInfoResult">
         <include refid="selectSkillsInfoVo"/>
         where id = #{id}
     </select>

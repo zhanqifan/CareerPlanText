@@ -18,7 +18,7 @@ public interface ISkillsInfoService
      * @param id 技能详情主键
      * @return 技能详情
      */
-    public SkillsInfo selectSkillsInfoById(Integer id);
+    public SkillsInfo selectSkillsInfoById(String id);
 
     /**
      * 查询技能详情列表

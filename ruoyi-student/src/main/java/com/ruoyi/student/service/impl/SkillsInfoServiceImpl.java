@@ -34,7 +34,7 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
      * @return 技能详情
      */
     @Override
-    public SkillsInfo selectSkillsInfoById(Integer id)
+    public SkillsInfo selectSkillsInfoById(String id)
     {
         return skillsInfoMapper.selectSkillsInfoById(id);
     }
