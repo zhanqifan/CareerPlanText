@@ -146,7 +146,7 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
             for (SkillsInfo skillsInfo:skillsInfoList){
                 a+=skillsInfo.getCompletionStatus();
             }
-            completionRate=a/skillsInfoList.size();
+            completionRate=Math.round(a/skillsInfoList.size()* 100.0) / 100.0;
         }
         targetPositionVO.setCompletionRate(completionRate);
         // 获取当前日期

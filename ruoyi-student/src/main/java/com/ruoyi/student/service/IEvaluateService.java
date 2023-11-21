@@ -39,7 +39,7 @@ public interface IEvaluateService
     /**
      * 修改评价
      * 
-     * @param evaluate 评价
+     * @param evaluateDTO 评价
      * @return 结果
      */
     public int updateEvaluate(EvaluateDTO evaluateDTO);

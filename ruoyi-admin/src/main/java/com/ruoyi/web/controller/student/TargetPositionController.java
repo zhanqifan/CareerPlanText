@@ -68,6 +68,7 @@ public class TargetPositionController extends BaseController
             targetPositionVO.setState(target.getState());
             targetPositionVO.setModificationsNumber(target.getModificationsNumber());
             targetPositionVO.setCreateBy(target.getCreateBy());
+            targetPositionVO.setCreateTime(target.getCreateTime());
             return targetPositionVO;
         }).collect(Collectors.toList());
         return getDataTable(collect);

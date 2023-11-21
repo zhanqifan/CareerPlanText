@@ -3,6 +3,7 @@ package com.ruoyi.student.service.impl;
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.student.constant.EvaluateTypeConstants;
 import com.ruoyi.student.domain.SkillsInfo;
 import com.ruoyi.student.domain.dto.EvaluateDTO;
@@ -90,12 +91,22 @@ public class EvaluateServiceImpl implements IEvaluateService
      * @return 结果
      */
     @Override
+    @Transactional
     public int updateEvaluate(EvaluateDTO evaluateDTO)
     {
         Evaluate evaluate = new Evaluate();
         evaluate.setEvaluateId(evaluateDTO.getEvaluateId());
         evaluate.setContent(evaluateDTO.getContent());
         evaluate.setUpdateTime(DateUtils.getNowDate());
+        SkillsInfo skillsInfo = new SkillsInfo();
+        skillsInfo.setId(evaluateDTO.getSkillsId());
+        skillsInfo.setCompletionStatus(evaluateDTO.getCompletionStatus());
+        if(StringUtils.isNotNull(evaluateDTO.getCompleteTime())){
+            skillsInfo.setCompleteTime(evaluateDTO.getCompleteTime());
+        }else {
+            skillsInfo.setCompleteTime(null);
+        }
+        skillsInfoService.updateSkillsInfo(skillsInfo);
         return evaluateMapper.updateEvaluate(evaluate);
     }
 
