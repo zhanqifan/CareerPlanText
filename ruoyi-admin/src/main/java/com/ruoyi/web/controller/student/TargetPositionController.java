@@ -3,7 +3,6 @@ package com.ruoyi.web.controller.student;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
