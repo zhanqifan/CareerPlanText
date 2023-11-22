@@ -49,7 +49,7 @@ public interface SkillsInfoMapper
      * @param id 技能详情主键
      * @return 结果
      */
-    public int deleteSkillsInfoById(Integer id);
+    public int deleteSkillsInfoById(String id);
 
     /**
      * 批量删除技能详情

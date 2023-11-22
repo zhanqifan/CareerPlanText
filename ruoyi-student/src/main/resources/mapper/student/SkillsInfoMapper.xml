@@ -105,7 +105,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-    <delete id="deleteSkillsInfoById" parameterType="Integer">
+    <delete id="deleteSkillsInfoById" parameterType="string">
         delete from skills_info where id = #{id}
     </delete>
 

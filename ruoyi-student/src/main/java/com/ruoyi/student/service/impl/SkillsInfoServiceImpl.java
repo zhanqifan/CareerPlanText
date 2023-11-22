@@ -94,7 +94,7 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
      * @return 结果
      */
     @Override
-    public int deleteSkillsInfoById(Integer id)
+    public int deleteSkillsInfoById(String id)
     {
         return skillsInfoMapper.deleteSkillsInfoById(id);
     }

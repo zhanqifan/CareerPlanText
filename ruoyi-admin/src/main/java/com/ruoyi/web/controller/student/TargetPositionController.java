@@ -138,4 +138,11 @@ public class TargetPositionController extends BaseController
     {
         return toAjax(targetPositionService.deleteTargetPositionByPositionId(positionIds));
     }
+    /**
+     * 删除技能
+     */
+    @DeleteMapping("/skills/{skillsId}")
+    public AjaxResult removeSkills(@PathVariable("skillsId") String skillsId){
+        return toAjax(skillsInfoService.deleteSkillsInfoById(skillsId));
+    }
 }
