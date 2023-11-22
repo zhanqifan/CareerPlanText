@@ -47,23 +47,6 @@ user:
     # 密码锁定时间（默认10分钟）
     lockTime: 10
 
-#sms:
-#  aliyun:
-#    access-key-id: LTAI5tE8S52xcarW1C8Pv32s
-#    access-key-secret: GiunyVBeY5p6Z0JpywcSkOcujrT638
-#    sign-name: 树课
-#    template:
-#      verification-code: SMS_216372884
-#    weight: 3
-#  tencent-cloud:
-#    secret-id: AKIDjCP0rVndviU2teNdkjslOm3g4xd4l9Xh
-#    secret-key: 2TfjY8tOi57380DMFsKXY7QZvBBu8Xlj
-#    sign-name: 树课
-#    sms-sdk-appid: 1400514563
-#    template:
-#      verification-code: 948823
-#    weight: 7
-
 # Spring配置
 spring:
   # 资源信息
