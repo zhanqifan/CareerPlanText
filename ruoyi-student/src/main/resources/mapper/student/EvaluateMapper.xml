@@ -11,11 +11,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="skillsId"    column="skills_id"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
+        <result property="completeTime"    column="complete_time"    />
         <result property="updateTime"    column="update_time"    />
     </resultMap>
 
     <sql id="selectEvaluateVo">
-        select evaluate_id, content, type, skills_id, create_by, create_time, update_time from evaluate
+        select evaluate_id, content, type, complete_time,skills_id, create_by, create_time, update_time from evaluate
     </sql>
 
     <select id="selectEvaluateList" parameterType="Evaluate" resultMap="EvaluateResult">

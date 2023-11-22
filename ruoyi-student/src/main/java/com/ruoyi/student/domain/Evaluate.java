@@ -1,9 +1,15 @@
 package com.ruoyi.student.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.util.Date;
 
 /**
  * 评价对象 evaluate
@@ -11,6 +17,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @author lihong
  * @date 2023-11-08
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Evaluate extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -26,57 +35,13 @@ public class Evaluate extends BaseEntity
     @Excel(name = "评价类型", readConverterExp = "s=tudents：学生自评，mapper:教师批阅")
     private String type;
 
+    /** 完成时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date completeTime;
+
     /** 目标id */
     @Excel(name = "目标id")
     private String skillsId;
 
-    public void setEvaluateId(Integer evaluateId) 
-    {
-        this.evaluateId = evaluateId;
-    }
 
-    public Integer getEvaluateId() 
-    {
-        return evaluateId;
-    }
-    public void setContent(String content) 
-    {
-        this.content = content;
-    }
-
-    public String getContent() 
-    {
-        return content;
-    }
-    public void setType(String type) 
-    {
-        this.type = type;
-    }
-
-    public String getType() 
-    {
-        return type;
-    }
-    public void setSkillsId(String skillsId)
-    {
-        this.skillsId = skillsId;
-    }
-
-    public String getSkillsId()
-    {
-        return skillsId;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-            .append("evaluateId", getEvaluateId())
-            .append("content", getContent())
-            .append("type", getType())
-            .append("skillsId", getSkillsId())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .append("updateTime", getUpdateTime())
-            .toString();
-    }
 }

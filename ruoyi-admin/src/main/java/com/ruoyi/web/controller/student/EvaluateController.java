@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.student;
 
 import java.util.List;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.student.domain.dto.EvaluateDTO;
@@ -33,7 +34,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 @RequestMapping("/students/evaluate")
 public class EvaluateController extends BaseController
 {
-    @Autowired
+    @Resource
     private IEvaluateService evaluateService;
 
     /**

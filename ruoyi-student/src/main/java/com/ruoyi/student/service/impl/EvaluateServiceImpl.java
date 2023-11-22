@@ -81,6 +81,7 @@ public class EvaluateServiceImpl implements IEvaluateService
         evaluate.setContent(evaluateDTO.getContent());
         evaluate.setCreateBy(SecurityUtils.getUsername());
         evaluate.setCreateTime(DateUtils.getNowDate());
+        evaluate.setCompleteTime(evaluateDTO.getCompleteTime());
         return evaluateMapper.insertEvaluate(evaluate);
     }
 
