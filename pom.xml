@@ -30,6 +30,9 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
+        <!-- SMS 配置 -->
+        <aliyun.sms.version>2.0.23</aliyun.sms.version>
+        <tencent.sms.version>3.1.687</tencent.sms.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -107,6 +110,19 @@
                 <version>${velocity.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>dysmsapi20170525</artifactId>
+                <version>${aliyun.sms.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.tencentcloudapi</groupId>
+                <artifactId>tencentcloud-sdk-java-sms</artifactId>
+                <version>${tencent.sms.version}</version>
+            </dependency>
+
+
             <!-- collections工具类 -->
             <dependency>
                 <groupId>commons-collections</groupId>
@@ -153,6 +169,12 @@
             <dependency>
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-framework</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.ruoyi.sms</groupId>
+                <artifactId>ruoyi-sms</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
@@ -207,6 +229,7 @@
         <module>ruoyi-common</module>
         <module>ruoyi-student</module>
         <module>ruoyi-teacher</module>
+        <module>ruoyi-sms</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -71,6 +71,8 @@ public class CollegeAnalysisVO {
     /**近6月完成人数*/
     private List<MoonCompletionsNumVO> moonCompletionsNumVOList;
 
+    /**学院平均完成率TOP5*/
+    private List<CollegeRanking> collegeRankingList;
 
 }
 

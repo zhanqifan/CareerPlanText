@@ -44,6 +44,7 @@ public final class ServiceException extends RuntimeException
         this.code = code;
     }
 
+
     public String getDetailMessage()
     {
         return detailMessage;

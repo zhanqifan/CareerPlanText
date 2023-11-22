@@ -93,12 +93,14 @@ public class timingCalculation {
             //岗位总完成率
             if(CompletionsSkillsInfosSize!=0){
                 double CompletionRate = ((double) CompletionsSkillsInfosSize / AllSize) * 100;
-                dataAnalysis.setCompletionRate( String.format("%.2f", CompletionRate));
+//                dataAnalysis.setCompletionRate( String.format("%.2f", CompletionRate));
+                dataAnalysis.setCompletionRate(Double.valueOf(String.format("%.2f", CompletionRate)));
                 if(CompletionRate==100.00){
                     dataAnalysis.setCompletionTime(new Date());
                 }
             }else {
-                dataAnalysis.setCompletionRate("0");
+//                dataAnalysis.setCompletionRate("0");
+                dataAnalysis.setCompletionRate(0.00);
             }
             int targetYear = LocalDate.now().getYear(); // 获取当前年份
             Month targetMonth = LocalDate.now().getMonth(); // 获取当前月份

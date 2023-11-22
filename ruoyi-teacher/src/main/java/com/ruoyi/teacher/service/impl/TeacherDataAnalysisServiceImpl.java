@@ -1,15 +1,11 @@
 package com.ruoyi.teacher.service.impl;
 
-import cn.hutool.extra.tokenizer.engine.analysis.AnalysisResult;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.student.domain.*;
 import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
 import com.ruoyi.student.service.*;
 import com.ruoyi.student.system.service.ISysDeptService;
-import com.ruoyi.teacher.domain.vo.CollegeAnalysisVO;
-import com.ruoyi.teacher.domain.vo.CompletionRateRange;
-import com.ruoyi.teacher.domain.vo.FirstAnalysisVO;
-import com.ruoyi.teacher.domain.vo.MoonCompletionsNumVO;
+import com.ruoyi.teacher.domain.vo.*;
 import com.ruoyi.teacher.service.TeacherDataAnalysisService;
 import org.springframework.stereotype.Service;
 
@@ -130,7 +126,6 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
             targetPosition.setCreateBy(sNum);
             targetPosition.setState(1);
             targetPosition.setIsMain(isMain);
-            //todo  统计近6月完成人次数
             List<DataAnalysis> dataAnalyses = this.numberCompletedMonths(student, deadlineDate);
             if (dataAnalyses.size() != 0) {
                 dataAnalysisArrayList.addAll(dataAnalyses);
@@ -155,12 +150,10 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                     // 统计完成率分布
                     completionRateRangeArrayList.addAll(this.completionRateRanges(targetPositionList, deadlineDate));
                 });
-
                 // 平均时效性分析异步执行
                 CompletableFuture<CollegeAnalysisVO> analysisTask = CompletableFuture.supplyAsync(() -> {
                     return this.averageTimeAnalysis(deadlineDate, targetPositionList);
                 });
-
                 // 统计分类平均完成率明细异步执行
                 CompletableFuture<List<FirstAnalysisVO>> classificationTask = CompletableFuture.supplyAsync(() -> {
                     return this.averageCompletionRateOfClassification(deadlineDate, targetPositionList);
@@ -169,11 +162,9 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                 try {
                     // 等待所有异步任务完成
                     CompletableFuture.allOf(asyncTask, analysisTask, classificationTask).join();
-
                     // 获取异步任务的结果
                     CollegeAnalysisVO analysisResult = analysisTask.get();
                     List<FirstAnalysisVO> firstAnalysisVOList = classificationTask.get();
-
                     // 处理异步任务的结果
                     completionsNum += analysisResult.getCompletionsNum();
                     unfinishedNum += analysisResult.getUnfinishedNum();
@@ -184,29 +175,12 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                     notExpiredTargetNum += analysisResult.getNotExpiredTargetNum();
                     // 处理分类平均完成率明细
                     firstAnalysisVOS.addAll(firstAnalysisVOList);
-
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace(); // 处理异常
                 }
-//                //统计年度总完成率
-//                annualTotalCompletionRate += this.getTotalCompletionRate(deadlineDate, annualTotalCompletionRate, thisYearPositions);
-//                //统计总完成率
-//                totalCompletionRate += this.getTotalCompletionRate(deadlineDate, totalCompletionRate, targetPositionList);
-//                //统计完成率分布
-//                completionRateRangeArrayList.addAll(this.completionRateRanges(targetPositionList, deadlineDate));
-//                //平均时效性分析
-//                analysis = this.averageTimeAnalysis(deadlineDate, targetPositionList);
-//                completionsNum += analysis.getCompletionsNum();
-//                unfinishedNum += analysis.getUnfinishedNum();
-//                timeoutCompletionsNum += analysis.getTimeoutCompletionsNum();
-//                justCompletionsNum += analysis.getJustCompletionsNum();
-//                beforeCompletionsNum += analysis.getBeforeCompletionsNum();
-//                expiredTargetNum += analysis.getExpiredTargetNum();
-//                notExpiredTargetNum += analysis.getNotExpiredTargetNum();
-//                //统计分类平均完成率明细
-//                firstAnalysisVOS.addAll(this.averageCompletionRateOfClassification(deadlineDate, targetPositionList));
             }
         }
+        this.StatisticsCollegeRanking(deadlineDate);
         //发布率:发布人数/学生总人数
         publishingRate = Math.round(((double) numberPublishers / totalNumberStudents) * 100.0) / 100.0;
         //人均项目数:项目总数/学生总人数
@@ -245,6 +219,27 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges1);
         collegeAnalysisVO.setMoonCompletionsNumVOList(moonCompletionsNumVOS);
         return collegeAnalysisVO;
+    }
+
+    /**
+     * 统计学院平均完成率TOP5
+     * */
+    private List<CollegeRanking> StatisticsCollegeRanking(Date deadlineDate){
+        DataAnalysis dataAnalysis = new DataAnalysis();
+        dataAnalysis.setDeadlineDate(deadlineDate);
+        List<DataAnalysis> dataAnalyses = dataAnalysisService.selectDataAnalysisList(dataAnalysis);
+        //每个学生的完成率
+        Map<String, Double> collect1 = dataAnalyses.stream()
+                .collect(Collectors.groupingBy((DataAnalysis::getCreateBy),
+                        Collectors.summingDouble((DataAnalysis::getCompletionRate))));
+        //全校学生数据
+        List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentList(null);
+        Map<String, List<String>> collect = commonStudents.stream()
+                .collect(Collectors.groupingBy(CommonStudent::getCollege,
+                        Collectors.mapping(CommonStudent::getSNum, Collectors.toList())));
+        System.out.println("学院学生:"+collect);
+
+        return null;
     }
 
     /**
@@ -412,7 +407,8 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
             List<DataAnalysis> dataAnalyses = dataAnalysisService.selectDataAnalysisList(dataAnalysis);
             if(!dataAnalyses.isEmpty()){
                 //总完成率
-                totalCompletionRate += Double.parseDouble(dataAnalyses.get(0).getCompletionRate());
+//                totalCompletionRate += Double.parseDouble(dataAnalyses.get(0).getCompletionRate());
+                totalCompletionRate += dataAnalyses.get(0).getCompletionRate();
             }
         }
         return totalCompletionRate;
@@ -441,7 +437,8 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
             List<DataAnalysis> dataAnalysisList = dataAnalysisService.selectDataAnalysisList(analysis);
             // 遍历 DataAnalysis 列表，进行统计
             for (DataAnalysis dataAnalysis : dataAnalysisList) {
-                double completionRate = Double.parseDouble(dataAnalysis.getCompletionRate());
+//                double completionRate = Double.parseDouble(dataAnalysis.getCompletionRate());
+                double completionRate = dataAnalysis.getCompletionRate();
                 if (completionRate >= 0 && completionRate <= 20) {
                     updateMap(CompletionRateRange, "0-20");
                 } else if (completionRate >= 21 && completionRate <= 40) {

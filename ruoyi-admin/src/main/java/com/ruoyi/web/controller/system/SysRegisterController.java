@@ -26,9 +26,9 @@ public class SysRegisterController extends BaseController
     private ISysConfigService configService;
 
     @PostMapping("/register")
-    public AjaxResult register(@RequestBody RegisterBody user)
+    public AjaxResult register(@RequestBody RegisterBody registerBody)
     {
-        String msg = registerService.register(user);
+        String msg = registerService.register(registerBody);
         return StringUtils.isEmpty(msg) ? success() : error(msg);
     }
 }

@@ -40,7 +40,7 @@ public class DataAnalysis extends BaseEntity
 
     /** 完成率 */
     @Excel(name = "完成率")
-    private String completionRate;
+    private Double completionRate;
 
     /** 完成时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")

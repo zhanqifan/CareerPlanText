@@ -25,4 +25,5 @@ public class CollegeAnalysisDTO {
 
     /**培养层次*/
     private String cultivationLevel;
+
 }

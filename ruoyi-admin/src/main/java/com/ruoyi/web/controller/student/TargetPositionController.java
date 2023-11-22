@@ -74,9 +74,6 @@ public class TargetPositionController extends BaseController
         return getDataTable(collect);
     }
 
-
-
-
     /**
      * 学生添加目标岗位
      * @param targetPositionDTO

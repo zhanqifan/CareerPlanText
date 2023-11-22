@@ -23,6 +23,11 @@
             <artifactId>ruoyi-common</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.ruoyi.sms</groupId>
+            <artifactId>ruoyi-sms</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

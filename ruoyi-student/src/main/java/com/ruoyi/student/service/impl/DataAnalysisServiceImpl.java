@@ -100,7 +100,7 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
         ClusterAnalysisVo clusterAnalysisVo = new ClusterAnalysisVo();
         clusterAnalysisVo.setIsMyself(1);
         clusterAnalysisVo.setTargetNum(dataAnalysisList.get(0).getTargetNum());
-        clusterAnalysisVo.setCompletionProgress(dataAnalysisList.get(0).getCompletionRate());
+        clusterAnalysisVo.setCompletionProgress(String.valueOf(dataAnalysisList.get(0).getCompletionRate()));
         clusterAnalysisVoArrayList.add(clusterAnalysisVo);
         dataAnalysisVO.setClusterAnalysisVos(clusterAnalysisVoArrayList);
         //查询所有目录
@@ -259,7 +259,7 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
                 DataAnalysis dataAnalysis=dataAnalysisMapper.selectIsMainDataAnalyByUserName(sNum);
                 clusterAnalysisVo.setTargetNum(dataAnalysis.getTargetNum());
                 clusterAnalysisVo.setIsMyself(0);
-                clusterAnalysisVo.setCompletionProgress(dataAnalysis.getCompletionRate());
+                clusterAnalysisVo.setCompletionProgress(String.valueOf(dataAnalysis.getCompletionRate()));
                 clusterAnalysisVoArrayList.add(clusterAnalysisVo);
             }
         }

@@ -52,6 +52,17 @@ public class GlobalExceptionHandler
     }
 
     /**
+     * 短信验证码校验异常
+     */
+//    @ExceptionHandler(ServiceException.class)
+//    public AjaxResult ServiceException(HttpRequestMethodNotSupportedException e,
+//                                                          HttpServletRequest request){
+//        String requestURI = request.getRequestURI();
+//        log.error("请求地址'{}',不支持'{}'请求", requestURI, e.getMethod());
+//        return AjaxResult.error(e.getMessage());
+//    }
+
+    /**
      * 业务异常
      */
     @ExceptionHandler(ServiceException.class)

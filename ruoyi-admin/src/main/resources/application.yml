@@ -34,10 +34,10 @@ server:
       min-spare: 100
 
 # 日志配置
-#logging:
-#  level:
-#    com.ruoyi: debug
-#    org.springframework: warn
+logging:
+  level:
+    com.ruoyi: debug
+    org.springframework: warn
 
 # 用户配置
 user:
@@ -46,6 +46,23 @@ user:
     maxRetryCount: 5
     # 密码锁定时间（默认10分钟）
     lockTime: 10
+
+sms:
+  aliyun:
+    access-key-id: LTAI5tE8S52xcarW1C8Pv32s
+    access-key-secret: GiunyVBeY5p6Z0JpywcSkOcujrT638
+    sign-name: 树课
+    template:
+      verification-code: SMS_216372884
+    weight: 3
+  tencent-cloud:
+    secret-id: AKIDjCP0rVndviU2teNdkjslOm3g4xd4l9Xh
+    secret-key: 2TfjY8tOi57380DMFsKXY7QZvBBu8Xlj
+    sign-name: 树课
+    sms-sdk-appid: 1400514563
+    template:
+      verification-code: 948823
+    weight: 7
 
 # Spring配置
 spring:
@@ -107,6 +124,22 @@ mybatis:
   mapperLocations: classpath*:mapper/**/*Mapper.xml
   # 加载全局的配置文件
   configLocation: classpath:mybatis/mybatis-config.xml
+
+#mybatis-plus:
+#  # 对应的 XML 文件位置
+#  mapper-locations: classpath*:mapper/**/*Mapper.xml
+#  # 实体扫描，多个package用逗号或者分号分隔
+#  type-aliases-package: com.ruoyi.**.domain
+#  configuration:
+#    classpath: mybatis/mybatis-config.xml
+#    # 自动驼峰命名规则（camel case）映射
+#    map-underscore-to-camel-case: true
+#    # MyBatis 自动映射策略
+#    # NONE：不启用 PARTIAL：只对非嵌套 resultMap 自动映射 FULL：对所有 resultMap 自动映射
+#    auto-mapping-behavior: partial
+#    # MyBatis 自动映射时未知列或未知属性处理策
+#    # NONE：不做处理 WARNING：打印相关警告 FAILING：抛出异常和详细信息
+#    auto-mapping-unknown-column-behavior: none
 
 # PageHelper分页插件
 pagehelper:

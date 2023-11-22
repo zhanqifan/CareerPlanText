@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.sms.mapper.SmsVerificationCodeMapper">
+    <resultMap type="com.ruoyi.sms.domain.SmsVerificationCode" id="SmsVerificationCodeResult">
+        <result property="id"    column="id"    />
+        <result property="phone"    column="phone"    />
+        <result property="code"    column="code"    />
+        <result property="type"    column="type"    />
+        <result property="provider"    column="provider"    />
+        <result property="tryTimes"    column="try_times"    />
+        <result property="status"    column="status"    />
+        <result property="ip"    column="ip"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSmsVerificationCodeVo">
+        select id, phone, code, type, provider, try_times, status, ip, create_time, update_time from sms_verification_code
+    </sql>
+
+    <select id="selectSmsVerificationCodeList" parameterType="com.ruoyi.sms.domain.SmsVerificationCode" resultMap="SmsVerificationCodeResult">
+        <include refid="selectSmsVerificationCodeVo"/>
+        <where>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="provider != null  and provider != ''"> and provider = #{provider}</if>
+            <if test="tryTimes != null "> and try_times = #{tryTimes}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="ip != null  and ip != ''"> and ip = #{ip}</if>
+            <if test="createTime != null"> and create_time = #{createTime}</if>
+        </where>
+    </select>
+
+    <select id="selectSmsVerificationCodeById" parameterType="Long" resultMap="SmsVerificationCodeResult">
+        <include refid="selectSmsVerificationCodeVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectSmsVerificationCodeOne"  parameterType="com.ruoyi.sms.domain.SmsVerificationCode" resultMap="SmsVerificationCodeResult">
+        <include refid="selectSmsVerificationCodeVo"/>
+        <where>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="type != null  and type != ''"> and `type` = #{type}</if>
+            <if test="provider != null  and provider != ''"> and provider = #{provider}</if>
+            <if test="tryTimes != null "> and try_times = #{tryTimes}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+<!--            <if test="ip != null  and ip != ''"> and ip = #{ip}</if>-->
+            <if test="createTime != null"> and create_time > #{createTime}</if>
+             order by create_time  limit 1
+        </where>
+    </select>
+
+    <insert id="insertSmsVerificationCode" parameterType="com.ruoyi.sms.domain.SmsVerificationCode" useGeneratedKeys="true" keyProperty="id">
+        insert into sms_verification_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="provider != null and provider != ''">provider,</if>
+            <if test="tryTimes != null">try_times,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="ip != null and ip != ''">ip,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="provider != null and provider != ''">#{provider},</if>
+            <if test="tryTimes != null">#{tryTimes},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="ip != null and ip != ''">#{ip},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSmsVerificationCode" parameterType="com.ruoyi.sms.domain.SmsVerificationCode">
+        update sms_verification_code
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="type != null and type != ''">`type` = #{type},</if>
+            <if test="provider != null and provider != ''">provider = #{provider},</if>
+            <if test="tryTimes != null">try_times = #{tryTimes},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="ip != null and ip != ''">ip = #{ip},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSmsVerificationCodeById" parameterType="Long">
+        delete from sms_verification_code where id = #{id}
+    </delete>
+
+    <delete id="deleteSmsVerificationCodeByIds" parameterType="String">
+        delete from sms_verification_code where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="delete" parameterType="date" >
+        delete from sms_verification_code where  create_time &lt; #{createTime}
+    </delete>
+</mapper>
