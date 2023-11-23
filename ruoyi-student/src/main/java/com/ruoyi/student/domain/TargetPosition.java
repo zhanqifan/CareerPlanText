@@ -30,8 +30,8 @@ public class TargetPosition extends BaseEntity
     @Excel(name = "岗位名称")
     private String positionName;
 
-    /** 目标状态(0:已发布，1:已废止，2:草稿) */
-    @Excel(name = "目标状态(0:已发布，1:已废止，2:草稿)")
+    /** 目标状态(1:已发布，0:已废止，2:草稿) */
+    @Excel(name = "目标状态(1:已发布，0:已废止，2:草稿)")
     private Integer state;
 
     /** 是否是组目标（0:主目标，1:非主目标） */

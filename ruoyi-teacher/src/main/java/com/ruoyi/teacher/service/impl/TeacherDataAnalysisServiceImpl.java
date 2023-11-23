@@ -229,15 +229,16 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         dataAnalysis.setDeadlineDate(deadlineDate);
         List<DataAnalysis> dataAnalyses = dataAnalysisService.selectDataAnalysisList(dataAnalysis);
         //每个学生的完成率
-        Map<String, Double> collect1 = dataAnalyses.stream()
+        Map<String, Double> stringDoubleMap = dataAnalyses.stream()
                 .collect(Collectors.groupingBy((DataAnalysis::getCreateBy),
                         Collectors.summingDouble((DataAnalysis::getCompletionRate))));
+        System.out.println(stringDoubleMap);
         //全校学生数据
-        List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentList(null);
-        Map<String, List<String>> collect = commonStudents.stream()
-                .collect(Collectors.groupingBy(CommonStudent::getCollege,
-                        Collectors.mapping(CommonStudent::getSNum, Collectors.toList())));
-        System.out.println("学院学生:"+collect);
+//        List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentList(null);
+//        Map<String, List<String>> collect = commonStudents.stream()
+//                .collect(Collectors.groupingBy(CommonStudent::getCollege,
+//                        Collectors.mapping(CommonStudent::getSNum, Collectors.toList())));
+//        System.out.println("学院学生:"+collect);
 
         return null;
     }
