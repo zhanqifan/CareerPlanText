@@ -136,23 +136,27 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Transactional
     public int updateskillsInfo(SkillsInfo skillsInfo) {
         //判断是否发布
-        String targetPositionId = skillsInfo.getTargetPositionId();
-        TargetPosition targetPosition = targetPositionMapper.selectTargetPositionByPositionId(targetPositionId);
-        if(targetPosition.getState().equals(0)){
+//        String targetPositionId = skillsInfo.getTargetPositionId();
+//        TargetPosition targetPosition = targetPositionMapper.selectTargetPositionByPositionId(targetPositionId);
+        //修改实习/实践内容
+        String id = skillsInfo.getId();
+        InternshipContent internshipContent = new InternshipContent();
+        internshipContent.setSkillsId(id);
+        internshipContent.setContent(skillsInfo.getContent());
+        //发布状态
+//        if(targetPosition.getState().equals(1)){
             //是否已经修改过
-            if(skillsInfo.getModificationsNumber()>0){
-                return 0;
-            }
-            skillsInfo.setModificationsNumber(1);
-            //修改实习/实践内容
-            String id = skillsInfo.getId();
-            InternshipContent internshipContent = new InternshipContent();
-            internshipContent.setSkillsId(id);
-            internshipContent.setContent(skillsInfo.getContent());
-            iInternshipContentService.updateInternshipContent(internshipContent);
-            return skillsInfoService.updateSkillsInfo(skillsInfo);
-        }
-        return 0;
+//            if(skillsInfo.getModificationsNumber()0){
+        iInternshipContentService.updateInternshipContent(internshipContent);
+        return skillsInfoService.updateSkillsInfo(skillsInfo);
+//            }
+//            skillsInfo.setModificationsNumber(1);
+//            iInternshipContentService.updateInternshipContent(internshipContent);
+//            return skillsInfoService.updateSkillsInfo(skillsInfo);
+//        }else {
+//            iInternshipContentService.updateInternshipContent(internshipContent);
+//            return skillsInfoService.updateSkillsInfo(skillsInfo);
+//        }
     }
 
 
