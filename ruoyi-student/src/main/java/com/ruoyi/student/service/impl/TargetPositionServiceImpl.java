@@ -136,12 +136,18 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Transactional
     public int updateskillsInfo(SkillsInfo skillsInfo) {
         //修改实习/实践内容
-        if(StringUtils.isNotNull(skillsInfo.getContent())){
-            String id = skillsInfo.getId();
+//        if(StringUtils.isNotNull(skillsInfo.getContent())){
+//            String id = skillsInfo.getId();
+//            InternshipContent internshipContent = new InternshipContent();
+//            internshipContent.setSkillsId(id);
+//            internshipContent.setContent(skillsInfo.getContent());
+//            iInternshipContentService.updateInternshipContent(internshipContent);
+//        }
+        if(Objects.equals(skillsInfo.getContent(), " ") ||skillsInfo.getContent()==null){
             InternshipContent internshipContent = new InternshipContent();
-            internshipContent.setSkillsId(id);
+            internshipContent.setSkillsId(skillsInfo.getId());
             internshipContent.setContent(skillsInfo.getContent());
-            iInternshipContentService.updateInternshipContent(internshipContent);
+            iInternshipContentService.insertInternshipContent(internshipContent);
         }
         return skillsInfoService.updateSkillsInfo(skillsInfo);
     }
