@@ -1,11 +1,12 @@
 import request from '@/utils/request'
 
 // 查询岗位管理列表
-export function listPosition(query) {
-  return request({
-    url: '/student/position/list',
-    method: 'get',
-    params: query
+export function listPosition(positionName,state) {
+  return request.get('/student/position/list',{
+    params: {
+      positionName,
+      state
+    },
   })
 }
 
@@ -36,9 +37,31 @@ export function updatePosition(data) {
 }
 
 // 删除岗位管理
-export function delPosition(positionId) {
+export function delPosition(positionIds) {
   return request({
-    url: '/student/position/' + positionId,
+    url: '/student/position/' + positionIds,
     method: 'delete'
   })
+}
+
+// 发布草稿岗位
+export const PublicPosition=(positionId)=>{
+  return request.get('/student/position/publish/'+positionId)
+}
+
+// 获取目录列表
+export const getcateLog = () =>{
+  return request.get('/student/ctatlogue/list')
+}
+// 添加岗位
+export const AddPosition =(data) =>{
+  return request.post('/student/position',data)
+}
+// 设置主目标
+export const SetPositoin=(positionId)=>{
+  return request.get('/student/position/setPrimaryTarget/'+positionId)
+}
+// 废止目标
+export const StopPosition =(positionId)=>{
+  return request.get('/student/position/repeal/'+positionId)
 }

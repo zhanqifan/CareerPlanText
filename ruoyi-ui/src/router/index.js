@@ -87,7 +87,13 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
-  }
+  },
+    // // 新增岗位
+    // {
+    //   path:'/careerplan/position/add',
+    //   component:()=>import('@/views/student/position/addposition.vue'),
+    //   name:'新增'
+    // }
 ]
 
 // 动态路由，基于用户权限动态去加载
