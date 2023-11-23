@@ -103,6 +103,9 @@ public class TargetPositionServiceImpl implements ITargetPositionService
             targetPositionMapper.updateTargetPosition(position);
         }
         TargetPosition targetPosition = new TargetPosition();
+        if(targetPositionDTO.getState().equals(2)){
+            targetPosition.setIsMain(0);
+        }
         String username = SecurityUtils.getUsername();
         String positionId = IdUtils.fastSimpleUUID();
         targetPosition.setPositionId(positionId);
