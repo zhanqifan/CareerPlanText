@@ -123,8 +123,6 @@
       </div>
     </div>
 
-
-
     <el-dialog title="发布" :visible.sync="SecondObject" width="20%"  append-to-body>
       <div>
         <p>确定发布该目标岗位吗?</p>
@@ -137,6 +135,7 @@
         >
       </span>
     </el-dialog>
+   
   </div>
 </template>
 
@@ -355,8 +354,8 @@ export default {
       // console.log(this.scrollDistance, this.isFixed);
     },
     // 提交||保存
-    async commit(state, checked) {
-       this.$refs.child.sayHi();
+    async commit(state) {
+
       // 预先判断是发布还是保存 且判断已发布岗位不多余2个
       if (state == 1 && this.Computedstate >= 2) {
         this.$alert("最多仅能发布两个目标岗位", "提示", {

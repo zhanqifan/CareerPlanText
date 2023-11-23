@@ -3,7 +3,12 @@
     <div class="top">个人数据分析</div>
     <div>
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="产品设计" name="first">
+        <el-tab-pane
+          :key="item.id"
+          v-for="(item) in positionList"
+          :label="item.positionName"
+          :name="item.id"
+        >
           <div class="row_title">
             <p class="title1">目标总览</p>
             <p class="title2">数据截止于:2023-11-10</p>
@@ -167,7 +172,22 @@
                 <p>未过期</p>
               </div>
               <div>
-               <svg t="1700728938632" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1837" width="16" height="16"><path d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z" fill="#D20E0E" p-id="1838"></path></svg>
+                <svg
+                  t="1700728938632"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="1837"
+                  width="16"
+                  height="16"
+                >
+                  <path
+                    d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+                    fill="#D20E0E"
+                    p-id="1838"
+                  ></path>
+                </svg>
                 <p>过期</p>
               </div>
             </div>
@@ -175,9 +195,9 @@
           <!-- 月度完成目标数 -->
           <div class="Month" ref="Month"></div>
         </el-tab-pane>
-        <el-tab-pane label="前端开发" name="second">配置管理</el-tab-pane>
+        <!-- <el-tab-pane label="前端开发" name="second">配置管理</el-tab-pane>
         <el-tab-pane label="废止目标一" name="third">角色管理</el-tab-pane>
-        <el-tab-pane label="废止目标二" name="fourth">定时任务补偿</el-tab-pane>
+        <el-tab-pane label="废止目标二" name="fourth">定时任务补偿</el-tab-pane> -->
       </el-tabs>
     </div>
   </div>
@@ -185,17 +205,23 @@
 
 <script>
 import * as echarts from "echarts";
-import {listPosition} from '@/api/student/position.js'
+import { listPosition } from "@/api/student/position.js";
 export default {
   data() {
     return {
-      activeName: "first",
+      activeName: 0,
+      positionList: [],
     };
   },
-  methods:{
-    async getList(){
-     const res =await listPosition()
-    }
+  methods: {
+    async getList() {
+      const res = await listPosition();
+      this.positionList = res.rows;
+      this.positionList.forEach((item) => {
+        item.id = this.activeName++;
+      });
+      console.log(this.positionList);
+    },
   },
   mounted() {
     var Histogram = echarts.init(this.$refs.Histogram);
@@ -498,65 +524,68 @@ export default {
 
     var Month = echarts.init(this.$refs.Month);
     Month.setOption({
-      title:{
-        text:'月度完成目标数'
+      title: {
+        text: "月度完成目标数",
       },
-       // 边距
+      // 边距
       grid: {
         top: 90,
         left: 60,
         right: 60,
       },
-   tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      type: 'cross',
-    },
-    formatter: function (params) {
-      let result = ''; // 用于存储提示信息
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "cross",
+        },
+        formatter: function (params) {
+          let result = ""; // 用于存储提示信息
 
-      params.forEach(item => {
-        result += `${item.seriesName}: ${item.value}%<br/>`; // 系列名和数据值
-      });
+          params.forEach((item) => {
+            result += `${item.seriesName}: ${item.value}%<br/>`; // 系列名和数据值
+          });
 
-      // 添加数据点之间的对比信息
-      if (params.length > 1) {
-        for (let i = 0; i < params.length - 1; i++) {
-          const diff = Math.abs(params[i].value - params[i + 1].value);
-          result += `与${params[i + 1].seriesName}的对比: ${diff}%<br/>`;
-        }
-      }
+          // 添加数据点之间的对比信息
+          if (params.length > 1) {
+            for (let i = 0; i < params.length - 1; i++) {
+              const diff = Math.abs(params[i].value - params[i + 1].value);
+              result += `与${params[i + 1].seriesName}的对比: ${diff}%<br/>`;
+            }
+          }
 
-      return result;
-    },
-  },
+          return result;
+        },
+      },
       xAxis: {
         type: "category",
-        data: ["2201", "2202", "2203","2204","2205","2206","2207"],
+        data: ["2201", "2202", "2203", "2204", "2205", "2206", "2207"],
       },
       yAxis: {
         type: "value",
-         min:0,
-         max:100
+        min: 0,
+        max: 100,
       },
       series: [
         {
-          data: [40, 30,40,50,20,30,60],
+          data: [40, 30, 40, 50, 20, 30, 60],
           type: "line",
           smooth: true,
-            symbol: 'none', // 设置节点为'none'
-             lineStyle: {
-        color: '#69BCFF', // 将折线颜色设为透明
-      },
+          symbol: "none", // 设置节点为'none'
+          lineStyle: {
+            color: "#69BCFF", // 将折线颜色设为透明
+          },
         },
-          {
-          data: [70, 50,10,60,30,80,10],
+        {
+          data: [70, 50, 10, 60, 30, 80, 10],
           type: "line",
           smooth: true,
-            symbol: 'none', // 设置节点为'none'
+          symbol: "none", // 设置节点为'none'
         },
       ],
     });
+  },
+  created() {
+    this.getList();
   },
 };
 </script>
@@ -677,8 +706,8 @@ export default {
     }
   }
   .Month {
-        padding-top: 20px;
-   margin-top: 30px;
+    padding-top: 20px;
+    margin-top: 30px;
     background-color: white;
     height: 350px;
   }

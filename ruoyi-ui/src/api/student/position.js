@@ -48,6 +48,10 @@ export function delPosition(positionIds) {
 export const PublicPosition=(positionId)=>{
   return request.get('/student/position/publish/'+positionId)
 }
+// 删除草稿行数据
+export const DeleteRow= (skillsId)=>{
+  return request.delete('/student/position/skills/'+skillsId)
+}
 
 // 获取目录列表
 export const getcateLog = () =>{

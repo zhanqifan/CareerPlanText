@@ -26,7 +26,6 @@
           >
           </el-option>
         </el-select>
-      
       </el-form-item>
       <el-form-item>
         <el-button
@@ -191,8 +190,22 @@
         </template>
       </el-table-column>
     </el-table>
+   
 
-    <!-- 新增弹出层 -->
+ <div class="block">
+
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="currentPage4"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="100"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+  </div>
+
+    <!-- 添加岗位弹出层 -->
     <div class="first">
       <el-dialog padding="0" :visible.sync="ObjectVisible" width="100%">
         <addposition
@@ -214,10 +227,6 @@
       class="SetObject"
       @close="positionId = ''"
     >
-      <!-- <el-radio-group v-model="Object">
-           <el-radio v-for="item in ObjectList " :key="item.positionId" :label="item.positionId">{{item.positionName}}</el-radio>
-      </el-radio-group> -->
-      <!-- <el-radio v-model="Object" v-for="item in ObjectList " :key="item.positionId" :label="item.positionId">{{item.positionName}}</el-radio> -->
       <el-select v-model="positionId" placeholder="请选择">
         <el-option
           v-for="item in ObjectList"
@@ -232,6 +241,7 @@
         <el-button type="primary" @click="SetObject()">确 定</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
@@ -258,12 +268,10 @@ export default {
   },
   data() {
     return {
-      // 遮罩层
-      loading: false,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
+      checkedObject: false, // 草稿是否设为主目标
+      loading: false, // 遮罩层
+      SendObject: false, //草稿发布提示
+      single: true, // 非单个禁用
       // 非多个禁用
       multiple: true,
       // 显示搜索条件
@@ -390,7 +398,6 @@ export default {
       },
       // 搜索框目标状态
       options: [
-      
         {
           value: "0",
           label: "已废止",
@@ -404,8 +411,8 @@ export default {
           label: "草稿",
         },
       ],
-      value:'',//搜索框
-      Name: "",//搜索岗位名称
+      value: "", //搜索框
+      Name: "", //搜索岗位名称
 
       // 查询参数
       queryParams: {
@@ -425,7 +432,8 @@ export default {
     async getList() {
       this.loading = true;
       const res = await listPosition();
-      // console.log(res);
+      console.log(res);
+      this.total=res.total
       this.positionList = res.rows;
       this.loading = false;
       // 已发布岗位数量
@@ -433,7 +441,7 @@ export default {
         (item) => item.state === 1
       ).length;
       console.log("已发布个数", this.Computedstate);
-      // 筛选状态为发布岗位
+      // 筛选状态为发布岗位数组
       this.ObjectList = this.positionList.filter((item) => item.state === 1);
       // 计算主目标个数
       this.ComputedisMain = this.positionList.filter(
@@ -475,6 +483,12 @@ export default {
     },
     // 发布草稿岗位
     async PublicRowClick(row) {
+      if (this.Computedstate === 2) {
+        this.$message.error("最多仅能发布两个目标岗位");
+        return;
+      }
+      // console.log(this.ComputedisMain)
+   
       const res = await PublicPosition(row.positionId);
       console.log(res);
       this.getList();
@@ -494,6 +508,7 @@ export default {
 
       this.ObjectVisible = true;
     },
+    // 对话框
     handleDialog(boolean) {
       // console.log(boolean)
       this.ObjectVisible = boolean;
@@ -505,9 +520,9 @@ export default {
     },
     // 重置按钮
     reset() {
-       this.Name=""
-       this.value=""
-       this.getList()
+      this.Name = "";
+      this.value = "";
+      this.getList();
     },
     /** 搜索按钮操作 */
     async handleQuery() {
@@ -518,26 +533,6 @@ export default {
       this.positionList = res.rows;
       // this.queryParams.pageNum = 1;
       // this.getList();
-    },
- 
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.positionId);
-      this.single = selection.length !== 1;
-      this.multiple = !selection.length;
-      this.ids = selection.map((item) => item.positionId);
-      this.single = selection.length !== 1;
-      this.multiple = !selection.length;
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download(
-        "student/position/export",
-        {
-          ...this.queryParams,
-        },
-        `position_${new Date().getTime()}.xlsx`
-      );
     },
     // 废止目标
     async ToStop(row) {
@@ -575,6 +570,7 @@ export default {
       }
       this.getList();
     },
+
     getIndex(data) {
       console.log(data);
       this.getList();
@@ -590,5 +586,11 @@ export default {
   ::deep .el-dialog__body {
     padding: 0;
   }
+}
+.block{
+  margin-top: 130px;
+  margin-right: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

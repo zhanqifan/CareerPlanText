@@ -20,7 +20,11 @@
       <p class="word">{{ list.catalogueName }}</p>
     </div>
     <div class="btn_row">
-      <el-button @click="AddRow" v-if="state===3?true:state===2?true:false" >新增一行</el-button>
+      <el-button
+        @click="AddRow"
+        v-if="state === 3 ? true : state === 2 ? true : false"
+        >新增一行</el-button
+      >
     </div>
 
     <div class="table-boder">
@@ -143,13 +147,13 @@
           <template slot-scope="scope">
             <el-form :model="scope.row" :rules="rules">
               <el-form-item prop="endTime">
-            <el-date-picker
-              v-model="scope.row.endTime"
-             :disabled="PickEnd"
-              placeholder="请选择时间"
-            >
-            </el-date-picker>
-            </el-form-item>
+                <el-date-picker
+                  v-model="scope.row.endTime"
+                  :disabled="PickEnd"
+                  placeholder="请选择时间"
+                >
+                </el-date-picker>
+              </el-form-item>
             </el-form>
           </template>
         </el-table-column>
@@ -157,15 +161,16 @@
           <template slot-scope="scope">
             <el-button
               type="danger"
-              @click="deleteRow(scope.$index,scope.$row)"
+              @click="deleteRow(scope.$index, scope.row.id)"
               :disabled="state === 1 ? true : state === 0 ? true : false"
               >删除</el-button
             >
             <el-button
-              v-if="state===1?true:state===2?true:false"
-              :type="btn_public===0?'primary':'success'"
+              v-if="state === 1 ? true : state === 2 ? true : false"
+              :type="btn_public === 0 ? 'primary' : 'success'"
               @click="ChangeRow(scope.row)"
-              >{{btn_public===0?'编辑':'保存'}}</el-button>
+              >{{ btn_public === 0 ? "编辑" : "保存" }}</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -234,9 +239,8 @@ import {
   getComment,
   ChangeComment,
   DeleteComment,
-
 } from "@/api/student/mycomment.js";
-import {  updatePosition,} from '@/api/student/position.js';
+import { updatePosition, DeleteRow } from "@/api/student/position.js";
 export default {
   props: ["list", "tableHeader", "parentId", "state"],
   data() {
@@ -249,15 +253,21 @@ export default {
       Id: "", // 目标岗位id
       dialogComment: false, //弹出框
       tableTime: "", //表单的结束时间 用来与自评完成时间对比
-      inp:true,//第一个输入框禁用
-      PickStart:true,//开始日期禁用
-      PickEnd:true,//结束日期禁用
-      btn_public:0,//编辑按钮的切换
+      inp: true, //第一个输入框禁用
+      PickStart: true, //开始日期禁用
+      PickEnd: true, //结束日期禁用
+      btn_public: 0, //编辑按钮的切换
       // 表单校验
       rules: {
-        skillsName: [{ required: true, message: "此不为空", trigger: ['blur', 'change']}],
-        startTime:[{required:true,message:"此不为空",trigger: ['blur', 'change']}],
-        endTime:[{required:true,message:"此不为空",trigger: ['blur', 'change']}],
+        skillsName: [
+          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+        ],
+        startTime: [
+          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+        ],
+        endTime: [
+          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+        ],
       },
     };
   },
@@ -265,9 +275,7 @@ export default {
   methods: {
     // 添加一行
     AddRow() {
-      this.inp=false,
-      this.PickStart=false,
-      this.PickEnd=false
+      (this.inp = false), (this.PickStart = false), (this.PickEnd = false);
       this.list.skillsInfoList.push({
         firstId: this.parentId, //父目录id
         ctatlogueId: this.list.catalogueId, //技能目录id
@@ -278,56 +286,60 @@ export default {
       });
     },
     // 删除当前行
-   async deleteRow(index) {
-      const res =await(row.id)
-      console.log(res)
+    async deleteRow(index, id) {
+      if (this.state === 2) {
+        const res = await DeleteRow(id);
+        console.log(res);
+        this.$message({
+          message: "删除成功",
+          type: "success",
+        });
+      }
+
       this.list.skillsInfoList.splice(index, 1);
 
+      // 草稿态可单行删除
     },
     // 输入框逻辑判断
-      inputDisbale(){
-       if(this.state==1){
-        this.inp=true
-       }
-       else if(this.state==0){
-        this.inp=true
-       }
-       else{
-        this.inp=false
-       }
-   },
+    inputDisbale() {
+      if (this.state == 1) {
+        this.inp = true;
+      } else if (this.state == 0) {
+        this.inp = true;
+      } else {
+        this.inp = false;
+      }
+    },
     //  结束时间逻辑判定
     endTimeDisable(modificationsNumber) {
-    
-        //  发布状态
-       if(this.state===1){
-          this.PickEnd= modificationsNumber === 1 ? true : false;
-       }
-        // 草稿状态
-         if(this.state===2){
-          this.PickEnd= false;
-          }
-        // 废止状态;
-        if(this.state===0){
-         this.PickEnd= true
-         }
-      
+      //  发布状态
+      if (this.state === 1) {
+        this.PickEnd = modificationsNumber === 1 ? true : false;
+      }
+      // 草稿状态
+      if (this.state === 2) {
+        this.PickEnd = false;
+      }
+      // 废止状态;
+      if (this.state === 0) {
+        this.PickEnd = true;
+      }
     },
     // 开始时间逻辑判断
     startTimeDisable(startTime) {
       // 发布态 时间比对
       if (this.state === 1) {
         const data11 = new Date(startTime).getTime();
-        const data22 = new Date()
-        this.PickStart= data11 < data22 ? true : false;
+        const data22 = new Date();
+        this.PickStart = data11 < data22 ? true : false;
       }
       // 草稿态直接开放
       if (this.state === 2) {
-       this.PickStart=false;
+        this.PickStart = false;
       }
       // 废止态直接禁用
       if (this.state === 0) {
-       this.PickStart=true;
+        this.PickStart = true;
       }
     },
     // 弹层控制
@@ -420,45 +432,56 @@ export default {
         });
     },
     // 保存修改
-   async ChangeRow(row){
-       if(this.btn_public===0){
-        this.btn_public=1
+    async ChangeRow(row) {
+      if (this.btn_public === 0) {
+        this.btn_public = 1;
         // 进入发布态切换
-        this.inputDisbale()
+        this.inputDisbale();
         //  开始时间是否开启判断
-       this.startTimeDisable(row.startTime)
-       const data11 = new Date(row.startTime).getTime();
-       console.log(data11>new Date()?true:false)
-       this.endTimeDisable(row.modificationsNumber)
-        return
-       }
-      else if(this.btn_public===1){
-        let changeDate={
-          id:row.id,
-          skillsName:row.skillsName,
-          endTime:row.endTime,
-          targetPositionId:row.targetPositionId,
-          modificationsNumber:row.modificationsNumber
-
-        }
-        // const res =await updatePosition(changeDate)
-        console.log(changeDate)
-        this.btn_public=0
-        this.inp=true
-        this.PickStart=true
-        this.PickEnd=true
-      } 
+        this.startTimeDisable(row.startTime);
+        const data11 = new Date(row.startTime).getTime();
+        console.log(data11 > new Date() ? true : false);
+        this.endTimeDisable(row.modificationsNumber);
+        return;
+      } else if (this.btn_public === 1) {
+        // console.log(row);
+        let date = new Date(row.endTime);
+        // 提取年、月、日
+        let year = date.getFullYear();
+        let month = (date.getMonth() + 1).toString().padStart(2, "0"); // 月份是从0开始的，所以要加1
+        let day = date.getDate().toString().padStart(2, "0");
+        // 格式化为 "YYYY-MM-DD"
+        let formattedDate = `${year}-${month}-${day}`;
+        // console.log(typeof formattedDate);
+        let changeDate = {
+          id: row.id,
+          skillsName: row.skillsName,
+          endTime: formattedDate,
+          take_role: "",
+          content: "",
+          targetPositionId: row.targetPositionId,
+          modificationsNumber: row.modificationsNumber + 1,
+        };
+        // console.log(changeDate)
+        const res = await updatePosition(changeDate);
+        console.log(res);
+        console.log(changeDate);
+        this.btn_public = 0;
+        this.inp = true;
+        this.PickStart = true;
+        this.PickEnd = true;
+      }
     },
-    submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
+    // submitForm(formName) {
+    //     this.$refs[formName].validate((valid) => {
+    //       if (valid) {
+    //         alert('submit!');
+    //       } else {
+    //         console.log('error submit!!');
+    //         return false;
+    //       }
+    //     });
+    //   },
   },
 
   computed: {
@@ -491,7 +514,7 @@ export default {
     //   this.PickStart=false
     //   this.PickEnd=false
     // }
-  
+
     console.log(this.list);
   },
 };
