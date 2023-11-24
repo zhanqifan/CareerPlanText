@@ -225,6 +225,8 @@ public class SysUserServiceImpl implements ISysUserService
         userMapper.deleteUserByUserName(userName);
     }
 
+
+
     /**
      * 校验用户是否允许操作
      * 
@@ -270,7 +272,6 @@ public class SysUserServiceImpl implements ISysUserService
     public int insertUser(SysUser user)
     {
         // 新增用户信息
-        System.out.println(user);
         int rows = userMapper.insertUser(user);
         // 新增用户岗位关联
         insertUserPost(user);
@@ -313,12 +314,18 @@ public class SysUserServiceImpl implements ISysUserService
         return userMapper.updateUser(user);
     }
 
-    /**
-     * 用户授权角色
-     * 
-     * @param userId 用户ID
-     * @param roleIds 角色组
-     */
+    @Override
+    public int updateRegisterUser(SysUser user) {
+        return userMapper.updateUser(user);
+    }
+
+
+        /**
+         * 用户授权角色
+         *
+         * @param userId 用户ID
+         * @param roleIds 角色组
+         */
     @Override
     @Transactional
     public void insertUserAuth(Long userId, Long[] roleIds)

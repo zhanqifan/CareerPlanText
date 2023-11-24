@@ -44,6 +44,7 @@ public class SysRegisterService
 
 
 
+
     /**
      * 注册
      */
@@ -71,7 +72,7 @@ public class SysRegisterService
         if(StringUtils.isNotNull(user)){
             user.setUserType("01");
             user.setPassword(SecurityUtils.encryptPassword(password));
-            userService.updateUser(user);
+            userService.updateRegisterUser(user);
             msg="学号/工号为："+username+"的用户认证成功";
         }else {
             msg="学号/工号为："+username+"的用户未导入系统，请联系管理员";
