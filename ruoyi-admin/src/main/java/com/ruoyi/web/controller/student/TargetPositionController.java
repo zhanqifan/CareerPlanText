@@ -54,8 +54,10 @@ public class TargetPositionController extends BaseController
     {
         startPage();
         targetPosition.setCreateBy(SecurityUtils.getUsername());
-
         List<TargetPosition> list = targetPositionService.selectTargetPositionList(targetPosition);
+        TargetPosition position = new TargetPosition();
+        position.setCreateBy(SecurityUtils.getUsername());
+        List<TargetPosition> total = targetPositionService.selectTargetPositionList(position);
         List<TargetPositionVO> collect = list.stream().map(target -> {
             TargetPositionVO targetPositionVO = new TargetPositionVO();
             TargetPositionVO positionVO = skillsInfoService.CalculationCompletionRate(target.getPositionId());
@@ -70,7 +72,7 @@ public class TargetPositionController extends BaseController
             targetPositionVO.setCreateTime(target.getCreateTime());
             return targetPositionVO;
         }).collect(Collectors.toList());
-        return getDataTable(collect);
+        return getDataTable(collect,total.size());
     }
 
     /**
