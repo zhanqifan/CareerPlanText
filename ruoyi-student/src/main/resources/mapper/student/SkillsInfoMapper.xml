@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="SkillsInfo" id="SkillsInfoResult">
         <result property="id"    column="id"    />
+        <result property="lineNumber"    column="line_number"    />
         <result property="ctatlogueId"    column="ctatlogue_id"    />
         <result property="firstId"    column="first_id"    />
         <result property="skillsName"    column="skills_name"    />
@@ -24,7 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <sql id="selectSkillsInfoVo">
-        select id, first_id,ctatlogue_id, skills_name,take_role,modifications_number,complete_time,evaluate_state, completion_status,target_position_id, create_by, end_time, start_time, create_time from skills_info
+        select id, line_number,first_id,ctatlogue_id, skills_name,take_role,modifications_number,complete_time,evaluate_state, completion_status,target_position_id, create_by, end_time, start_time, create_time from skills_info
     </sql>
 
     <select id="selectSkillsInfoList" parameterType="SkillsInfo" resultMap="SkillsInfoResult">
@@ -63,6 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into skills_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
+            <if test="lineNumber != null">line_number,</if>
             <if test="ctatlogueId != null">ctatlogue_id,</if>
             <if test="firstId != null">first_id,</if>
             <if test="skillsName != null and skillsName != ''">skills_name,</if>
@@ -75,6 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
+            <if test="lineNumber != null">#{lineNumber},</if>
             <if test="ctatlogueId != null">#{ctatlogueId},</if>
             <if test="firstId != null">#{firstId},</if>
             <if test="skillsName != null and skillsName != ''">#{skillsName},</if>

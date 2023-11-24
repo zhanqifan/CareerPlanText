@@ -91,6 +91,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Override
     @Transactional
     public int addTargetPosition(TargetPositionDTO targetPositionDTO) {
+        System.out.println(targetPositionDTO);
         Boolean isUpdate = targetPositionDTO.getIsUpdate();
         if(isUpdate){
             //更新主目标
@@ -121,6 +122,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
                 skillsInfo.setFirstId(skillsInfo.getFirstId());
                 skillsInfo.setTargetPositionId(positionId);
                 skillsInfo.setTakeRole(skillsInfo.getTakeRole());
+                skillsInfo.setLineNumber(skillsInfo.getLineNumber());
                 skillsInfo.setCreateBy(username);
                 //添加实习/实践内容
                 if(Objects.equals(skillsInfo.getContent(), " ") ||skillsInfo.getContent()==null){
@@ -129,6 +131,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
                     internshipContent.setContent(skillsInfo.getContent());
                     iInternshipContentService.insertInternshipContent(internshipContent);
                 }
+                System.out.println(skillsInfo);
                 skillsInfoService.insertSkillsInfo(skillsInfo);
             }
             return 1;
