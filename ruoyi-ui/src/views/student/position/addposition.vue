@@ -10,11 +10,11 @@
       <div class="left">
         <h1>目录</h1>
         <!-- 分类列表 -->
-        <div class="list" :class="{ fixed: isFixed }">
+        <div class="list" >
           <div v-for="Log in LogList" :key="Log.catalogueId">
             <p>{{ Log.catalogueName }}</p>
             <ul>
-              <li v-for="item in Log.child" :key="item.catalogueName">
+              <li v-for="item in Log.child" :key="item.catalogueName" @click="scrollToItem()">
                 {{ item.catalogueName }}
               </li>
             </ul>
@@ -34,7 +34,7 @@
             <el-button
               type="success"
               @click="commit('2')"
-              v-if="this.positionDetail.state!=0"
+              v-if="this.positionDetail.state != 0"
               :disabled="
                 this.positionDetail.state === 1
                   ? true
@@ -44,7 +44,16 @@
               "
               >存为草稿</el-button
             >
-            <el-button type="primary" v-if="this.positionDetail.state!=0" @click="commit('1')">发布</el-button>
+            <el-button
+              type="primary"
+              v-if="
+                this.positionDetail.state === 1
+                  ? false
+                  : this.positionDetail.state === 3
+              "
+              @click="commit('1')"
+              >发布</el-button
+            >
           </div>
         </div>
         <!-- 表单内容 -->
@@ -79,7 +88,7 @@
                 :tableHeader="tableHeader[index]"
                 :key="list.catalogueId"
                 :list="list"
-                ref="child"
+                @mySon="handlemyson"
               />
               <Form2
                 v-for="(list, index) in positionDetail.ctatlogueList.slice(
@@ -91,7 +100,7 @@
                 :tableHeader="tableHeader[index + 10]"
                 :key="list.catalogueId"
                 :list="list"
-                ref="child"
+                @mySon="handlemyson"
               />
               <Form1
                 v-for="(list, index) in positionDetail.ctatlogueList.slice(
@@ -103,7 +112,7 @@
                 :tableHeader="tableHeader[index + 12]"
                 :key="list.catalogueId"
                 :list="list"
-                ref="child"
+                @mySon="handlemyson"
               />
               <Form3
                 v-for="(list, index) in positionDetail.ctatlogueList.slice(
@@ -115,7 +124,7 @@
                 :tableHeader="tableHeader[index + 15]"
                 :key="list.catalogueId"
                 :list="list"
-                ref="child"
+                @mySon="handlemyson"
               />
             </div>
           </div>
@@ -123,19 +132,21 @@
       </div>
     </div>
 
-    <el-dialog title="发布" :visible.sync="SecondObject" width="20%"  append-to-body>
+    <el-dialog
+      title="发布"
+      :visible.sync="SecondObject"
+      width="20%"
+      append-to-body
+    >
       <div>
         <p>确定发布该目标岗位吗?</p>
         <el-checkbox v-model="checked">将该目标岗位设置为主目标</el-checkbox>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="SecondObject = false">取 消</el-button>
-        <el-button type="primary" @click="commitSon('1')"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="commitSon('1')">确 定</el-button>
       </span>
     </el-dialog>
-   
   </div>
 </template>
 
@@ -144,13 +155,19 @@ import {
   getcateLog,
   AddPosition,
   updatePosition,
-  listPosition
+  listPosition,
 } from "@/api/student/position.js";
 import Form1 from "../components/Form1.vue";
 import Form2 from "../components/Form2.vue";
 import Form3 from "../components/Form3.vue";
 export default {
-  props: ["positionDetail", "Computedstate", "ObjectVisible","ComputedisMain","getIndex"],
+  props: [
+    "positionDetail",
+    "Computedstate",
+    "ObjectVisible",
+    "ComputedisMain",
+    "getIndex",
+  ],
   inject: ["comment"],
   components: {
     Form1,
@@ -165,7 +182,7 @@ export default {
       FormList: [], // 筛选出表单填写的每一行数据
       childList: [],
       isFixed: false,
-      SecondObject:false,//第二次发布
+      SecondObject: false, //第二次发布
       scrollDistance: 0,
       isFixed: false,
       // 技能表格表头
@@ -354,8 +371,7 @@ export default {
       // console.log(this.scrollDistance, this.isFixed);
     },
     // 提交||保存
-    async commit(state) {
-
+    commit(state) {
       // 预先判断是发布还是保存 且判断已发布岗位不多余2个
       if (state == 1 && this.Computedstate >= 2) {
         this.$alert("最多仅能发布两个目标岗位", "提示", {
@@ -383,8 +399,8 @@ export default {
       }
       // 第二次发布岗位
       if (state == 1 && this.ComputedisMain === 1) {
-        this.SecondObject=true
-        return
+        this.SecondObject = true;
+        return;
       }
       // 草稿直接发布 不进入判定
       this.commitSon(state);
@@ -407,15 +423,21 @@ export default {
       // 发送请求
       const res = await AddPosition(data);
       // console.log(res);
-      this.SecondObject=false//对话框关闭
+      this.SecondObject = false; //对话框关闭
       // 通知父组件关闭对话框
       this.$emit("closeDialog", false);
-        this.$emit("getIndex",'调用父组件刷新页面');
       // 用户提示
       this.$message({
-        message: res.msg ,
+        message: res.msg,
         type: "success",
       });
+    },
+    
+    handlemyson(targetPositionId,change) {
+      console.log(change)
+       if(targetPositionId){
+      this.$emit("getIndex", targetPositionId,change);
+      }
     },
   },
 
@@ -424,9 +446,7 @@ export default {
   },
 
   mounted() {
-    console.log("我是positionDetail", this.positionDetail.state);
-    // 检测滚动条变化更新
-    // window.addEventListener("scroll", this.handleScroll);
+
   },
 };
 </script>

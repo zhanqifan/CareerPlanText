@@ -20,7 +20,11 @@
       <p class="word">{{ list.catalogueName }}</p>
     </div>
     <div class="btn_row">
-      <el-button @click="AddRow" v-if="state===3?true:state===2?true:false">新增一行</el-button>
+      <el-button
+        @click="AddRow"
+        v-if="state === 3 ? true : state === 2 ? true : false"
+        >新增一行</el-button
+      >
     </div>
     <!-- 表格 -->
     <div class="table-boder">
@@ -30,7 +34,6 @@
         :data="list.skillsInfoList"
         v-if="comment() === 3"
       >
-        <el-table-column type="selection" width="45"> </el-table-column>
         <el-table-column label="序号" type="index" width="50">
         </el-table-column>
         <el-table-column :label="tableHeader.skill">
@@ -106,7 +109,6 @@
       </el-table>
       <!-- 创建 -->
       <el-table class="tables" :data="list.skillsInfoList" v-else>
-        <el-table-column type="selection" width="45"> </el-table-column>
         <el-table-column label="序号" type="index" width="50">
         </el-table-column>
         <!-- 序号 -->
@@ -117,7 +119,7 @@
                 <el-input
                   :placeholder="tableHeader.point"
                   v-model="scope.row.skillsName"
-                    :disabled="inp"
+                  :disabled="scope.row.inp"
                   clearable
                 ></el-input>
               </el-form-item>
@@ -130,7 +132,7 @@
             <el-input
               :placeholder="tableHeader.point1"
               v-model="scope.row.takeRole"
-                :disabled="inp"
+              :disabled="scope.row.inp"
               clearable
             ></el-input>
           </template>
@@ -142,7 +144,7 @@
               <el-form-item prop="startTime">
                 <el-date-picker
                   v-model="scope.row.startTime"
-                     :disabled="PickStart"
+                  :disabled="scope.row.PickStart"
                   placeholder="请选择时间"
                 >
                 </el-date-picker>
@@ -153,53 +155,49 @@
         <!-- 结束时间 -->
         <el-table-column :label="tableHeader.end">
           <template slot-scope="scope">
-             <el-form :model="scope.row" :rules="rules">
+            <el-form :model="scope.row" :rules="rules">
               <el-form-item prop="endTime">
-            <el-date-picker
-              v-model="scope.row.endTime"
-        :disabled="PickEnd"
-              placeholder="请选择时间"
-            >
-            </el-date-picker>
-             </el-form-item>
+                <el-date-picker
+                  v-model="scope.row.endTime"
+                  :disabled="scope.row.PickEnd"
+                  placeholder="请选择时间"
+                >
+                </el-date-picker>
+              </el-form-item>
             </el-form>
           </template>
         </el-table-column>
 
         <el-table-column :label="tableHeader.content">
           <template slot-scope="scope">
-            <el-select v-model="scope.row.content" placeholder="是否填写">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
+            <el-tag v-if="scope.row.content != ''">已完成</el-tag>
+            <el-tag v-else>未完成</el-tag>
           </template>
         </el-table-column>
         <el-table-column :label="tableHeader.control">
           <template slot-scope="scope">
-             <el-button
+            <el-button
               type="danger"
               @click="deleteRow(scope.$index)"
               :disabled="state === 1 ? true : state === 0 ? true : false"
               >删除</el-button
             >
-            <el-button
-              v-if="state===1?true:state===2?true:false"
-              :type="btn_public===0?'primary':'success'"
+            <el-button @click="dialogContent = true">实习内容</el-button>
+             <el-button
+              v-if="state === 1 ? true : state === 2 ? true : false"
+              :type="scope.row.btn_public === 0 ? 'primary' : 'success'"
               @click="ChangeRow(scope.row)"
-              >{{btn_public===0?'编辑':'保存'}}</el-button>
+              >{{ scope.row.btn_public === 0 ? "编辑" : "保存" }}</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
     </div>
 
-    <!--实习 弹出框 -->
+    <!--实习内容 弹出框 -->
     <el-dialog
       :title="'计划' + tableHeader.content"
-      :visible.sync="dialog"
+      :visible.sync="dialogContent"
       append-to-body
     >
       <el-input
@@ -210,8 +208,10 @@
       >
       </el-input>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialog = false">取 消</el-button>
-        <el-button type="primary" @click="dialog = false">确 定</el-button>
+        <el-button @click="dialogContent = false">取 消</el-button>
+        <el-button type="primary" @click="dialogContent = false"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
 
@@ -279,24 +279,30 @@ import {
   ChangeComment,
   DeleteComment,
 } from "@/api/student/mycomment.js";
+import { DeleteRow ,updatePosition} from "@/api/student/position.js";
+
 export default {
   props: ["list", "tableHeader", "parentId", "state"],
   inject: ["comment"],
   data() {
     return {
-      
+      dialogContent: false,
+      lineNumber: 0, //行号
       evaluateId: null, //自评id
       evaluateState: 0, //自评状态
+      targetPositionId: "", //目标id(通知页面数据刷新用)
+
       radio: "1", //选项
       Completiontime: "", //日期选择
       textarea: " ", //自评内容
       Id: "", // 目标岗位id
       dialogComment: false, //弹出框
       tableTime: "", //表单的结束时间 用来与自评完成时间对比
-       inp:true,//第一个输入框禁用
-      PickStart:true,//开始日期禁用
-      PickEnd:true,//结束日期禁用
-      btn_public:0,//编辑按钮的切换
+      // inp: true, //第一个输入框禁用
+      // takeRole: true,
+      // PickStart: true, //开始日期禁用
+      // PickEnd: true, //结束日期禁用
+      // btn_public: 0, //编辑按钮的切换
       // 下拉选择器选项
       options: [
         {
@@ -315,91 +321,96 @@ export default {
         skillsName: [
           { required: true, message: "此不为空", trigger: ["blur", "change"] },
         ],
-        startTime:[{required:true,message:"此不为空",trigger: ['blur', 'change']}],
-        endTime:[{required:true,message:"此不为空",trigger: ['blur', 'change']}],
+        startTime: [
+          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+        ],
+        endTime: [
+          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+        ],
       },
     };
   },
   methods: {
     // 添加一行
     AddRow() {
-       this.inp=false,
-      this.PickStart=false,
-      this.PickEnd=false
+      (this.inp = false), (this.PickStart = false), (this.PickEnd = false);
       this.list.skillsInfoList.push({
-        id: this.list.skillsInfoList.length + 1,
         firstId: this.parentId, //父目录id
         ctatlogueId: this.list.catalogueId, //技能目录id
         skillsName: "", //计划实践的项目
+        lineNumber: this.lineNumber++,
         takeRole: "", //计划实践的角色
         startTime: "", //开始时间
         endTime: "", ///结束时间
-        content: "", //实习内容
+        content: this.textarea2, //实习内容
       });
     },
-
-  // 输入框逻辑判断
-   inputDisbale(){
-       if(this.state==1){
-        this.inp=true
-       }
-       else if(this.state==0){
-        this.inp=true
-       }
-       else{
-        this.inp=false
-       }
-   },
-
-  // 开始时间逻辑判断
-    startTimeDisable(startTime) {
+    // 删除当前行
+    async deleteRow(index) {
+      if (this.state === 2) {
+        const res = await DeleteRow(id);
+        console.log(res);
+        this.$message({
+          message: "删除成功",
+          type: "success",
+        });
+      }
+      this.lineNumber = this.lineNumber - 1;
+      // 草稿态可单行删除
+      this.list.skillsInfoList.splice(index, 1);
+    },
+    // 输入框逻辑判断
+    inputDisbale(row) {
+      if (this.state == 1) {
+        row.inp = true;
+      } else if (this.state == 0) {
+        row.inp = true;
+      } else {
+        row.inp = false;
+      }
+      this.$forceUpdate()
+    },
+    //  结束时间逻辑判定
+    endTimeDisable(row) {
+      //  发布状态
+      if (this.state === 1) {
+        row.PickEnd = row.modificationsNumber != 0 ? true : false;
+      }
+      // 草稿状态
+      if (this.state === 2) {
+        row.PickEnd = false;
+      }
+      // 废止状态;
+      if (this.state === 0) {
+        row.PickEnd = true;
+      }
+    },
+    // 开始时间逻辑判断
+    startTimeDisable(row) {
       // 发布态 时间比对
       if (this.state === 1) {
-        const data11 = new Date(startTime).getTime();
-        const data22 = new Date()
-        this.PickStart= data11 < data22 ? true : false;
+        const data11 = new Date(row.startTime).getTime();
+        const data22 = new Date();
+        row.PickStart = data11 < data22 ? true : false;
       }
       // 草稿态直接开放
       if (this.state === 2) {
-       this.PickStart=false;
+        row.PickStart = false;
       }
       // 废止态直接禁用
       if (this.state === 0) {
-       this.PickStart=true;
+        row.PickStart = true;
       }
     },
-  //  结束时间逻辑判定
-    endTimeDisable(modificationsNumber) {
-    
-        //  发布状态
-       if(this.state===1){
-          this.PickEnd= modificationsNumber === 1 ? true : false;
-       }
-        // 草稿状态
-         if(this.state===2){
-          this.PickEnd= false;
-          }
-        // 废止状态;
-        if(this.state===0){
-         this.PickEnd= true
-         }
-      
-    },
-   
-    // 删除当前行
-    deleteRow(index) {
-      this.list.skillsInfoList.splice(index, 1);
-    },
-    // 实习内容弹出框
-    WriteText() {
-      this.dialog = true;
-    }, // 弹层控制
+
+    // 弹层控制
     ToComment(value, row, sum) {
       this.dialogComment = value; //弹窗
       this.tableTime = row.endTime; //结束时间 用与用户的对比
       this.Id = row.id; //传参用的id
       this.Completiontime = row.completeTime; //用户选择的完成时间
       this.evaluateState = row.evaluateState;
+      this.targetPositionId = row.targetPositionId;
       console.log(this.Id);
 
       // 如果是编辑按钮 做数据回显
@@ -420,6 +431,8 @@ export default {
         };
         // console.log('修改',this.completeTime)
         const res = await ChangeComment(secondata);
+        this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
+
         this.$message({
           type: "success",
           message: "修改成功请刷新",
@@ -436,6 +449,7 @@ export default {
         };
 
         const res = await TodoComments(data);
+        this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
 
         this.$message({
           type: "success",
@@ -468,8 +482,10 @@ export default {
           type: "warning",
         }
       )
-        .then(() => {
-          const res = DeleteComment(this.evaluateId);
+        .then(async() => {
+          const res =await DeleteComment(this.evaluateId);
+          this.$emit("mySon", row.targetPositionId); //通知爷组件刷新
+
           console.log(res);
           this.$message({
             type: "success",
@@ -483,27 +499,56 @@ export default {
           });
         });
     },
-      ChangeRow(row){
-        // 编辑按钮
-       if(this.btn_public===0){
-        this.btn_public=1
-        // 进入发布态切换
-       this.inputDisbale()//输入框条件判断
-       //  开始时间是否开启判断
-       this.startTimeDisable(row.startTime)
-      //  const data11 = new Date(row.startTime).getTime();
-      //  console.log(data11>new Date()?true:false)
-       this.endTimeDisable(row.modificationsNumber)
 
-        return
-       }
-      //  保存传接口按钮
-      else if(this.btn_public===1){
-        this.btn_public=0
-        this.PickStart=true
-        this.PickEnd=true
-      } 
+    // 保存修改
+    async ChangeRow(row) {
+  
+      
+      if (row.btn_public === 0) {
+        row.btn_public = 1;
+        // 进入发布态切换
+        this.inputDisbale(row);
+        //  开始时间是否开启判断
+        this.startTimeDisable(row);
+        // const data11 = new Date(row.startTime).getTime();
+        // console.log(data11 > new Date() ? true : false);
+        this.endTimeDisable(row);
+        console.log(row);
+        console.log(this.list)
+        return;
+      } else if (row.btn_public === 1) {
+       
+        let date = new Date(row.endTime);
+        // 提取年、月、日
+        let year = date.getFullYear();
+        let month = (date.getMonth() + 1).toString().padStart(2, "0"); // 月份是从0开始的，所以要加1
+        let day = date.getDate().toString().padStart(2, "0");
+        // 格式化为 "YYYY-MM-DD"
+        let formattedDate = `${year}-${month}-${day}`;
+        // console.log(typeof formattedDate);
+        let changeDate = {
+          id: row.id,
+          skillsName: row.skillsName,
+          endTime: formattedDate,
+          take_role: row.takeRole,
+          content: row.content,
+          targetPositionId: row.targetPositionId,
+          modificationsNumber: row.modificationsNumber + 1,
+        };
+        // console.log(changeDate)
+        //  console.log(row); 
+        const res = await updatePosition(changeDate);
+        console.log(res);
+        let change=true
+        this.$emit('mySon',row.targetPositionId,change)
+        // console.log(changeDate);
+        row.btn_public = 0;
+        row.inp = true;
+        row.PickStart = true;
+        row.PickEnd = true;
+      }
     },
+
   },
   // 自评计算属性
   computed: {

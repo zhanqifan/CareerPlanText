@@ -1,11 +1,13 @@
 import request from '@/utils/request'
 
 // 查询岗位管理列表
-export function listPosition(positionName,state) {
-  return request.get('/student/position/list',{
+export function listPosition(positionName, state, pageNum, pageSize ) {
+  return request.get('/student/position/list', {
     params: {
       positionName,
-      state
+      state,
+      pageNum,
+      pageSize
     },
   })
 }
@@ -45,27 +47,27 @@ export function delPosition(positionIds) {
 }
 
 // 发布草稿岗位
-export const PublicPosition=(positionId)=>{
-  return request.get('/student/position/publish/'+positionId)
+export const PublicPosition = (positionId) => {
+  return request.get('/student/position/publish/' + positionId)
 }
 // 删除草稿行数据
-export const DeleteRow= (skillsId)=>{
-  return request.delete('/student/position/skills/'+skillsId)
+export const DeleteRow = (skillsId) => {
+  return request.delete('/student/position/skills/' + skillsId)
 }
 
 // 获取目录列表
-export const getcateLog = () =>{
+export const getcateLog = () => {
   return request.get('/student/ctatlogue/list')
 }
 // 添加岗位
-export const AddPosition =(data) =>{
-  return request.post('/student/position',data)
+export const AddPosition = (data) => {
+  return request.post('/student/position', data)
 }
 // 设置主目标
-export const SetPositoin=(positionId)=>{
-  return request.get('/student/position/setPrimaryTarget/'+positionId)
+export const SetPositoin = (positionId) => {
+  return request.get('/student/position/setPrimaryTarget/' + positionId)
 }
 // 废止目标
-export const StopPosition =(positionId)=>{
-  return request.get('/student/position/repeal/'+positionId)
+export const StopPosition = (positionId) => {
+  return request.get('/student/position/repeal/' + positionId)
 }

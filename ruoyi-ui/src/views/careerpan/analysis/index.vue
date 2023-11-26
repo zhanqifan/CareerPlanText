@@ -3,12 +3,7 @@
     <div class="top">个人数据分析</div>
     <div>
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane
-          :key="item.id"
-          v-for="(item) in positionList"
-          :label="item.positionName"
-          :name="item.id"
-        >
+        <el-tab-pane label="前端开发" name="0"  >
           <div class="row_title">
             <p class="title1">目标总览</p>
             <p class="title2">数据截止于:2023-11-10</p>
@@ -195,9 +190,9 @@
           <!-- 月度完成目标数 -->
           <div class="Month" ref="Month"></div>
         </el-tab-pane>
-        <!-- <el-tab-pane label="前端开发" name="second">配置管理</el-tab-pane>
+        <el-tab-pane label="前端开发" name="second">配置管理</el-tab-pane>
         <el-tab-pane label="废止目标一" name="third">角色管理</el-tab-pane>
-        <el-tab-pane label="废止目标二" name="fourth">定时任务补偿</el-tab-pane> -->
+        <el-tab-pane label="废止目标二" name="fourth">定时任务补偿</el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -222,8 +217,85 @@ export default {
       });
       console.log(this.positionList);
     },
+    // draw_specific() {
+    //   var Histogram = document.getElementsByClassName("Histogram");
+    //   console.log(Histogram)
+    //   for (var i = 0; i < Histogram.length; i++) {
+    //     console.log('执行')
+    //     var myChart = echarts.init(Histogram[i]);
+    //     myChart.setOption({
+    //   title: {
+    //     text: "子目标数明细和完成率",
+    //   },
+    //   // 边距
+    //   grid: {
+    //     top: 90,
+    //     left: 40,
+    //     right: 60,
+    //   },
+    //   tooltip: {},
+    //   xAxis: {
+    //     data: [
+    //       "专业技能",
+    //       "其他技能",
+    //       "竞赛奖项",
+    //       "学业奖项",
+    //       "实践奖项",
+    //       "活动奖项",
+    //       "其他奖项",
+    //       "职业资格证书",
+    //       "职业技能证书",
+    //       "其他证书",
+    //       "实习经历",
+    //       "科研项目",
+    //       "专利成果",
+    //       "学生会",
+    //       "兴趣爱好",
+    //     ],
+    //   },
+    //   yAxis: [
+    //     {
+    //       type: "value",
+    //       name: "项目数量",
+    //       min: 0,
+    //       max: 10,
+    //       interval: 5,
+    //     },
+    //     {
+    //       type: "value",
+    //       name: "完成率",
+    //       min: 0, //最小
+    //       max: 100, //最大
+    //       interval: 50, //数值差
+    //       position: "right", //y轴位置
+    //       axisLabel: {
+    //         formatter: "{value} °%",
+    //       },
+    //     },
+    //   ],
+    //   series: [
+    //     {
+    //       barWidth: 30,
+    //       type: "bar",
+    //       data: [5, 3, 10, 4, 5, 2, 9, 3, 7, 6, 1, 3, 7, 6, 1],
+    //       itemStyle: {
+    //         color: "#3BA1FF", // 设置柱子颜色
+    //       },
+    //     },
+    //     {
+    //       name: "折线图",
+    //       type: "line",
+    //       yAxisIndex: 1,
+    //       data: [30, 55, 70, 80, 50, 12, 60, 100, 40, 88, 55, 80, 50, 12, 60],
+    //     },
+    //   ],
+    // })
+    //   }
+    // },
   },
   mounted() {
+    
+
     var Histogram = echarts.init(this.$refs.Histogram);
     Histogram.setOption({
       title: {

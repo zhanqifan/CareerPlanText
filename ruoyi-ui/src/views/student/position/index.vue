@@ -69,7 +69,7 @@
     </el-row>
     <!-- @row-click="handleRowClick" -->
     <el-table v-loading="loading" :data="positionList">
-      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column type="index" label="序号" width="55" align="center" />
       <el-table-column label="岗位名称" align="center" prop="positionName" />
       <el-table-column
         label="创建时间"
@@ -190,20 +190,20 @@
         </template>
       </el-table-column>
     </el-table>
-   
 
- <div class="block">
-
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-sizes="[10, 20, 30, 40]"
-      :page-size="100"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
-  </div>
+    <!-- 分页 -->
+    <div class="block">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="1"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="10"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
+    </div>
 
     <!-- 添加岗位弹出层 -->
     <div class="first">
@@ -241,7 +241,6 @@
         <el-button type="primary" @click="SetObject()">确 定</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -413,18 +412,9 @@ export default {
       ],
       value: "", //搜索框
       Name: "", //搜索岗位名称
-
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        positionid: null,
-        Name: null,
-        state: null,
-        isMain: null,
-        modificationsNumber: null,
-        reviewsNumber: null,
-      },
+      // 分页默认参数
+      pageNum: 1,
+      pageSize: 10,
     };
   },
   methods: {
@@ -432,8 +422,7 @@ export default {
     async getList() {
       this.loading = true;
       const res = await listPosition();
-      console.log(res);
-      this.total=res.total
+      this.total = res.total;
       this.positionList = res.rows;
       this.loading = false;
       // 已发布岗位数量
@@ -457,6 +446,23 @@ export default {
         this.comment = null;
         //  console.log('我是数据',res)
         this.positionDetail = res.data;
+        this.positionDetail.ctatlogueList.forEach((catalogue) => {
+          // 遍历当前目录的 skillsInfoList
+          catalogue.skillsInfoList.forEach((skillsInfo) => {
+            //     // 在每个对象中添加新的属性
+            // skillsInfo.btn_public = 0; //编辑按钮的切换
+            // skillsInfo.inp = true, //第一个输入框禁用
+            // skillsInfo.PickStart = true //开始日期禁用
+            // skillsInfo.PickEnd = true; //结束日期禁用
+            // 更改为这样 由于是动态添加属性 保证后续组件修改保持响应式
+            this.$set(skillsInfo, "btn_public", 0); // 编辑按钮的切换
+            this.$set(skillsInfo, "inp", true); // 第一个输入框禁用
+            this.$set(skillsInfo, "PickStart", true); // 开始日期禁用
+            this.$set(skillsInfo, "PickEnd", true); // 结束日期禁用
+          });
+        });
+
+        // this.positionDetail.ctatlogueList;
         console.log("我是真数据", this.positionDetail);
       }
       // 点击新增置空数组
@@ -488,9 +494,9 @@ export default {
         return;
       }
       // console.log(this.ComputedisMain)
-   
+
       const res = await PublicPosition(row.positionId);
-      console.log(res);
+
       this.getList();
       this.$message({
         message: "发布成功",
@@ -512,6 +518,8 @@ export default {
     handleDialog(boolean) {
       // console.log(boolean)
       this.ObjectVisible = boolean;
+      this.getList();
+      console.log("刷新");
     },
     // 取消按钮
     cancel() {
@@ -570,10 +578,61 @@ export default {
       }
       this.getList();
     },
+    // 选择第几页
+    async handleCurrentChange(num) {
+      this.pageNum = num;
+      this.loading = true;
+      const res = await listPosition(
+        this.Name,
+        this.value,
+        this.pageNum,
+        this.pageSize
+      );
 
-    getIndex(data) {
-      console.log(data);
-      this.getList();
+      this.positionList = res.rows;
+      this.loading = false;
+    },
+    // 页面展示数量
+    async handleSizeChange(val) {
+      this.pageSize = val;
+
+      this.loading = true;
+      const res = await listPosition(
+        this.Name,
+        this.value,
+        this.pageNum,
+        this.pageSize
+      );
+
+      this.positionList = res.rows;
+      this.loading = false;
+    },
+    //  处理子组件刷新
+    async getIndex(targetPositionId, change) {
+      console.log(change);
+      if (targetPositionId != "") {
+        const res = await getPosition(targetPositionId);
+        // console.log("爷爷接收到了");
+        this.positionDetail = res.data;
+        if (change == true) {
+          this.positionDetail.ctatlogueList.forEach((catalogue) => {
+            // 遍历当前目录的 skillsInfoList
+            catalogue.skillsInfoList.forEach((skillsInfo) => {
+              //     // 在每个对象中添加新的属性
+              // skillsInfo.btn_public = 0; //编辑按钮的切换
+              // skillsInfo.inp = true, //第一个输入框禁用
+              // skillsInfo.PickStart = true //开始日期禁用
+              // skillsInfo.PickEnd = true; //结束日期禁用
+              // 更改为这样 由于是动态添加属性 保证后续组件修改保持响应式
+              this.$set(skillsInfo, "btn_public", 0); // 编辑按钮的切换
+              this.$set(skillsInfo, "inp", true); // 第一个输入框禁用
+              this.$set(skillsInfo, "PickStart", true); // 开始日期禁用
+              this.$set(skillsInfo, "PickEnd", true); // 结束日期禁用
+              this.$set(skillsInfo, "OriginTime", ""); //时间比对使用
+            });
+          });
+        }
+      }
     },
   },
   created() {
@@ -587,7 +646,7 @@ export default {
     padding: 0;
   }
 }
-.block{
+.block {
   margin-top: 130px;
   margin-right: 20px;
   display: flex;
