@@ -45,6 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="content != null and content != ''">content,</if>
             <if test="type != null and type != ''">type,</if>
             <if test="skillsId != null">skills_id,</if>
+            <if test="completeTime != null">complete_time,</if>
             <if test="createBy != null">create_by,</if>
             <if test="createTime != null">create_time,</if>
             update_time,
@@ -54,6 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="content != null and content != ''">#{content},</if>
             <if test="type != null and type != ''">#{type},</if>
             <if test="skillsId != null">#{skillsId},</if>
+            <if test="completeTime != null">#{completeTime},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             sysdate()
