@@ -1,7 +1,10 @@
 package com.ruoyi.student.service;
 
 import java.util.List;
+
+import com.ruoyi.student.domain.CommonStudent;
 import com.ruoyi.student.domain.SkillsInfo;
+import com.ruoyi.student.domain.vo.FirstCtatlogueAnalysisVO;
 import com.ruoyi.student.domain.vo.TargetPositionVO;
 
 /**
@@ -71,4 +74,6 @@ public interface ISkillsInfoService
     SkillsInfo selectSkillsInfoBycreateBy(String sNum);
 
     TargetPositionVO CalculationCompletionRate(String positionId);
+
+    List<FirstCtatlogueAnalysisVO> StatisticsFirstCtatlogueAnalysisVO(List<CommonStudent> commonStudentList);
 }

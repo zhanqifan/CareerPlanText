@@ -122,6 +122,11 @@ public class CommonStudentServiceImpl implements ICommonStudentService
     }
 
     @Override
+    public List<CommonStudent> selectcollegeCountList() {
+        return commonStudentMapper.selectCollegeCountList();
+    }
+
+    @Override
     @Transactional
     public String BuildDepartment(){
         List<CommonStudent> commonStudents = commonStudentMapper.selectCollege();

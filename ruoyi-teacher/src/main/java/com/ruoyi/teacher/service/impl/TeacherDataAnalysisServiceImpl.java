@@ -1,8 +1,10 @@
 package com.ruoyi.teacher.service.impl;
 
+import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.student.domain.*;
 import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
+import com.ruoyi.student.domain.vo.FirstCtatlogueAnalysisVO;
 import com.ruoyi.student.service.*;
 import com.ruoyi.student.system.service.ISysDeptService;
 import com.ruoyi.teacher.domain.vo.*;
@@ -28,6 +30,10 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
     @Resource
     private ITargetPositionService targetPositionService;
 
+
+    @Resource
+    private ISkillsInfoService skillsInfoService;
+
     @Resource
     private IDataAnalysisService dataAnalysisService;
 
@@ -45,6 +51,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
     @Override
     public CollegeAnalysisVO getCollegeAnalysis(CollegeAnalysisDTO collegeAnalysisDTO) {
         List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentListByCollegeAnalysis(collegeAnalysisDTO);
+
         return this.statisticalCollegeData(commonStudents,collegeAnalysisDTO.getIsMain());
     }
 
@@ -67,8 +74,6 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         long annualAverageNumberProjects;
         //年度完成率(od)
         double annualAverageCompletionRate;
-        //完成率分布
-        List<CompletionRateRange> completionRateRanges = null;
         //完成数
         long completionsNum = 0L;
         // 未完成数
@@ -100,9 +105,6 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         AtomicReference<Double> totalCompletionRate = new AtomicReference<>(0.00);
         //年度总完成率
         AtomicReference<Double> annualTotalCompletionRate = new AtomicReference<>(0.00);
-        // 获取当前年份
-        int targetYear = LocalDate.now().getYear();
-        CollegeAnalysisVO analysis = new CollegeAnalysisVO();
         //所选学生一级目录分析
         ArrayList<FirstAnalysisVO> firstAnalysisVOS = new ArrayList<>();
 
@@ -119,6 +121,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         //设置截至日期
         collegeAnalysisVO.setDeadlineDate(deadlineDate);
         totalNumberStudents += commonStudentList.size();
+        List<FirstCtatlogueAnalysisVO> firstCtatlogueAnalysisVOS = this.StatisticsFirstCtatlogueAnalysisVO(commonStudentList);
         for (CommonStudent student : commonStudentList) {
             String sNum = student.getSNum();
             //查询学生所发布的目标数
@@ -158,7 +161,6 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                 CompletableFuture<List<FirstAnalysisVO>> classificationTask = CompletableFuture.supplyAsync(() -> {
                     return this.averageCompletionRateOfClassification(deadlineDate, targetPositionList);
                 });
-
                 try {
                     // 等待所有异步任务完成
                     CompletableFuture.allOf(asyncTask, analysisTask, classificationTask).join();
@@ -180,7 +182,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
                 }
             }
         }
-        this.StatisticsCollegeRanking(deadlineDate);
+        List<CollegeRanking> collegeRankings = this.StatisticsCollegeRanking(deadlineDate);
         //发布率:发布人数/学生总人数
         publishingRate = Math.round(((double) numberPublishers / totalNumberStudents) * 100.0) / 100.0;
         //人均项目数:项目总数/学生总人数
@@ -218,31 +220,71 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         collegeAnalysisVO.setSchoolData(schoolData);
         collegeAnalysisVO.setCompletionRateRangeList(completionRateRanges1);
         collegeAnalysisVO.setMoonCompletionsNumVOList(moonCompletionsNumVOS);
+        collegeAnalysisVO.setCollegeRankingList(collegeRankings);
+        collegeAnalysisVO.setFirstCtatlogueAnalysisVOList(firstCtatlogueAnalysisVOS);
         return collegeAnalysisVO;
+    }
+
+    /**
+     * 统计一级分类占比
+     */
+    public List<FirstCtatlogueAnalysisVO> StatisticsFirstCtatlogueAnalysisVO(List<CommonStudent> commonStudentList){
+       return skillsInfoService.StatisticsFirstCtatlogueAnalysisVO(commonStudentList);
     }
 
     /**
      * 统计学院平均完成率TOP5
      * */
     private List<CollegeRanking> StatisticsCollegeRanking(Date deadlineDate){
+        //统计有多少个学院,并给每一个学院的完成率赋值为0.00
+        List<SysDept> sysDeptList = sysDeptService.selectCollectorsList();
+        Map<String, Double> deptNameToValueMap = sysDeptList.stream()
+                .collect(Collectors.toMap(SysDept::getDeptName, dept -> 0.0));
         DataAnalysis dataAnalysis = new DataAnalysis();
         dataAnalysis.setDeadlineDate(deadlineDate);
         List<DataAnalysis> dataAnalyses = dataAnalysisService.selectDataAnalysisList(dataAnalysis);
         //每个学生的完成率
-        Map<String, Double> stringDoubleMap = dataAnalyses.stream()
+        Map<String, Double> studentCompletionRate = dataAnalyses.stream()
                 .collect(Collectors.groupingBy((DataAnalysis::getCreateBy),
                         Collectors.summingDouble((DataAnalysis::getCompletionRate))));
-        System.out.println(stringDoubleMap);
-        //全校学生数据
-//        List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentList(null);
-//        Map<String, List<String>> collect = commonStudents.stream()
-//                .collect(Collectors.groupingBy(CommonStudent::getCollege,
-//                        Collectors.mapping(CommonStudent::getSNum, Collectors.toList())));
-//        System.out.println("学院学生:"+collect);
-
-        return null;
+        studentCompletionRate.forEach((studentId,completionRate)->{
+            CommonStudent commonStudent = commonStudentService.selectCommonStudentBySNum(studentId);
+            if (commonStudent != null) {
+                String collegeName = commonStudent.getCollege();
+                deptNameToValueMap.merge(collegeName, completionRate, Double::sum);
+            }
+        });
+        //查询个学院人数
+        List<CommonStudent> commonStudents = commonStudentService.selectcollegeCountList();
+        // 步骤1: 计算每个学院的总完成率和学生人数
+        Map<String, Double> totalCompletionMap = new HashMap<>();
+        Map<String, Integer> totalPeopleMap = new HashMap<>();
+        for (CommonStudent student : commonStudents) {
+            String college = student.getCollege();
+            double completionRate = deptNameToValueMap.get(college);
+            int peopleNum = Math.toIntExact(student.getPeopleNum());
+            totalCompletionMap.put(college, totalCompletionMap.getOrDefault(college, 0.0) + completionRate);
+            totalPeopleMap.put(college, totalPeopleMap.getOrDefault(college, 0) + peopleNum);
+        }
+        // 计算每个学院的平均完成率
+        Map<String, Double> averageCompletionMap = new HashMap<>();
+        for (Map.Entry<String, Double> entry : totalCompletionMap.entrySet()) {
+            String college = entry.getKey();
+            double totalCompletion = entry.getValue();
+            int totalPeople = totalPeopleMap.get(college);
+            double averageCompletion = totalCompletion / totalPeople;
+            averageCompletionMap.put(college, averageCompletion);
+        }
+        // 封装成 CollegeRanking 对象
+        List<CollegeRanking> collegeRankings = averageCompletionMap.entrySet().stream()
+                .map(entry -> new CollegeRanking(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+        // 对学院进行排序，取前5名
+        return collegeRankings.stream()
+                .sorted((c1, c2) -> Double.compare(c2.getCompletionRate(), c1.getCompletionRate()))
+                .limit(5)
+                .collect(Collectors.toList());
     }
-
     /**
      * 近6月完成项目数
      */

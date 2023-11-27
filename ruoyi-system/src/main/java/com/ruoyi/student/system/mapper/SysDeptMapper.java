@@ -118,4 +118,6 @@ public interface SysDeptMapper
     public int deleteDeptById(Long deptId);
 
     List<SysDept> selectProfessionalList();
+
+    List<SysDept> selectCollectorsList();
 }

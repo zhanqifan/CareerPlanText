@@ -4,8 +4,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.student.domain.CommonStudent;
+import com.ruoyi.student.domain.vo.FirstCtatlogueAnalysisVO;
 import com.ruoyi.student.domain.vo.TargetPositionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -189,6 +192,14 @@ public class SkillsInfoServiceImpl implements ISkillsInfoService
         targetPositionVO.setCompletedQuantity2((long) projects7To12);
         targetPositionVO.setCompletionRate2(completionRate7To12);
         return targetPositionVO;
+    }
+
+    @Override
+    public List<FirstCtatlogueAnalysisVO> StatisticsFirstCtatlogueAnalysisVO(List<CommonStudent> commonStudentList) {
+        List<String> studentIdList = commonStudentList.stream().
+                map(CommonStudent::getSNum)
+                .collect(Collectors.toList());
+        return skillsInfoMapper.StatisticsFirstCtatlogueAnalysisVO(studentIdList);
     }
 
     private static double calculateCompletionRate(int totalProjects, int completedProjects) {

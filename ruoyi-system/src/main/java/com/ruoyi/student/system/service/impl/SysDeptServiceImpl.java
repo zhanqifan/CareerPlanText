@@ -22,6 +22,8 @@ import com.ruoyi.student.system.mapper.SysDeptMapper;
 import com.ruoyi.student.system.mapper.SysRoleMapper;
 import com.ruoyi.student.system.service.ISysDeptService;
 
+import javax.annotation.Resource;
+
 /**
  * 部门管理 服务实现
  * 
@@ -30,10 +32,10 @@ import com.ruoyi.student.system.service.ISysDeptService;
 @Service
 public class SysDeptServiceImpl implements ISysDeptService
 {
-    @Autowired
+    @Resource
     private SysDeptMapper deptMapper;
 
-    @Autowired
+    @Resource
     private SysRoleMapper roleMapper;
 
     /**
@@ -43,7 +45,7 @@ public class SysDeptServiceImpl implements ISysDeptService
      * @return 部门信息集合
      */
     @Override
-    @DataScope(deptAlias = "d")
+//    @DataScope(deptAlias = "d")
     public List<SysDept> selectDeptList(SysDept dept)
     {
         return deptMapper.selectDeptList(dept);
@@ -298,6 +300,11 @@ public class SysDeptServiceImpl implements ISysDeptService
     @Override
     public List<SysDept> selectProfessionalList() {
         return deptMapper.selectProfessionalList();
+    }
+
+    @Override
+    public List<SysDept> selectCollectorsList() {
+        return deptMapper.selectCollectorsList();
     }
 
     /**

@@ -3,6 +3,7 @@ package com.ruoyi.teacher.domain.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.student.domain.FirstAnalysis;
+import com.ruoyi.student.domain.vo.FirstCtatlogueAnalysisVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -73,6 +74,9 @@ public class CollegeAnalysisVO {
 
     /**学院平均完成率TOP5*/
     private List<CollegeRanking> collegeRankingList;
+
+    /**一级分类占比*/
+    private List<FirstCtatlogueAnalysisVO> firstCtatlogueAnalysisVOList;
 
 }
 

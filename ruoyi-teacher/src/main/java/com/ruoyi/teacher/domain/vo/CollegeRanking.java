@@ -12,5 +12,7 @@ public class CollegeRanking {
     /**学院名称*/
     private String collegeName;
     /**完成率*/
-    private Long CompletionRate;
+    private Double CompletionRate;
+
+
 }
