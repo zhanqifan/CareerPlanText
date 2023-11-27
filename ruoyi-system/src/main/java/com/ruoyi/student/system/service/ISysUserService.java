@@ -212,4 +212,6 @@ public interface ISysUserService
     boolean checkUserAuthenticationUnique(SysUser user);
 
     void deleteUserByUserName(String userName);
+
+    int updateRegisterUser(SysUser user);
 }

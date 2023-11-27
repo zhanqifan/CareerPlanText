@@ -60,6 +60,43 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where create_by=#{sNum} and
     </select>
 
+    <select id="StatisticsFirstCtatlogueAnalysisVO" resultType="com.ruoyi.student.domain.vo.FirstCtatlogueAnalysisVO" parameterType="list">
+<!--        SELECT c.catalogue_name as FirstCtatlogueName  ,s.percentage as proportion-->
+<!--        FROM-->
+<!--        ((SELECT first_id,-->
+<!--                 COUNT(*) AS count,-->
+<!--                 COUNT(*) * 100.0/(SELECT COUNT(*) FROM skills_info WHERE create_by IN-->
+<!--                  <foreach collection="studentIdList" item="studentId" open="(" separator="," close=")">-->
+<!--                        #{studentId}-->
+<!--                  </foreach>) AS percentage-->
+<!--        FROM skills_info WHERE create_by IN-->
+<!--        <foreach collection="studentIdList" item="studentId" open="(" separator="," close=")">-->
+<!--            #{studentId}-->
+<!--        </foreach>-->
+<!--        GROUP BY first_id)  as s RIGHT JOIN ctatlogue  c on s.first_id =c.catalogue_id)-->
+        SELECT c.catalogue_name as FirstCtatlogueName  ,s.percentage as proportion
+        FROM
+        (
+        SELECT
+        first_id,
+        COUNT(*) AS count,
+        COUNT(*) * 100.0 / NULLIF(( SELECT COUNT(*) FROM skills_info WHERE create_by IN
+        <foreach collection="studentIdList" item="studentId" open="(" separator="," close=")">
+            #{studentId}
+        </foreach>), 0 ) AS percentage
+        FROM
+        skills_info
+        WHERE
+        create_by IN
+            <foreach collection="studentIdList" item="studentId" open="(" separator="," close=")">
+                 #{studentId}
+             </foreach>
+        GROUP BY
+        first_id
+        ) AS s
+        RIGHT JOIN ( SELECT catalogue_id, catalogue_name FROM ctatlogue WHERE parent_id = 0 ) AS c ON s.first_id = c.catalogue_id
+    </select>
+
     <insert id="insertSkillsInfo" parameterType="SkillsInfo" >
         insert into skills_info
         <trim prefix="(" suffix=")" suffixOverrides=",">

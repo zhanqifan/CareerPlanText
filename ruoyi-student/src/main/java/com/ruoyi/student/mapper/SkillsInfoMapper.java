@@ -1,7 +1,11 @@
 package com.ruoyi.student.mapper;
 
 import java.util.List;
+
+import com.ruoyi.student.domain.CommonStudent;
 import com.ruoyi.student.domain.SkillsInfo;
+import com.ruoyi.student.domain.vo.FirstCtatlogueAnalysisVO;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 技能详情Mapper接口
@@ -64,4 +68,6 @@ public interface SkillsInfoMapper
     List<SkillsInfo> selectSkillsInfoByUnfinished(String positionId);
 
     SkillsInfo selectSkillsInfoBycreateBy(String sNum);
+
+    List<FirstCtatlogueAnalysisVO> StatisticsFirstCtatlogueAnalysisVO(@Param("studentIdList") List<String> studentIdList);
 }

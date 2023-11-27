@@ -91,7 +91,6 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Override
     @Transactional
     public int addTargetPosition(TargetPositionDTO targetPositionDTO) {
-        System.out.println(targetPositionDTO);
         Boolean isUpdate = targetPositionDTO.getIsUpdate();
         if(isUpdate){
             //更新主目标

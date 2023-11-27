@@ -71,4 +71,6 @@ public interface CommonStudentMapper
     List<CommonStudent> selectClassList();
 
     List<CommonStudent> selectCommonStudentListByCollegeAnalysis(CollegeAnalysisDTO commonStudent);
+
+    List<CommonStudent> selectCollegeCountList();
 }

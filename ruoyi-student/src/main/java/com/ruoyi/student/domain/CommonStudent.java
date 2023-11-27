@@ -84,4 +84,7 @@ public class CommonStudent extends BaseEntity
     private Long userid;
 
 
+    private Long peopleNum;
+
+
 }

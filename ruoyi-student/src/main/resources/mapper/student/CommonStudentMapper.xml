@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.student.mapper.CommonStudentMapper">
     
-    <resultMap type="CommonStudent" id="CommonStudentResult">
+    <resultMap type="com.ruoyi.student.domain.CommonStudent" id="CommonStudentResult">
         <result property="sId"    column="s_id"    />
         <result property="collegeCode"    column="college_code"    />
         <result property="campusName"    column="campus_name"    />
@@ -21,6 +21,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="cultivationLevel"    column="cultivation_level"    />
         <result property="classCode"    column="class_code"    />
         <result property="userid"    column="userid"    />
+    </resultMap>
+
+    <resultMap id="selectCollegeCountResult" type="com.ruoyi.student.domain.CommonStudent">
+        <result property="college"    column="college"    />
+        <result property="peopleNum"    column="peopleNum"    />
     </resultMap>
 
     <sql id="selectCommonStudentVo">
@@ -49,7 +54,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
         </select>
 
-    <select id="selectCommonStudentListByCollegeAnalysis" resultType="CollegeAnalysisDTO" resultMap="CommonStudentResult">
+    <select id="selectCommonStudentListByCollegeAnalysis" resultType="com.ruoyi.student.domain.dto.CollegeAnalysisDTO" resultMap="CommonStudentResult">
         <include refid="selectCommonStudentVo"/>
         <where>
             <if test="college != null and !college.isEmpty()">
@@ -109,10 +114,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY college_code;
     </select>
 
+    <select id="selectCollegeCountList" resultMap="selectCollegeCountResult">
+        select college,count(*) as peopleNum from common_student group by college
+    </select>
 
 
-
-    <insert id="insertCommonStudent" parameterType="CommonStudent">
+    <insert id="insertCommonStudent" parameterType="com.ruoyi.student.domain.CommonStudent">
         insert into common_student
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="sId != null">s_id,</if>
@@ -152,7 +159,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateCommonStudent" parameterType="CommonStudent">
+    <update id="updateCommonStudent" parameterType="com.ruoyi.student.domain.CommonStudent">
         update common_student
         <trim prefix="SET" suffixOverrides=",">
             <if test="collegeCode != null">college_code = #{collegeCode},</if>

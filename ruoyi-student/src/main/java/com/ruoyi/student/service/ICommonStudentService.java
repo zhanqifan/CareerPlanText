@@ -68,4 +68,6 @@ public interface ICommonStudentService
     CommonStudent selectCommonStudentBySNum(String userName);
 
     List<CommonStudent> selectCommonStudentListByCollegeAnalysis(CollegeAnalysisDTO commonStudent);
+
+    List<CommonStudent> selectcollegeCountList();
 }
