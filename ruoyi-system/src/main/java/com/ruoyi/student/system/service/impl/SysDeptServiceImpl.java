@@ -45,7 +45,7 @@ public class SysDeptServiceImpl implements ISysDeptService
      * @return 部门信息集合
      */
     @Override
-//    @DataScope(deptAlias = "d")
+    @DataScope(deptAlias = "d")
     public List<SysDept> selectDeptList(SysDept dept)
     {
         return deptMapper.selectDeptList(dept);

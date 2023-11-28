@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.student.mapper.EvaluateMapper">
     
-    <resultMap type="Evaluate" id="EvaluateResult">
+    <resultMap type="com.ruoyi.student.domain.Evaluate" id="EvaluateResult">
         <result property="evaluateId"    column="evaluate_id"    />
         <result property="content"    column="content"    />
         <result property="type"    column="type"    />
@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select evaluate_id, content, type, complete_time,skills_id, create_by, create_time, update_time from evaluate
     </sql>
 
-    <select id="selectEvaluateList" parameterType="Evaluate" resultMap="EvaluateResult">
+    <select id="selectEvaluateList" parameterType="com.ruoyi.student.domain.Evaluate" resultMap="EvaluateResult">
         <include refid="selectEvaluateVo"/>
         <where>  
             <if test="content != null  and content != ''"> and content = #{content}</if>
@@ -38,7 +38,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             where skills_id=#{skillsId}
     </select>
 
-    <insert id="insertEvaluate" parameterType="Evaluate">
+    <insert id="insertEvaluate" parameterType="com.ruoyi.student.domain.Evaluate">
         insert into evaluate
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="evaluateId != null">evaluate_id,</if>
@@ -62,7 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateEvaluate" parameterType="Evaluate">
+    <update id="updateEvaluate" parameterType="com.ruoyi.student.domain.Evaluate">
         update evaluate
         <trim prefix="SET" suffixOverrides=",">
             <if test="content != null and content != ''">content = #{content},</if>
