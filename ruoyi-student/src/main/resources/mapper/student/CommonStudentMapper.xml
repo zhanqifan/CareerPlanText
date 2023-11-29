@@ -32,6 +32,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select s_id, college_code, campus_name, campus_code, sex, professional, classname, s_num, phone, name, college, politics, grade, cultivation_level, class_code, userid from common_student
     </sql>
 
+    <select id="QueryStudentsTaughtByTeacherId" resultMap="CommonStudentResult">
+        SELECT
+        cs.s_num AS s_num,
+        cs.`name` AS `name`,
+        cs.college AS college,
+        cs.professional AS professional,
+        cs.classname AS classname,
+        cs.grade AS grade,
+        cs.cultivation_level AS cultivation_level
+        FROM common_student cs
+        INNER JOIN teacher_class tc ON cs.classname = tc.class_name
+        <where>
+            <if test="teacherId != null">
+                AND tc.teacher_id = #{teacherId}
+            </if>
+            <if test="commonStudentList != null">
+                AND cs.s_num IN
+                <foreach item="commonStudent" collection="commonStudentList" open="(" separator="," close=")">
+                    #{commonStudent.sNum}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectCommonStudentByClassNameList" resultMap="CommonStudentResult" parameterType="arraylist">
+        <include refid="selectCommonStudentVo"/>
+        WHERE classname IN
+        <foreach item="className" collection="classNameList" open="(" separator="," close=")">
+            #{className}
+        </foreach>
+    </select>
+
     <select id="selectCommonStudentList" parameterType="com.ruoyi.student.domain.CommonStudent" resultMap="CommonStudentResult">
         <include refid="selectCommonStudentVo"/>
         <where>
@@ -78,6 +110,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="cultivationLevel != null  and cultivationLevel != ''"> and cultivation_level = #{cultivationLevel}</if>
         </where>
     </select>
+
+
     
     <select id="selectCommonStudentBySId" parameterType="Long" resultMap="CommonStudentResult">
         <include refid="selectCommonStudentVo"/>
@@ -117,6 +151,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectCollegeCountList" resultMap="selectCollegeCountResult">
         select college,count(*) as peopleNum from common_student group by college
     </select>
+
+    <select id="selectCommonStudentByUserName" resultMap="selectCollegeCountResult">
+        <include refid="selectCommonStudentVo"/>
+        where `name` = #{sNum}
+    </select>
+
+
 
 
     <insert id="insertCommonStudent" parameterType="com.ruoyi.student.domain.CommonStudent">

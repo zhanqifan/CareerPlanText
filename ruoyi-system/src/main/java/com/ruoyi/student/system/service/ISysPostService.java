@@ -96,4 +96,6 @@ public interface ISysPostService
      * @return 结果
      */
     public int updatePost(SysPost post);
+
+    List<String> selectPostCodeList(Long userId);
 }

@@ -10,19 +10,19 @@ import lombok.NoArgsConstructor;
 public class TeacherClass {
 
     /**教师id*/
-    private Long teacherId;
+    private String teacherId;
 
     /**学院id*/
-    private Long CollegeId;
+    private String College;
 
     /**系部id*/
-    private Long ProfessionalId;
+    private String Professional;
 
     /**年级*/
     private String grade;
 
     /**班级id*/
-    private Long ClassId;
+    private String className;
 
 
 }

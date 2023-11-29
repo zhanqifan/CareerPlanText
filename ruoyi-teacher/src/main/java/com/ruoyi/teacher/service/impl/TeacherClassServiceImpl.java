@@ -2,6 +2,7 @@ package com.ruoyi.teacher.service.impl;
 
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.utils.PageUtil;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.student.domain.CommonStudent;
@@ -9,7 +10,9 @@ import com.ruoyi.student.domain.TargetPosition;
 import com.ruoyi.student.service.ICommonStudentService;
 import com.ruoyi.student.service.ITargetPositionService;
 import com.ruoyi.student.system.service.ISysDeptService;
+import com.ruoyi.student.system.service.ISysPostService;
 import com.ruoyi.student.system.service.ISysUserService;
+import com.ruoyi.teacher.constant.PostCodeConstants;
 import com.ruoyi.teacher.domain.TeacherClass;
 import com.ruoyi.teacher.domain.dto.ClassDTO;
 import com.ruoyi.teacher.domain.dto.StudentDTO;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TeacherClassServiceImpl implements TeacherClassService {
@@ -41,88 +45,197 @@ public class TeacherClassServiceImpl implements TeacherClassService {
     @Autowired
     private ITargetPositionService targetPositionService;
 
+    @Resource
+    private ISysPostService sysPostService;
+
 
     /**
      * 任课教师查询所教学生列表
-     *
-     * @return
      */
     @Override
     public List<StudentVO> selectStudent(StudentDTO studentDTO) {
-        //使用学院，专业，年级查询
+        //查看老师岗位
+        Long userId = SecurityUtils.getUserId();
+        List<String> postCodes = sysPostService.selectPostCodeList(userId);
+        String postCode = postCodes.get(0);
+        System.out.println(postCode);
+        //校验教师岗位
         ArrayList<StudentVO> studentVOS = new ArrayList<>();
-        if (StringUtils.isNull(studentDTO.getUserName())) {
-            TeacherClass teacherClass = new TeacherClass();
+        if(StringUtils.isNotNull(postCode)){
+            String code = this.verifyPostCode(postCode);
+            switch (code) {
+                    //院长
+                case PostCodeConstants.PRESIDENT:
+                    SysUser sysUser = sysUserService.selectUserById(userId);
+                    SysDept dept = sysUser.getDept();
+                    return this.president(studentVOS,dept.getDeptName(),studentDTO);
+                    //系主任
+                case PostCodeConstants.DEAN:
+                    SysUser user = sysUserService.selectUserById(userId);
+                    SysDept sysDept = user.getDept();
+                    return this.dean(studentVOS,sysDept.getDeptName(),studentDTO);
+                    //教师
+                case PostCodeConstants.TEACHER:
+                    return this.teacher(studentVOS, studentDTO);
+                default:
+                    //未知岗位
+                    return studentVOS;
+            }
+        }
+        return studentVOS;
+    }
 
-            teacherClass.setTeacherId(Long.parseLong(SecurityUtils.getUsername()));
-            teacherClass.setCollegeId(studentDTO.getCollegeId());
-            teacherClass.setProfessionalId(studentDTO.getProfessionalId());
-            teacherClass.setClassId(studentDTO.getClassId());
-            teacherClass.setGrade(studentDTO.getGrade());
-            //根据筛选参数查询教师教的班级
-            List<TeacherClass> teacherClasses = teacherClassMapper.selectTeacherClassList(teacherClass);
-            //查询该班级下的学生
-            for (TeacherClass teacherClass1 : teacherClasses) {
-                SysUser sysUser = new SysUser();
-                sysUser.setDeptId(teacherClass1.getClassId());
-                List<SysUser> sysUsers = sysUserService.selectUserList(sysUser);
-                for (SysUser sysUser1 : sysUsers) {
-                    CommonStudent commonStudent = commonStudentService.selectCommonStudentBySNum(sysUser1.getUserName());
-                    StudentVO studentVO = this.EncapsulateStudentInfo(commonStudent);
-                    studentVOS.add(studentVO);
-                }
-            }
-        } else {
-            //查询该教师所教的班级
-            List<TeacherClass> teacherClass = teacherClassMapper.selectTeacherClassByTeacherId(SecurityUtils.getUserId());
-            SysUser sysUser = new SysUser();
-            //通过学号查询
-            String sNumberOrStudentName = studentDTO.getUserName();
-            if (Characterutils(sNumberOrStudentName)) {
-                sysUser.setUserName(sNumberOrStudentName);
-            }else {
-                sysUser.setNickName(sNumberOrStudentName);
-            }
-            List<SysUser> sysUsers = sysUserService.selectUserList(sysUser);
-            //查询这个学生是否是在该教师所教授的班级中
-            for (TeacherClass teacherClass1 : teacherClass) {
-                for (SysUser student : sysUsers) {
-                    if (student.getDeptId().equals(teacherClass1.getClassId())) {
-                        //学生学号
-                        String SNumber = student.getUserName();
-                        CommonStudent commonStudent = commonStudentService.selectCommonStudentBySNum(SNumber);
-                        StudentVO studentVO = this.EncapsulateStudentInfo(commonStudent);
-                        studentVOS.add(studentVO);
-                    }
-                }
-            }
+    /**
+     * 院长
+     */
+    private ArrayList<StudentVO> president(ArrayList<StudentVO> studentVOS,String college,StudentDTO studentDTO ){
+        CommonStudent commonStudent = new CommonStudent();
+        if(StringUtils.isNull(studentDTO.getUserName())
+                &&StringUtils.isNull(studentDTO.getClassName())
+                &&StringUtils.isNull(studentDTO.getProfessional())
+                &&StringUtils.isNull(studentDTO.getGrade())
+                &&StringUtils.isNull(studentDTO.getCollege())
+        ){
+            commonStudent.setCollege(college);
+        }else {
+            QueryStudentInformation(studentDTO, commonStudent);
+        }
+        List<CommonStudent>  commonStudents = commonStudentService.selectCommonStudentList(commonStudent);
+        for (CommonStudent student : commonStudents) {
+            studentVOS.add(this.EncapsulateStudentInfo(student));
         }
         return studentVOS;
     }
 
 
     /**
+     * 系主任
+     */
+    private ArrayList<StudentVO> dean(ArrayList<StudentVO> studentVOS,String professional,StudentDTO studentDTO ){
+        List<CommonStudent> commonStudents;
+        CommonStudent commonStudent = new CommonStudent();
+        if(StringUtils.isNull(studentDTO.getUserName())
+                &&StringUtils.isNull(studentDTO.getClassName())
+                &&StringUtils.isNull(studentDTO.getProfessional())
+                &&StringUtils.isNull(studentDTO.getGrade())
+                &&StringUtils.isNull(studentDTO.getCollege())
+        ){
+            commonStudent.setProfessional(professional);
+        }else {
+            QueryStudentInformation(studentDTO, commonStudent);
+        }
+
+        commonStudents = commonStudentService.selectCommonStudentList(commonStudent);
+        for (CommonStudent student : commonStudents) {
+            studentVOS.add(this.EncapsulateStudentInfo(student));
+        }
+        return studentVOS;
+    }
+
+
+
+    /**
+     * 普通教师
+     */
+    private ArrayList<StudentVO> teacher(ArrayList<StudentVO> studentVOS,StudentDTO studentDTO ){
+        //查询该老师所教班级列表
+        TeacherClass teacherClass = new TeacherClass();
+        String teacherId = SecurityUtils.getUsername();
+        teacherClass.setTeacherId(teacherId);
+        List<TeacherClass> teacherClasses = teacherClassMapper.selectTeacherClassList(teacherClass);
+        if (StringUtils.isEmpty(teacherClasses)) {
+            return studentVOS;
+        }
+        String SNum = studentDTO.getUserName();
+        List<CommonStudent> commonStudentList;
+        if (StringUtils.isNotNull(SNum)) {
+            CommonStudent commonStudent = new CommonStudent();
+            //返回属于该教师所教的学生列表
+            if (Characterutils(SNum)) {
+                //根据学号查询
+                commonStudent.setSNum(SNum);
+            } else {
+                //根据姓名查询
+                commonStudent.setName(SNum);
+            }
+            commonStudentList = commonStudentService.selectCommonStudentList(commonStudent);
+            //查询该教师所教的学生列表
+            List<CommonStudent> commonStudents = commonStudentService.QueryStudentsTaughtByTeacherId(commonStudentList, teacherId);
+            for (CommonStudent student : commonStudents) {
+                studentVOS.add(this.EncapsulateStudentInfo(student));
+            }
+        } else {
+            //通过学院数据筛选
+            teacherClass.setCollege(studentDTO.getCollege());
+            teacherClass.setProfessional(studentDTO.getProfessional());
+            teacherClass.setGrade(studentDTO.getGrade());
+            teacherClass.setClassName(studentDTO.getClassName());
+            List<TeacherClass> teacherClassList = teacherClassMapper.selectTeacherClassList(teacherClass);
+            //班级名称列表
+            List<String> classNameList = teacherClassList.stream()
+                    .map(TeacherClass::getClassName)
+                    .collect(Collectors.toList());
+            //查出班级的学生
+            List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentByClassNameList(classNameList);
+            for (CommonStudent student : commonStudents) {
+                studentVOS.add(this.EncapsulateStudentInfo(student));
+            }
+    }
+        return studentVOS;
+    }
+
+
+    private static void QueryStudentInformation(StudentDTO studentDTO, CommonStudent commonStudent) {
+        String userName = studentDTO.getUserName();
+        if (StringUtils.isNotNull(userName)) {
+            //返回属于该教师所教的学生列表
+            if (Characterutils(userName)) {
+                //根据学号查询
+                commonStudent.setSNum(userName);
+            } else {
+                //根据姓名查询
+                commonStudent.setName(userName);
+            }
+        } else {
+            //根据传进来的条件过滤
+            commonStudent.setCollege(studentDTO.getCollege());
+            commonStudent.setGrade(studentDTO.getGrade());
+            commonStudent.setProfessional(studentDTO.getProfessional());
+            commonStudent.setClassname(studentDTO.getClassName());
+        }
+    }
+    /**
+     * 校验岗位编码
+     */
+    private String verifyPostCode(String postCode) {
+        if (isNumeric(postCode)) {
+            return PostCodeConstants.PRESIDENT;
+        } else if (isAlpha(postCode)) {
+            return PostCodeConstants.DEAN;
+        } else if (postCode.equals("#")) {
+            return PostCodeConstants.TEACHER;
+        } else {
+            return " ";
+        }
+    }
+
+
+    /**
      * 绑定班级
-     *
-     * @return
      */
     @Override
     public int bingClass(ClassDTO classDTO) {
         TeacherClass teacherClass = new TeacherClass();
-        Long classId = classDTO.getClassId();
-        SysDept sysDept = sysDeptService.selectDeptById(classId);
-        //系部id
-        teacherClass.setProfessionalId(classDTO.getProfessionalId());
-        //院系id
-        teacherClass.setCollegeId(classDTO.getCollegeId());
-        String deptName = sysDept.getDeptName();
-        String grade = deptName.substring(0, 4);
+        String className = classDTO.getClassName();
+        teacherClass.setClassName(className);
+        teacherClass.setCollege(classDTO.getCollege());
+        teacherClass.setProfessional(classDTO.getProfessional());
+        String grade = className.substring(0, 4);
         teacherClass.setGrade(grade);
-        teacherClass.setClassId(classId);
-        teacherClass.setTeacherId(SecurityUtils.getUserId());
+        teacherClass.setTeacherId(SecurityUtils.getUsername());
         return teacherClassMapper.insertTeacherClass(teacherClass);
-
     }
+
 
     private StudentVO EncapsulateStudentInfo(CommonStudent commonStudent) {
         StudentVO studentVO = new StudentVO();
@@ -132,6 +245,7 @@ public class TeacherClassServiceImpl implements TeacherClassService {
         studentVO.setCultivationLevel(commonStudent.getCultivationLevel());
         studentVO.setProfessional(commonStudent.getProfessional());
         studentVO.setStudentName(commonStudent.getName());
+        studentVO.setGrade(commonStudent.getGrade());
         studentVO.setClassname(commonStudent.getClassname());
         //学生岗位目标信息
         String sNum = commonStudent.getSNum();
@@ -140,11 +254,11 @@ public class TeacherClassServiceImpl implements TeacherClassService {
             ArrayList<TargetPosition> targetPositions1 = new ArrayList<>();
             for (TargetPosition targetPosition : targetPositions) {
                 //主目标
-                if (targetPosition.getIsMain() == 0) {
+                if (targetPosition.getIsMain() == 1) {
                     studentVO.setMainTarget(targetPosition);
                 }
                 //次目标
-                if (targetPosition.getIsMain() == 1) {
+                if (targetPosition.getIsMain() == 0) {
                     studentVO.setSecondaryTarget(targetPosition);
                 }
                 //废弃目标
@@ -158,14 +272,37 @@ public class TeacherClassServiceImpl implements TeacherClassService {
     }
 
 
+    /**
+     * 判断是学号还是姓名
+     */
     private static boolean Characterutils(String str) {
         try {
             Integer.parseInt(str);
             return true;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return false;
         }
     }
+
+
+    private boolean isNumeric(String str) {
+        for (char c : str.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isAlpha(String str) {
+        for (char c : str.toCharArray()) {
+            if (!Character.isLetter(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
 
 
