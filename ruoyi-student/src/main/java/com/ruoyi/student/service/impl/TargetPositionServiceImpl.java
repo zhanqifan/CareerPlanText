@@ -92,29 +92,29 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Transactional
     public int addTargetPosition(TargetPositionDTO targetPositionDTO) {
         Boolean isUpdate = targetPositionDTO.getIsUpdate();
+        TargetPosition position = new TargetPosition();
         if(isUpdate){
             //更新主目标
             TargetPosition targetPosition = new TargetPosition();
             targetPosition.setCreateBy(SecurityUtils.getUsername());
             targetPosition.setState(1);
             List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionList(targetPosition);
-            TargetPosition position = targetPositions.get(0);
-            position.setIsMain(0);
-            targetPositionMapper.updateTargetPosition(position);
-        }
-        TargetPosition targetPosition = new TargetPosition();
-        if(targetPositionDTO.getState().equals(2)){
-            targetPosition.setIsMain(0);
+            TargetPosition positions = targetPositions.get(0);
+            positions.setIsMain(0);
+            targetPositionMapper.updateTargetPosition(positions);
         }else {
-            targetPosition.setIsMain(1);
+            position.setIsMain(0);
+        }
+        if(targetPositionDTO.getState().equals(2)){
+            position.setIsMain(0);
         }
         String username = SecurityUtils.getUsername();
         String positionId = IdUtils.fastSimpleUUID();
-        targetPosition.setPositionId(positionId);
-        targetPosition.setPositionName(targetPositionDTO.getPositionName());
-        targetPosition.setCreateBy(username);
-        targetPosition.setState(targetPositionDTO.getState());
-        if(targetPositionMapper.insertTargetPosition(targetPosition)==1){
+        position.setPositionId(positionId);
+        position.setPositionName(targetPositionDTO.getPositionName());
+        position.setCreateBy(username);
+        position.setState(targetPositionDTO.getState());
+        if(targetPositionMapper.insertTargetPosition(position)==1){
             List<SkillsInfo> skillsInfoList = targetPositionDTO.getSkillsInfoList();
             for (SkillsInfo skillsInfo:skillsInfoList){
                 //添加技能详情
