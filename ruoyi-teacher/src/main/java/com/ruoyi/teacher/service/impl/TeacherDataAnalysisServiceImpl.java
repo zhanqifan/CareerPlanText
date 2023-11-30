@@ -1,12 +1,15 @@
 package com.ruoyi.teacher.service.impl;
 
 import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.student.domain.*;
 import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
 import com.ruoyi.student.domain.vo.FirstCtatlogueAnalysisVO;
 import com.ruoyi.student.service.*;
 import com.ruoyi.student.system.service.ISysDeptService;
+import com.ruoyi.student.system.service.ISysUserService;
 import com.ruoyi.teacher.domain.vo.*;
 import com.ruoyi.teacher.service.TeacherDataAnalysisService;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,8 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
     @Resource
     private ITargetPositionService targetPositionService;
 
+    @Resource
+    private ISysUserService sysUserService;
 
     @Resource
     private ISkillsInfoService skillsInfoService;
@@ -50,8 +55,12 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
      */
     @Override
     public CollegeAnalysisVO getCollegeAnalysis(CollegeAnalysisDTO collegeAnalysisDTO) {
-        List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentListByCollegeAnalysis(collegeAnalysisDTO);
+//        //默认是自己学院和自己系部的数据
+//        Long userId = SecurityUtils.getUserId();
+//        SysUser sysUser = sysUserService.selectUserById(userId);
+//        String deptName = sysUser.getDept().getDeptName();
 
+        List<CommonStudent> commonStudents = commonStudentService.selectCommonStudentListByCollegeAnalysis(collegeAnalysisDTO);
         return this.statisticalCollegeData(commonStudents,collegeAnalysisDTO.getIsMain());
     }
 
@@ -122,6 +131,7 @@ public class TeacherDataAnalysisServiceImpl implements TeacherDataAnalysisServic
         collegeAnalysisVO.setDeadlineDate(deadlineDate);
         totalNumberStudents += commonStudentList.size();
         List<FirstCtatlogueAnalysisVO> firstCtatlogueAnalysisVOS = this.StatisticsFirstCtatlogueAnalysisVO(commonStudentList);
+
         for (CommonStudent student : commonStudentList) {
             String sNum = student.getSNum();
             //查询学生所发布的目标数

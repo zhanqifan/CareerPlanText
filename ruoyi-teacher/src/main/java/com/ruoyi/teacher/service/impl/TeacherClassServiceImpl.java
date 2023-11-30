@@ -58,7 +58,6 @@ public class TeacherClassServiceImpl implements TeacherClassService {
         Long userId = SecurityUtils.getUserId();
         List<String> postCodes = sysPostService.selectPostCodeList(userId);
         String postCode = postCodes.get(0);
-        System.out.println(postCode);
         //校验教师岗位
         ArrayList<StudentVO> studentVOS = new ArrayList<>();
         if(StringUtils.isNotNull(postCode)){
