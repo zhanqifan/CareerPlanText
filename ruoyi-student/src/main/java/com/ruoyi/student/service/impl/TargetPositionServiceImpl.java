@@ -105,6 +105,8 @@ public class TargetPositionServiceImpl implements ITargetPositionService
         TargetPosition targetPosition = new TargetPosition();
         if(targetPositionDTO.getState().equals(2)){
             targetPosition.setIsMain(0);
+        }else {
+            targetPosition.setIsMain(1);
         }
         String username = SecurityUtils.getUsername();
         String positionId = IdUtils.fastSimpleUUID();
@@ -140,14 +142,6 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     @Override
     @Transactional
     public int updateskillsInfo(SkillsInfo skillsInfo) {
-        //修改实习/实践内容
-//        if(StringUtils.isNotNull(skillsInfo.getContent())){
-//            String id = skillsInfo.getId();
-//            InternshipContent internshipContent = new InternshipContent();
-//            internshipContent.setSkillsId(id);
-//            internshipContent.setContent(skillsInfo.getContent());
-//            iInternshipContentService.updateInternshipContent(internshipContent);
-//        }
         if(Objects.equals(skillsInfo.getContent(), " ") ||skillsInfo.getContent()==null){
             InternshipContent internshipContent = new InternshipContent();
             internshipContent.setSkillsId(skillsInfo.getId());
