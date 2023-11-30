@@ -9,18 +9,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudentDTO {
 
+
+
     /**学号/姓名*/
     private String userName;
 
-    /**学院id*/
-    private Long collegeId;
+    /**学院*/
+    private String college;
 
-    /**系部id*/
-    private Long professionalId;
+    /**系部*/
+    private String professional;
 
     /**年级*/
     private String grade;
 
-    /**班级id*/
-    private Long classId;
+    /**班级*/
+    private String className;
 }

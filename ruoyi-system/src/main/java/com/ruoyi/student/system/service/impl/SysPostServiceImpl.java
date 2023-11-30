@@ -176,4 +176,9 @@ public class SysPostServiceImpl implements ISysPostService
     {
         return postMapper.updatePost(post);
     }
+
+    @Override
+    public List<String> selectPostCodeList(Long userId) {
+        return postMapper.selectPostCodeListByUserId(userId);
+    }
 }

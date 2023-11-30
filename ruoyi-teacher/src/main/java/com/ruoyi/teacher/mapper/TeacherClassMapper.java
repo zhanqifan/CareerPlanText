@@ -19,7 +19,7 @@ public interface TeacherClassMapper
      * @param teacherId 教师所教的班级主键
      * @return 教师所教的班级
      */
-    public List<TeacherClass> selectTeacherClassByTeacherId(Long teacherId);
+    public List<TeacherClass> selectTeacherClassByTeacherId(String teacherId);
 
     /**
      * 查询教师所教的班级列表

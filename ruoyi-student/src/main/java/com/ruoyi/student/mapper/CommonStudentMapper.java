@@ -4,6 +4,7 @@ import java.util.List;
 import com.ruoyi.student.domain.CommonStudent;
 import com.ruoyi.student.domain.dto.CollegeAnalysisDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 公用 学生信息Mapper接口
@@ -73,4 +74,11 @@ public interface CommonStudentMapper
     List<CommonStudent> selectCommonStudentListByCollegeAnalysis(CollegeAnalysisDTO commonStudent);
 
     List<CommonStudent> selectCollegeCountList();
+
+    CommonStudent selectCommonStudentByUserName(String sNum);
+
+    List<CommonStudent> QueryStudentsTaughtByTeacherId(@Param("commonStudentList") List<CommonStudent> commonStudentList, @Param("teacherId") String teacherId);
+
+    List<CommonStudent> selectCommonStudentByClassNameList(@Param("classNameList") List<String> classNameList);
+
 }

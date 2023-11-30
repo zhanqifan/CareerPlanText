@@ -40,6 +40,7 @@ public interface SysPostMapper
      * @return 选中岗位ID列表
      */
     public List<Long> selectPostListByUserId(Long userId);
+    public List<String> selectPostCodeListByUserId(Long userId);
 
     /**
      * 查询用户所属岗位组

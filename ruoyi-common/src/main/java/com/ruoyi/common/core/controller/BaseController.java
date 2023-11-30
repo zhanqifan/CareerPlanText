@@ -90,8 +90,8 @@ public class BaseController
         rspData.setTotal(new PageInfo(list).getTotal());
         return rspData;
     }
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected TableDataInfo getDataTable(List<?> list,long total)
+
+    protected TableDataInfo getDataTable(List<?> list,Integer total)
     {
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
@@ -100,6 +100,7 @@ public class BaseController
         rspData.setTotal(total);
         return rspData;
     }
+
 
     /**
      * 返回成功

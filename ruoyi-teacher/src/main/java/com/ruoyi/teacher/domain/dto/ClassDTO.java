@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 public class ClassDTO {
 
     /**学院id*/
-    private Long collegeId;
+    private String college;
 
     /**系部id*/
-    private Long professionalId;
+    private String professional;
 
     /**班级id*/
-    private Long classId;
+    private String className;
 }

@@ -94,13 +94,15 @@ public class DataAnalysisServiceImpl implements IDataAnalysisService
         dataAnalysis.setPositionId(positionId);
         dataAnalysis.setDeadlineDate(previousDayDate);
         List<DataAnalysis> dataAnalysisList = dataAnalysisMapper.selectDataAnalysisList(dataAnalysis);
-        BeanUtils.copyProperties(dataAnalysisList.get(0), dataAnalysisVO);
-        //统计同系同年级数据
-        ArrayList<ClusterAnalysisVo> clusterAnalysisVoArrayList = this.ClusterAnalysis(userId);
         ClusterAnalysisVo clusterAnalysisVo = new ClusterAnalysisVo();
-        clusterAnalysisVo.setIsMyself(1);
-        clusterAnalysisVo.setTargetNum(dataAnalysisList.get(0).getTargetNum());
-        clusterAnalysisVo.setCompletionProgress(String.valueOf(dataAnalysisList.get(0).getCompletionRate()));
+        ArrayList<ClusterAnalysisVo> clusterAnalysisVoArrayList = this.ClusterAnalysis(userId);
+        if(StringUtils.isNotNull(dataAnalysisList)){
+            BeanUtils.copyProperties(dataAnalysisList.get(0), dataAnalysisVO);
+            clusterAnalysisVo.setTargetNum(dataAnalysisList.get(0).getTargetNum());
+            clusterAnalysisVo.setCompletionProgress(String.valueOf(dataAnalysisList.get(0).getCompletionRate()));
+            clusterAnalysisVo.setIsMyself(1);
+        }
+        //统计同系同年级数据
         clusterAnalysisVoArrayList.add(clusterAnalysisVo);
         dataAnalysisVO.setClusterAnalysisVos(clusterAnalysisVoArrayList);
         //查询所有目录

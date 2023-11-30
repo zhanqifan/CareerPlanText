@@ -70,4 +70,10 @@ public interface ICommonStudentService
     List<CommonStudent> selectCommonStudentListByCollegeAnalysis(CollegeAnalysisDTO commonStudent);
 
     List<CommonStudent> selectcollegeCountList();
+
+    CommonStudent selectCommonStudentByUserName(String sNum);
+
+    List<CommonStudent> QueryStudentsTaughtByTeacherId(List<CommonStudent> commonStudentList, String teacherId);
+
+    List<CommonStudent> selectCommonStudentByClassNameList(List<String> classNameList);
 }

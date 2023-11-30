@@ -127,6 +127,21 @@ public class CommonStudentServiceImpl implements ICommonStudentService
     }
 
     @Override
+    public CommonStudent selectCommonStudentByUserName(String sNum) {
+        return commonStudentMapper.selectCommonStudentByUserName(sNum);
+    }
+
+    @Override
+    public List<CommonStudent> QueryStudentsTaughtByTeacherId(List<CommonStudent> commonStudentList, String teacherId) {
+        return commonStudentMapper.QueryStudentsTaughtByTeacherId(commonStudentList, teacherId);
+    }
+
+    @Override
+    public List<CommonStudent> selectCommonStudentByClassNameList(List<String> classNameList) {
+        return commonStudentMapper.selectCommonStudentByClassNameList(classNameList);
+    }
+
+    @Override
     @Transactional
     public String BuildDepartment(){
         List<CommonStudent> commonStudents = commonStudentMapper.selectCollege();
