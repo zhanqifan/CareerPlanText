@@ -2,46 +2,41 @@
   <div class="main">
     <!-- 头部 -->
     <div class="title">
-      <h1>新增目标岗位</h1>
+     
     </div>
 
     <div class="content">
       <!-- 左侧  -->
       <div class="left">
-        <h1>目录</h1>
+        <h1 id="left_top">目录</h1>
         <!-- 分类列表 -->
-        <div class="list" >
+        <div class="list">
           <div v-for="Log in LogList" :key="Log.catalogueId">
             <p>{{ Log.catalogueName }}</p>
             <ul>
-              <li v-for="item in Log.child" :key="item.catalogueName" @click="scrollToItem()">
+              <li
+                v-for="item in Log.child"
+                :key="item.catalogueName"
+                @click="goAnchor(item.catalogueId)"
+
+              >
                 {{ item.catalogueName }}
               </li>
             </ul>
           </div>
         </div>
       </div>
-
+    
       <!-- 右侧 -->
       <div class="right">
         <!-- 表单标题 -->
         <div class="left_title">
-          <p>新增目标岗位</p>
-          <div class="btn" v-if="comment() === 3">
-            <el-button type="primary">保存</el-button>
-          </div>
-          <div class="btn" v-else>
+          <p>{{this.positionDetail.positionName?this.positionDetail.positionName:'新增目标'}}岗位</p>
+          <div class="btn">
             <el-button
               type="success"
               @click="commit('2')"
-              v-if="this.positionDetail.state != 0"
-              :disabled="
-                this.positionDetail.state === 1
-                  ? true
-                  : this.positionDetail.state === 0
-                  ? true
-                  : false
-              "
+              v-if="this.positionDetail.state != 3 ? false : true"
               >存为草稿</el-button
             >
             <el-button
@@ -83,6 +78,7 @@
                   0,
                   10
                 )"
+                :id="list.catalogueId"
                 :state="positionDetail.state"
                 :parentId="parentId[index]"
                 :tableHeader="tableHeader[index]"
@@ -95,6 +91,7 @@
                   10,
                   12
                 )"
+                :id="list.catalogueId"
                 :state="positionDetail.state"
                 :parentId="parentId[index + 10]"
                 :tableHeader="tableHeader[index + 10]"
@@ -107,6 +104,7 @@
                   12,
                   15
                 )"
+                :id="list.catalogueId"
                 :state="positionDetail.state"
                 :parentId="parentId[index + 12]"
                 :tableHeader="tableHeader[index + 12]"
@@ -119,6 +117,7 @@
                   15,
                   20
                 )"
+                :id="list.catalogueId"
                 :state="positionDetail.state"
                 :parentId="parentId[index + 15]"
                 :tableHeader="tableHeader[index + 15]"
@@ -147,16 +146,14 @@
         <el-button type="primary" @click="commitSon('1')">确 定</el-button>
       </span>
     </el-dialog>
+       <div class="To_top">
+        <el-button  circle size="medium"  @click="scrollToTop">目录</el-button>
+       </div>
   </div>
 </template>
 
 <script>
-import {
-  getcateLog,
-  AddPosition,
-  updatePosition,
-  listPosition,
-} from "@/api/student/position.js";
+import { getcateLog, AddPosition } from "@/api/student/position.js";
 import Form1 from "../components/Form1.vue";
 import Form2 from "../components/Form2.vue";
 import Form3 from "../components/Form3.vue";
@@ -354,7 +351,7 @@ export default {
     async getLog() {
       const res = await getcateLog();
       this.LogList = res.data;
-      // console.log(res)
+      console.log(this.LogList);
       this.parentId = this.LogList.flatMap((item) =>
         item.child.map((subItem) => subItem.parentId)
       );
@@ -379,6 +376,7 @@ export default {
         });
         return;
       }
+      console.log(this.Computedstate)
       // 第一次发布岗位
       if (state == 1 && this.Computedstate < 1) {
         this.$confirm("确定发布该目标岗位吗", "发布", {
@@ -387,7 +385,9 @@ export default {
         })
           .then(() => {
             // 确定后直接发布
-            this.commitSon(state, true);
+            this.checked=true
+            this.commitSon(state);
+            console.log('判断1直接发布')
           })
           .catch(() => {
             this.$message({
@@ -400,10 +400,12 @@ export default {
       // 第二次发布岗位
       if (state == 1 && this.ComputedisMain === 1) {
         this.SecondObject = true;
+         console.log('判断2询问发布')
         return;
       }
       // 草稿直接发布 不进入判定
       this.commitSon(state);
+
     },
     // 封装提交方法
     async commitSon(state) {
@@ -417,12 +419,12 @@ export default {
         positionName: this.positionDetail.positionName,
         state: state,
         skillsInfoList: this.FormList,
-        isUpdate: this.checked === true ? true : false,
+        isUpdate: this.checked === true ? true : false,//是否勾选了替换主目标
       };
       console.log(data);
       // 发送请求
       const res = await AddPosition(data);
-      // console.log(res);
+      console.log(res);
       this.SecondObject = false; //对话框关闭
       // 通知父组件关闭对话框
       this.$emit("closeDialog", false);
@@ -432,29 +434,45 @@ export default {
         type: "success",
       });
     },
+    // 接受子组件数据
+    handlemyson(targetPositionId, change) {
     
-    handlemyson(targetPositionId,change) {
-      console.log(change)
-       if(targetPositionId){
-      this.$emit("getIndex", targetPositionId,change);
+      if (targetPositionId) {
+        this.$emit("getIndex", targetPositionId, change);
       }
     },
+    // 锚点定位
+    goAnchor(id) {
+      const targetElement = document.getElementById(id);
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+    },
+    // 回到顶部
+ scrollToTop() {
+      const backtop= document.getElementById("left_top");
+        if (backtop) {
+        backtop.scrollIntoView({
+          behavior: "smooth",
+        });
+      }
+}  
   },
 
   created() {
     this.getLog(); //获取目录
   },
 
-  mounted() {
-
-  },
+  mounted() {},
 };
 </script>
 
 <style lang="scss" scoped>
 .main {
   background-color: #f2f2f2;
-  height: auto;
+  height: 100%;
 
   .title {
     display: flex;
@@ -531,5 +549,11 @@ export default {
       }
     }
   }
+  .To_top{
+    position: fixed;
+    bottom: 20px; /* 调整按钮距离底部的位置 */
+ 
+  }
+
 }
 </style>

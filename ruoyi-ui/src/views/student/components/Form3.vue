@@ -253,7 +253,7 @@ import {
   ChangeComment,
   DeleteComment,
 } from "@/api/student/mycomment.js";
-import { DeleteRow ,updatePosition} from "@/api/student/position.js";
+import { DeleteRow, updatePosition } from "@/api/student/position.js";
 
 export default {
   props: ["list", "tableHeader", "parentId", "state"],
@@ -270,10 +270,8 @@ export default {
       Id: "", // 目标岗位id
       dialogComment: false, //弹出框
       tableTime: "", //表单的结束时间 用来与自评完成时间对比
-      // inp: true, //第一个输入框禁用
-      // PickStart: true, //开始日期禁用
-      // PickEnd: true, //结束日期禁用
-      // btn_public: 0, //编辑按钮的切换
+      formattedDate: "", //时间格式化
+      formattedDate1: "", //时间格式化
       rules: {
         skillsName: [
           { required: true, message: "此不为空", trigger: ["blur", "change"] },
@@ -290,7 +288,6 @@ export default {
   methods: {
     // 添加一行
     AddRow() {
-      (this.inp = false), (this.PickStart = false), (this.PickEnd = false);
       this.list.skillsInfoList.push({
         firstId: this.parentId, //父目录id
         lineNumber: this.lineNumber++,
@@ -302,7 +299,7 @@ export default {
         content: "",
       });
     },
-  // 输入框逻辑判断
+    // 输入框逻辑判断
     inputDisbale(row) {
       if (this.state == 1) {
         row.inp = true;
@@ -311,7 +308,7 @@ export default {
       } else {
         row.inp = false;
       }
-      this.$forceUpdate()
+      this.$forceUpdate();
     },
     //  结束时间逻辑判定
     endTimeDisable(row) {
@@ -366,7 +363,7 @@ export default {
       this.Id = row.id; //传参用的id
       this.Completiontime = row.completeTime; //用户选择的完成时间
       this.evaluateState = row.evaluateState;
-            this.targetPositionId = row.targetPositionId;
+      this.targetPositionId = row.targetPositionId;
 
       console.log(this.Id);
 
@@ -377,18 +374,17 @@ export default {
     },
     // 发送自评1 修改自评0
     async Subcommit(evaluateState) {
-      // console.log(evaluateState);
+      this.DataFormat(this.Completiontime); //时间格式矫正
       // 修改自评
       if (evaluateState === 1) {
         let secondata = {
           evaluateId: this.evaluateId,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime: this.Completiontime,
+          completeTime: this.formattedDate,
         };
-        // console.log('修改',this.completeTime)
         const res = await ChangeComment(secondata);
-
+        this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
         this.$message({
           type: "success",
           message: "修改成功请刷新",
@@ -401,12 +397,11 @@ export default {
           skillsId: this.Id,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime: this.Completiontime,
+          completeTime: this.formattedDate,
         };
-
+        // console.log(data)
         const res = await TodoComments(data);
-        this.$emit("mySon", this.targetPositionId);//通知爷组件刷新
-
+        this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
         this.$message({
           type: "success",
           message: "自评成功请刷新",
@@ -422,7 +417,7 @@ export default {
       this.radio = row.completionStatus.toString();
       this.textarea = res.data.content; //文本回显
       this.evaluateId = res.data.evaluateId; //自评id
-      this.Completiontime = res.data.updateTime; //日期
+      this.Completiontime = res.data.completeTime; //日期
     },
     // 删除自评
     async delComment(row) {
@@ -437,8 +432,8 @@ export default {
           type: "warning",
         }
       )
-        .then(async() => {
-          const res =await DeleteComment(this.evaluateId);
+        .then(async () => {
+          const res = await DeleteComment(this.evaluateId);
           console.log(res);
           this.$emit("mySon", row.targetPositionId); //通知爷组件刷新
           this.$message({
@@ -453,57 +448,67 @@ export default {
           });
         });
     },
-  // 保存修改
+    // 保存修改
     async ChangeRow(row) {
-  
-      
       if (row.btn_public === 0) {
-        row.btn_public = 1;
         // 进入发布态切换
         this.inputDisbale(row);
         //  开始时间是否开启判断
         this.startTimeDisable(row);
-        // const data11 = new Date(row.startTime).getTime();
-        // console.log(data11 > new Date() ? true : false);
+
         this.endTimeDisable(row);
-        console.log(row);
-        console.log(this.list)
+        if (row.inp && row.PickStart && row.PickEnd) {
+          row.btn_public = 0;
+          this.$message({
+            message: "该行已不可修改",
+            type: "warning",
+          });
+        } else {
+          row.btn_public = 1;
+          row.OriginTime = row.endTime;
+        }
+
         return;
       } else if (row.btn_public === 1) {
-        // console.log(row); 
-        let date = new Date(row.endTime);
-        // 提取年、月、日
-        let year = date.getFullYear();
-        let month = (date.getMonth() + 1).toString().padStart(2, "0"); // 月份是从0开始的，所以要加1
-        let day = date.getDate().toString().padStart(2, "0");
-        // 格式化为 "YYYY-MM-DD"
-        let formattedDate = `${year}-${month}-${day}`;
-        
+       let endTime= this.DataFormat(row.endTime);
+      
         // console.log(typeof formattedDate);
         let changeDate = {
           id: row.id,
           skillsName: row.skillsName,
-          endTime: formattedDate,
+          startTime: this.DataFormat(eow.startTime),
+          endTime:endTime,
           take_role: row.takeRole,
           content: "",
           targetPositionId: row.targetPositionId,
-          modificationsNumber:   row.modificationsNumber + 1,
+          modificationsNumber:
+            row.OriginTime === endTime
+              ? row.modificationsNumber
+              : row.modificationsNumber + 1,
         };
-        // console.log(changeDate)
         const res = await updatePosition(changeDate);
-       console.log(res)
-        let change=true
-        this.$emit('mySon',row.targetPositionId,change)
-         console.log(res);
-        // console.log(changeDate);
+        let change = true;
+        this.$emit("mySon", row.targetPositionId, change);
         row.btn_public = 0;
         row.inp = true;
         row.PickStart = true;
         row.PickEnd = true;
+        this.$message({
+          message: res.msg,
+          type: "success",
+        });
       }
     },
-
-
+    // 日期格式转换
+    DataFormat(time) {
+      let date = new Date(time);
+      // 提取年、月、日
+      let year = date.getFullYear();
+      let month = (date.getMonth() + 1).toString().padStart(2, "0"); // 月份是从0开始的，所以要加1
+      let day = date.getDate().toString().padStart(2, "0");
+      // 格式化为 "YYYY-MM-DD"
+      return `${year}-${month}-${day}`;
+    },
   },
   computed: {
     //  完成情况控制时间显示
@@ -527,7 +532,6 @@ export default {
       }
     },
   },
- 
 };
 </script>
 

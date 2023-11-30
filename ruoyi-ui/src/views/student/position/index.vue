@@ -439,7 +439,7 @@ export default {
     },
     // 查看岗位详情
     async handleRowClick(row) {
-      console.log("我是行", row);
+      // console.log("我是行", row);
       // 点击编辑时候发请求
       if (row != null) {
         const res = await getPosition(row.positionId);
@@ -477,31 +477,58 @@ export default {
       // console.log(res)
       this.ObjectVisible = true;
     },
-    // 删除非发布岗位
-    async DeleteRowClick(row) {
-      const res = await delPosition(row.positionId);
-      console.log(res);
-      this.getList();
-      this.$message({
-        message: "删除成功",
-        type: "success",
-      });
+    // 删除草稿岗位
+     DeleteRowClick(row) {
+       this.$confirm('删除后将无法查看, 是否继续?', '删除草稿', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async() => {
+      await delPosition(row.positionId);
+      await this.getList();
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+   
     },
     // 发布草稿岗位
-    async PublicRowClick(row) {
+    PublicRowClick(row) {
+       
       if (this.Computedstate === 2) {
         this.$message.error("最多仅能发布两个目标岗位");
         return;
       }
+       this.$confirm('确定发布该草稿岗位吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then( async() => {
+         await PublicPosition(row.positionId);
+         this.getList();
+          this.$message({
+            type: 'success',
+            message: '发布成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          });          
+        });
       // console.log(this.ComputedisMain)
 
-      const res = await PublicPosition(row.positionId);
-
-      this.getList();
-      this.$message({
-        message: "发布成功",
-        type: "success",
-      });
+     
+      // this.$message({
+      //   message: "发布成功",
+      //   type: "success",
+      // });
     },
     // 进入目标自评
     async handleComment(row, num) {
@@ -543,14 +570,31 @@ export default {
       // this.getList();
     },
     // 废止目标
-    async ToStop(row) {
-      const res = await StopPosition(row.positionId);
-      console.log(res);
-      this.getList();
-      this.$message({
-        message: "已废止",
-        type: "success",
-      });
+     ToStop(row) {
+      this.$confirm("确定废止目标吗？废止后无法恢复，仅支持查看。", "废止", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {          
+           await StopPosition(row.positionId);//废止
+          await this.getList();//刷新获取数据
+          // 变更主目标条件
+          if (this.ObjectList.length === 1 && this.ObjectList[0].isMain === 0) {
+            await SetPositoin(this.ObjectList[0].positionId);
+            await this.getList();
+          }
+          this.$message({
+            type: "success",
+            message: "废止成功!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消",
+          });
+        });
     },
     // 查看废止状态
     SeeObject(row) {
@@ -609,20 +653,14 @@ export default {
     },
     //  处理子组件刷新
     async getIndex(targetPositionId, change) {
-      console.log(change);
       if (targetPositionId != "") {
         const res = await getPosition(targetPositionId);
-        // console.log("爷爷接收到了");
         this.positionDetail = res.data;
         if (change == true) {
           this.positionDetail.ctatlogueList.forEach((catalogue) => {
             // 遍历当前目录的 skillsInfoList
             catalogue.skillsInfoList.forEach((skillsInfo) => {
               //     // 在每个对象中添加新的属性
-              // skillsInfo.btn_public = 0; //编辑按钮的切换
-              // skillsInfo.inp = true, //第一个输入框禁用
-              // skillsInfo.PickStart = true //开始日期禁用
-              // skillsInfo.PickEnd = true; //结束日期禁用
               // 更改为这样 由于是动态添加属性 保证后续组件修改保持响应式
               this.$set(skillsInfo, "btn_public", 0); // 编辑按钮的切换
               this.$set(skillsInfo, "inp", true); // 第一个输入框禁用
