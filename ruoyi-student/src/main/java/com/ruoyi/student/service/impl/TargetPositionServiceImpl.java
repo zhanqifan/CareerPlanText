@@ -102,6 +102,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
             TargetPosition positions = targetPositions.get(0);
             positions.setIsMain(0);
             targetPositionMapper.updateTargetPosition(positions);
+            position.setIsMain(1);
         }else {
             position.setIsMain(0);
         }
@@ -113,6 +114,7 @@ public class TargetPositionServiceImpl implements ITargetPositionService
         position.setPositionId(positionId);
         position.setPositionName(targetPositionDTO.getPositionName());
         position.setCreateBy(username);
+
         position.setState(targetPositionDTO.getState());
         if(targetPositionMapper.insertTargetPosition(position)==1){
             List<SkillsInfo> skillsInfoList = targetPositionDTO.getSkillsInfoList();
