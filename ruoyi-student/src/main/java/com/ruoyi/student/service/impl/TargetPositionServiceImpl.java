@@ -93,20 +93,24 @@ public class TargetPositionServiceImpl implements ITargetPositionService
     public int addTargetPosition(TargetPositionDTO targetPositionDTO) {
         Boolean isUpdate = targetPositionDTO.getIsUpdate();
         TargetPosition position = new TargetPosition();
-        if(isUpdate){
-            //更新主目标
-            TargetPosition targetPosition = new TargetPosition();
-            targetPosition.setCreateBy(SecurityUtils.getUsername());
-            targetPosition.setState(1);
-            List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionList(targetPosition);
-            TargetPosition positions = targetPositions.get(0);
-            positions.setIsMain(0);
-            targetPositionMapper.updateTargetPosition(positions);
+        // 查询所有主目标职位
+        TargetPosition targetPosition = new TargetPosition();
+        targetPosition.setCreateBy(SecurityUtils.getUsername());
+        targetPosition.setState(1);
+        List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionList(targetPosition);
+        if (!targetPositions.isEmpty()) {
+            // 如果是更新操作，将原主目标职位的 isMain 设置为 0
+            if (isUpdate) {
+                TargetPosition mainPosition = targetPositions.get(0);
+                mainPosition.setIsMain(0);
+                targetPositionMapper.updateTargetPosition(mainPosition);
+            }
+        } else {
+            // 如果没有主目标职位，将当前职位设置为主目标
             position.setIsMain(1);
-        }else {
-            position.setIsMain(0);
         }
-        if(targetPositionDTO.getState().equals(2)){
+        // 如果是 state 为 2，将 isMain 设置为 0
+        if (targetPositionDTO.getState().equals(2)) {
             position.setIsMain(0);
         }
         String username = SecurityUtils.getUsername();
