@@ -134,6 +134,8 @@
                 <el-date-picker
                   v-model="scope.row.startTime"
                   :disabled="scope.row.PickStart"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   placeholder="请选择时间"
                 >
                 </el-date-picker>
@@ -147,6 +149,8 @@
             <el-form :model="scope.row" :rules="rules">
               <el-form-item prop="endTime">
                 <el-date-picker
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   v-model="scope.row.endTime"
                   :disabled="scope.row.PickEnd"
                   placeholder="请选择时间"
@@ -196,6 +200,8 @@
         >
           <el-date-picker
             v-model="Completiontime"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
             type="date"
             placeholder="选择日期"
           >
@@ -255,8 +261,7 @@ export default {
       Id: "", // 目标岗位id
       dialogComment: false, //弹出框
       tableTime: "", //表单的结束时间 用来与自评完成时间对比
-      formattedDate: "", //时间格式化
-      formattedDate1:"",
+
       // 表单校验
       rules: {
         skillsName: [
@@ -282,7 +287,7 @@ export default {
         skillsName: "", //技能名称
         startTime: "", //开始时间
         endTime: "", ///结束时间
-        content: " ",
+        content: "",
       });
     },
     // 删除当前行
@@ -350,7 +355,6 @@ export default {
       this.Completiontime = row.completeTime; //用户选择的完成时间
       this.evaluateState = row.evaluateState;
       this.targetPositionId = row.targetPositionId;
-
       // 如果是编辑按钮 做数据回显
       if (sum === 1) {
         this.lookup(row);
@@ -358,20 +362,22 @@ export default {
     },
     // 发送自评1 修改自评0
     async Subcommit(evaluateState) {
-      // this.DataFormat(this.Completiontime); //时间格式矫正
       // 修改自评
       if (evaluateState === 1) {
         let secondata = {
           evaluateId: this.evaluateId,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime: this.DataFormat(this.Completiontime),//时间格式转换
+          skillsId:this.Id,
+        completeTime: this.Completiontime//时间格式转换
         };
         const res = await ChangeComment(secondata);
-        this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
+        console.log(secondata)
+        console.log(res)
+      this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
         this.$message({
           type: "success",
-          message: "修改成功请刷新",
+          message: "修改成功",
         });
         this.dialogComment = false;
       }
@@ -381,7 +387,7 @@ export default {
           skillsId: this.Id,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime: this.formattedDate,
+          completeTime: this.Completiontime
         };
         // console.log(data)
         const res = await TodoComments(data);
@@ -453,23 +459,21 @@ export default {
 
         return;
       } else if (row.btn_public === 1) {
-       
-        // console.log(typeof this.DataFormat(row.startTime))
-        let endTime = this.DataFormat(row.endTime);//用户改变的时间
+        // console.log(typeof this.DataFormat(row.startTime)
         let changeDate = {
           id: row.id,
           skillsName: row.skillsName,
-          endTime: endTime,
-          startTime: this.DataFormat(row.startTime),
+          endTime: row.endTime,
+          startTime: row.startTime,
           take_role: "",
           content: "",
           targetPositionId: row.targetPositionId,
           modificationsNumber:
-            row.OriginTime ===  endTime
+            row.OriginTime === row.endTime
               ? row.modificationsNumber
               : row.modificationsNumber + 1,
         };
-        console.log(changeDate)
+        console.log(changeDate);
         const res = await updatePosition(changeDate);
         let change = true;
         this.$emit("mySon", row.targetPositionId, change);
@@ -484,17 +488,6 @@ export default {
       }
     },
 
- 
-    // 日期格式转换
-    DataFormat(time) {
-      let date = new Date(time);
-      // 提取年、月、日
-      let year = date.getFullYear();
-      let month = (date.getMonth() + 1).toString().padStart(2, "0"); // 月份是从0开始的，所以要加1
-      let day = date.getDate().toString().padStart(2, "0");
-      // 格式化为 "YYYY-MM-DD"
-      return `${year}-${month}-${day}`;
-    },
     // 提交所有表单
     // submitForms() {
     //   // 遍历所有表单引用

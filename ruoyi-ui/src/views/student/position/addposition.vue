@@ -1,9 +1,7 @@
 <template>
   <div class="main">
     <!-- 头部 -->
-    <div class="title">
-     
-    </div>
+    <div class="title"></div>
 
     <div class="content">
       <!-- 左侧  -->
@@ -15,10 +13,10 @@
             <p>{{ Log.catalogueName }}</p>
             <ul>
               <li
+                class="hover_poiont"
                 v-for="item in Log.child"
                 :key="item.catalogueName"
                 @click="goAnchor(item.catalogueId)"
-
               >
                 {{ item.catalogueName }}
               </li>
@@ -26,12 +24,18 @@
           </div>
         </div>
       </div>
-    
+
       <!-- 右侧 -->
       <div class="right">
         <!-- 表单标题 -->
         <div class="left_title">
-          <p>{{this.positionDetail.positionName?this.positionDetail.positionName:'新增目标'}}岗位</p>
+          <p>
+            {{
+              this.positionDetail.positionName
+                ? this.positionDetail.positionName
+                : "新增目标"
+            }}岗位
+          </p>
           <div class="btn">
             <el-button
               type="success"
@@ -146,9 +150,9 @@
         <el-button type="primary" @click="commitSon('1')">确 定</el-button>
       </span>
     </el-dialog>
-       <div class="To_top">
-        <el-button  circle size="medium"  @click="scrollToTop">目录</el-button>
-       </div>
+    <div class="To_top">
+      <el-button circle size="medium" @click="scrollToTop">目录</el-button>
+    </div>
   </div>
 </template>
 
@@ -376,7 +380,7 @@ export default {
         });
         return;
       }
-      console.log(this.Computedstate)
+      console.log(this.Computedstate);
       // 第一次发布岗位
       if (state == 1 && this.Computedstate < 1) {
         this.$confirm("确定发布该目标岗位吗", "发布", {
@@ -385,9 +389,9 @@ export default {
         })
           .then(() => {
             // 确定后直接发布
-            this.checked=true
+            this.checked = true;
             this.commitSon(state);
-            console.log('判断1直接发布')
+            console.log("判断1直接发布");
           })
           .catch(() => {
             this.$message({
@@ -400,12 +404,11 @@ export default {
       // 第二次发布岗位
       if (state == 1 && this.ComputedisMain === 1) {
         this.SecondObject = true;
-         console.log('判断2询问发布')
+        console.log("判断2询问发布");
         return;
       }
       // 草稿直接发布 不进入判定
       this.commitSon(state);
-
     },
     // 封装提交方法
     async commitSon(state) {
@@ -419,7 +422,7 @@ export default {
         positionName: this.positionDetail.positionName,
         state: state,
         skillsInfoList: this.FormList,
-        isUpdate: this.checked === true ? true : false,//是否勾选了替换主目标
+        isUpdate: this.checked === true ? true : false, //是否勾选了替换主目标
       };
       console.log(data);
       // 发送请求
@@ -436,7 +439,6 @@ export default {
     },
     // 接受子组件数据
     handlemyson(targetPositionId, change) {
-    
       if (targetPositionId) {
         this.$emit("getIndex", targetPositionId, change);
       }
@@ -451,14 +453,14 @@ export default {
       }
     },
     // 回到顶部
- scrollToTop() {
-      const backtop= document.getElementById("left_top");
-        if (backtop) {
+    scrollToTop() {
+      const backtop = document.getElementById("left_top");
+      if (backtop) {
         backtop.scrollIntoView({
           behavior: "smooth",
         });
       }
-}  
+    },
   },
 
   created() {
@@ -491,10 +493,7 @@ export default {
       height: 750px;
       .list {
         margin-left: 30px;
-        &.fixed {
-          position: fixed;
-          top: 0; /* 添加其吸顶效果的样式 */
-        }
+          
         p {
           font-weight: 800;
           margin: 5px 0;
@@ -504,6 +503,12 @@ export default {
           margin: 0 0;
           list-style: none;
           padding: 0 0 0 20px;
+        li{
+          &:hover {
+             color: #1890FF;
+             cursor: pointer;
+          }
+        }
         }
       }
     }
@@ -544,16 +549,13 @@ export default {
             font-weight: 900;
           }
         }
-        .list {
-        }
+     
       }
     }
   }
-  .To_top{
+  .To_top {
     position: fixed;
     bottom: 20px; /* 调整按钮距离底部的位置 */
- 
   }
-
 }
 </style>

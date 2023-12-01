@@ -150,6 +150,8 @@
                   v-model="scope.row.startTime"
                   placeholder="请选择时间"
                   :disabled="scope.row.PickStart"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                 >
                 </el-date-picker>
               </el-form-item>
@@ -163,6 +165,8 @@
                 <el-date-picker
                   v-model="scope.row.endTime"
                   :disabled="scope.row.PickEnd"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   placeholder="请选择时间"
                 >
                 </el-date-picker>
@@ -208,6 +212,8 @@
           >
             <el-date-picker
               v-model="Completiontime"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd"
               type="date"
               placeholder="选择日期"
             >
@@ -374,14 +380,14 @@ export default {
     },
     // 发送自评1 修改自评0
     async Subcommit(evaluateState) {
-      this.DataFormat(this.Completiontime); //时间格式矫正
       // 修改自评
       if (evaluateState === 1) {
         let secondata = {
           evaluateId: this.evaluateId,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime: this.formattedDate,
+          completeTime: this.Completiontime,
+          skillsId: this.Id,
         };
         const res = await ChangeComment(secondata);
         this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
@@ -397,7 +403,8 @@ export default {
           skillsId: this.Id,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime: this.formattedDate,
+          completeTime: this.Completiontime,
+      
         };
         // console.log(data)
         const res = await TodoComments(data);
@@ -442,10 +449,7 @@ export default {
           });
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
+       
         });
     },
     // 保存修改
@@ -470,19 +474,17 @@ export default {
 
         return;
       } else if (row.btn_public === 1) {
-       let endTime= this.DataFormat(row.endTime);
-      
         // console.log(typeof formattedDate);
         let changeDate = {
           id: row.id,
           skillsName: row.skillsName,
-          startTime: this.DataFormat(eow.startTime),
-          endTime:endTime,
+          startTime: row.startTime,
+          endTime: row.endTime,
           take_role: row.takeRole,
           content: "",
           targetPositionId: row.targetPositionId,
           modificationsNumber:
-            row.OriginTime === endTime
+            row.OriginTime === row.endTime
               ? row.modificationsNumber
               : row.modificationsNumber + 1,
         };
@@ -498,16 +500,6 @@ export default {
           type: "success",
         });
       }
-    },
-    // 日期格式转换
-    DataFormat(time) {
-      let date = new Date(time);
-      // 提取年、月、日
-      let year = date.getFullYear();
-      let month = (date.getMonth() + 1).toString().padStart(2, "0"); // 月份是从0开始的，所以要加1
-      let day = date.getDate().toString().padStart(2, "0");
-      // 格式化为 "YYYY-MM-DD"
-      return `${year}-${month}-${day}`;
     },
   },
   computed: {

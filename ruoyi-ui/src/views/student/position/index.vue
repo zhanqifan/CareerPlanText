@@ -170,14 +170,7 @@
             @click="PublicRowClick(scope.row)"
             >发布</el-button
           >
-          <el-button
-            v-if="scope.row.state === 2"
-            icon="el-icon-scissors"
-            size="mini"
-            type="text"
-            @click="DeleteRowClick(scope.row)"
-            >删除</el-button
-          >
+       
           <!-- 只给废止状态用 -->
           <el-button
             size="mini"
@@ -186,6 +179,14 @@
             v-if="scope.row.state === 0"
             @click="SeeObject(scope.row)"
             >查看</el-button
+          >
+             <el-button
+            v-if="scope.row.state !=1"
+            icon="el-icon-scissors"
+            size="mini"
+            type="text"
+            @click="DeleteRowClick(scope.row)"
+            >删除</el-button
           >
         </template>
       </el-table-column>
@@ -479,7 +480,7 @@ export default {
     },
     // 删除草稿岗位
      DeleteRowClick(row) {
-       this.$confirm('删除后将无法查看, 是否继续?', '删除草稿', {
+       this.$confirm('删除后将无法查看, 是否继续?', '删除岗位', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -491,10 +492,7 @@ export default {
             message: '删除成功!'
           });
         }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
+                 
         });
    
     },

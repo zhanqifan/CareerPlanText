@@ -143,6 +143,8 @@
             <el-form :model="scope.row" :rules="rules">
               <el-form-item prop="startTime">
                 <el-date-picker
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   v-model="scope.row.startTime"
                   :disabled="scope.row.PickStart"
                   placeholder="请选择时间"
@@ -158,6 +160,8 @@
             <el-form :model="scope.row" :rules="rules">
               <el-form-item prop="endTime">
                 <el-date-picker
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   v-model="scope.row.endTime"
                   :disabled="scope.row.PickEnd"
                   placeholder="请选择时间"
@@ -170,7 +174,7 @@
 
         <el-table-column :label="tableHeader.content">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.content != '' && 'null'">已完成</el-tag>
+            <el-tag v-if="scope.row.content != '' && null">已完成</el-tag>
             <el-tag v-else>未完成</el-tag>
           </template>
         </el-table-column>
@@ -189,31 +193,30 @@
               @click="ChangeRow(scope.row)"
               >{{ scope.row.btn_public === 0 ? "编辑" : "保存" }}</el-button
             >
+            <!--实习内容 弹出框 -->
+            <el-dialog
+              :title="'计划' + tableHeader.content"
+              :visible.sync="dialogContent"
+              append-to-body
+            >
+              <el-input
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4 }"
+                placeholder="请输入内容"
+                v-model="scope.row.content"
+              >
+              </el-input>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogContent = false">取 消</el-button>
+                <el-button type="primary" @click="dialogContent = false"
+                  >确 定</el-button
+                >
+              </span>
+            </el-dialog>
           </template>
         </el-table-column>
       </el-table>
     </div>
-
-    <!--实习内容 弹出框 -->
-    <el-dialog
-      :title="'计划' + tableHeader.content"
-      :visible.sync="dialogContent"
-      append-to-body
-    >
-      <el-input
-        type="textarea"
-        :autosize="{ minRows: 2, maxRows: 4 }"
-        placeholder="请输入内容"
-        v-model="textarea2"
-      >
-      </el-input>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogContent = false">取 消</el-button>
-        <el-button type="primary" @click="dialogContent = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
 
     <!-- 自评弹窗 -->
     <el-dialog
@@ -235,6 +238,8 @@
         >
           <el-date-picker
             v-model="Completiontime"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
             type="date"
             placeholder="选择日期"
           >
@@ -291,8 +296,6 @@ export default {
       evaluateId: null, //自评id
       evaluateState: 0, //自评状态
       targetPositionId: "", //目标id(通知页面数据刷新用)
-      formattedDate: "", //时间格式化
-      formattedDate1: "", //时间格式化
       radio: "1", //选项
       Completiontime: "", //日期选择
       textarea: " ", //自评内容
@@ -326,9 +329,17 @@ export default {
         takeRole: "", //计划实践的角色
         startTime: "", //开始时间
         endTime: "", ///结束时间
-        content: this.textarea2, //实习内容
+        content: "", //实习内容
       });
     },
+    // // 填写实习内容
+    // writeContent(row) {
+    //   this.dialogContent = true;
+    //   let WriteContent = this.list.skillsInfoList.filter(
+    //     (item) => item.catalogueId === row.catalogueId
+    //   );
+    //   console.log(WriteContent);
+    // },
     // 删除当前行
     async deleteRow(index) {
       if (this.state === 2) {
@@ -404,7 +415,6 @@ export default {
     },
     // 发送自评1 修改自评0
     async Subcommit(evaluateState) {
-     
       // console.log(evaluateState);
       // 修改自评
       if (evaluateState === 1) {
@@ -412,7 +422,8 @@ export default {
           evaluateId: this.evaluateId,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime:  this.DataFormat(this.Completiontime)
+          completeTime: this.Completiontime,
+          skillsId: this.Id,
         };
         const res = await ChangeComment(secondata);
         this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
@@ -428,7 +439,7 @@ export default {
           skillsId: this.Id,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime: this.formattedDate,
+          completeTime: this.Completiontime,
         };
         // console.log(data)
         const res = await TodoComments(data);
@@ -504,21 +515,20 @@ export default {
 
         return;
       } else if (row.btn_public === 1) {
-        let endTime = this.DataFormat(row.endTime); //用户改变的时间
         let changeDate = {
           id: row.id,
           skillsName: row.skillsName,
-          endTime: endTime,
-          startTime: this.DataFormat(row.startTime),
+          endTime: row.endTime,
+          startTime: row.startTime,
           take_role: row.takeRole,
           content: row.content ? row.content : "",
           targetPositionId: row.targetPositionId,
           modificationsNumber:
-            row.OriginTime === endTime
+            row.OriginTime === row.endTime
               ? row.modificationsNumber
               : row.modificationsNumber + 1,
         };
-
+        console.log(changeDate);
         const res = await updatePosition(changeDate);
         let change = true;
         this.$emit("mySon", row.targetPositionId, change);
