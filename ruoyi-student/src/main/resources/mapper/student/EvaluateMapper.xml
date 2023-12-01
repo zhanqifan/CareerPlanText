@@ -70,6 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="skillsId != null">skills_id = #{skillsId},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="completeTime != null">complete_time = #{completeTime},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </trim>
         where evaluate_id = #{evaluateId}
