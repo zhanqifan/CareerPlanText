@@ -132,10 +132,11 @@ public class TargetPositionServiceImpl implements ITargetPositionService
                 skillsInfo.setLineNumber(skillsInfo.getLineNumber());
                 skillsInfo.setCreateBy(username);
                 //添加实习/实践内容
-                if(Objects.equals(skillsInfo.getContent(), " ") ||skillsInfo.getContent()==null){
+                if(!Objects.equals(skillsInfo.getContent(), " ") ||skillsInfo.getContent()!=null){
                     InternshipContent internshipContent = new InternshipContent();
                     internshipContent.setSkillsId(skillsInfoId);
                     internshipContent.setContent(skillsInfo.getContent());
+                    System.out.println(internshipContent);
                     iInternshipContentService.insertInternshipContent(internshipContent);
                 }
                 System.out.println(skillsInfo);

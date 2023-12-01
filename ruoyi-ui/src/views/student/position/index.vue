@@ -661,7 +661,7 @@ export default {
               this.$set(skillsInfo, "PickStart", true); // 开始日期禁用
               this.$set(skillsInfo, "PickEnd", true); // 结束日期禁用
               this.$set(skillsInfo, "OriginTime", ""); //时间比对使用
-                    this.$set(skillsInfo, "dialogContent", false); // 实习内容对话框
+              this.$set(skillsInfo, "dialogContent", false); // 实习内容对话框
             });
           });
         }

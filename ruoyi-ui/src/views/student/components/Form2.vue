@@ -174,7 +174,7 @@
 
         <el-table-column :label="tableHeader.content">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.content != '' && null">已完成</el-tag>
+            <el-tag v-if="scope.row.content.trim()!=''">已完成</el-tag>
             <el-tag v-else>未完成</el-tag>
           </template>
         </el-table-column>
@@ -329,7 +329,7 @@ export default {
         takeRole: "", //计划实践的角色
         startTime: "", //开始时间
         endTime: "", ///结束时间
-        content: "12121", //实习内容
+        content: "", //实习内容
         dialogContent: false
       });
     },
@@ -516,7 +516,7 @@ export default {
           endTime: row.endTime,
           startTime: row.startTime,
           take_role: row.takeRole,
-          content: row.content ? row.content : "",
+          content: row.content!=null ? row.content : ' ',
           targetPositionId: row.targetPositionId,
           modificationsNumber:
             row.OriginTime === row.endTime
