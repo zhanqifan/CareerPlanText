@@ -104,6 +104,7 @@ public class EvaluateServiceImpl implements IEvaluateService
         skillsInfo.setCompletionStatus(evaluateDTO.getCompletionStatus());
         if(StringUtils.isNotNull(evaluateDTO.getCompleteTime())){
             skillsInfo.setCompleteTime(evaluateDTO.getCompleteTime());
+            evaluate.setCompleteTime(evaluateDTO.getCompleteTime());
         }else {
             skillsInfo.setCompleteTime(null);
         }
