@@ -257,7 +257,7 @@ export default {
       targetPositionId: "", //目标id(通知页面数据刷新用)
       radio: "1", //选项
       Completiontime: "", //日期选择
-      textarea: " ", //自评内容
+      textarea: "", //自评内容
       Id: "", // 目标岗位id
       dialogComment: false, //弹出框
       tableTime: "", //表单的结束时间 用来与自评完成时间对比

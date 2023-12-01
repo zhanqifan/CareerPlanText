@@ -170,7 +170,7 @@
             @click="PublicRowClick(scope.row)"
             >发布</el-button
           >
-       
+
           <!-- 只给废止状态用 -->
           <el-button
             size="mini"
@@ -180,8 +180,8 @@
             @click="SeeObject(scope.row)"
             >查看</el-button
           >
-             <el-button
-            v-if="scope.row.state !=1"
+          <el-button
+            v-if="scope.row.state != 1"
             icon="el-icon-scissors"
             size="mini"
             type="text"
@@ -451,15 +451,12 @@ export default {
           // 遍历当前目录的 skillsInfoList
           catalogue.skillsInfoList.forEach((skillsInfo) => {
             //     // 在每个对象中添加新的属性
-            // skillsInfo.btn_public = 0; //编辑按钮的切换
-            // skillsInfo.inp = true, //第一个输入框禁用
-            // skillsInfo.PickStart = true //开始日期禁用
-            // skillsInfo.PickEnd = true; //结束日期禁用
             // 更改为这样 由于是动态添加属性 保证后续组件修改保持响应式
             this.$set(skillsInfo, "btn_public", 0); // 编辑按钮的切换
             this.$set(skillsInfo, "inp", true); // 第一个输入框禁用
             this.$set(skillsInfo, "PickStart", true); // 开始日期禁用
             this.$set(skillsInfo, "PickEnd", true); // 结束日期禁用
+            this.$set(skillsInfo, "dialogContent", false); // 实习内容对话框
           });
         });
 
@@ -479,50 +476,49 @@ export default {
       this.ObjectVisible = true;
     },
     // 删除草稿岗位
-     DeleteRowClick(row) {
-       this.$confirm('删除后将无法查看, 是否继续?', '删除岗位', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async() => {
-      await delPosition(row.positionId);
-      await this.getList();
+    DeleteRowClick(row) {
+      this.$confirm("删除后将无法查看, 是否继续?", "删除岗位", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          await delPosition(row.positionId);
+          await this.getList();
           this.$message({
-            type: 'success',
-            message: '删除成功!'
+            type: "success",
+            message: "删除成功!",
           });
-        }).catch(() => {
-                 
-        });
-   
+        })
+        .catch(() => {});
     },
     // 发布草稿岗位
     PublicRowClick(row) {
-       
       if (this.Computedstate === 2) {
         this.$message.error("最多仅能发布两个目标岗位");
         return;
       }
-       this.$confirm('确定发布该草稿岗位吗?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then( async() => {
-         await PublicPosition(row.positionId);
-         this.getList();
+      this.$confirm("确定发布该草稿岗位吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          await PublicPosition(row.positionId);
+          this.getList();
           this.$message({
-            type: 'success',
-            message: '发布成功!'
+            type: "success",
+            message: "发布成功!",
           });
-        }).catch(() => {
+        })
+        .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消'
-          });          
+            type: "info",
+            message: "已取消",
+          });
         });
       // console.log(this.ComputedisMain)
 
-     
       // this.$message({
       //   message: "发布成功",
       //   type: "success",
@@ -568,15 +564,15 @@ export default {
       // this.getList();
     },
     // 废止目标
-     ToStop(row) {
+    ToStop(row) {
       this.$confirm("确定废止目标吗？废止后无法恢复，仅支持查看。", "废止", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(async () => {          
-           await StopPosition(row.positionId);//废止
-          await this.getList();//刷新获取数据
+        .then(async () => {
+          await StopPosition(row.positionId); //废止
+          await this.getList(); //刷新获取数据
           // 变更主目标条件
           if (this.ObjectList.length === 1 && this.ObjectList[0].isMain === 0) {
             await SetPositoin(this.ObjectList[0].positionId);
@@ -665,6 +661,7 @@ export default {
               this.$set(skillsInfo, "PickStart", true); // 开始日期禁用
               this.$set(skillsInfo, "PickEnd", true); // 结束日期禁用
               this.$set(skillsInfo, "OriginTime", ""); //时间比对使用
+                    this.$set(skillsInfo, "dialogContent", false); // 实习内容对话框
             });
           });
         }

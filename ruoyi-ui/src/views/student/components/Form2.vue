@@ -186,7 +186,7 @@
               :disabled="state === 1 ? true : state === 0 ? true : false"
               >删除</el-button
             >
-            <el-button @click="dialogContent = true">实习内容</el-button>
+            <el-button @click="scope.row.dialogContent = true">实习内容</el-button>
             <el-button
               v-if="state === 1 ? true : state === 2 ? true : false"
               :type="scope.row.btn_public === 0 ? 'primary' : 'success'"
@@ -196,7 +196,7 @@
             <!--实习内容 弹出框 -->
             <el-dialog
               :title="'计划' + tableHeader.content"
-              :visible.sync="dialogContent"
+              :visible.sync="scope.row.dialogContent"
               append-to-body
             >
               <el-input
@@ -207,8 +207,8 @@
               >
               </el-input>
               <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogContent = false">取 消</el-button>
-                <el-button type="primary" @click="dialogContent = false"
+                <el-button @click="scope.row.dialogContent = false">取 消</el-button>
+                <el-button type="primary" @click="scope.row.dialogContent = false"
                   >确 定</el-button
                 >
               </span>
@@ -259,7 +259,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="ToComment(false)">取 消</el-button>
+        <el-button @click="dialogComment=false">取 消</el-button>
         <el-button
           type="primary"
           v-if="evaluateState === 0"
@@ -291,7 +291,8 @@ export default {
   inject: ["comment"],
   data() {
     return {
-      dialogContent: false, //实习内容弹层
+      dialogComment:false,//自评弹层
+      // dialogContent: false, //实习内容弹层
       lineNumber: 0, //行号
       evaluateId: null, //自评id
       evaluateState: 0, //自评状态
@@ -300,11 +301,10 @@ export default {
       Completiontime: "", //日期选择
       textarea: " ", //自评内容
       Id: "", // 目标岗位id
-      dialogComment: false, //弹出框
       tableTime: "", //表单的结束时间 用来与自评完成时间对比
-      // 控制弹出框
-      dialog: false,
-      textarea2: "", //实习内容
+      // // 控制弹出框
+      // dialog: false,
+ 
       rules: {
         skillsName: [
           { required: true, message: "此不为空", trigger: ["blur", "change"] },
@@ -330,16 +330,10 @@ export default {
         startTime: "", //开始时间
         endTime: "", ///结束时间
         content: "", //实习内容
+        dialogContent: false
       });
     },
-    // // 填写实习内容
-    // writeContent(row) {
-    //   this.dialogContent = true;
-    //   let WriteContent = this.list.skillsInfoList.filter(
-    //     (item) => item.catalogueId === row.catalogueId
-    //   );
-    //   console.log(WriteContent);
-    // },
+
     // 删除当前行
     async deleteRow(index) {
       if (this.state === 2) {
@@ -425,6 +419,7 @@ export default {
           completeTime: this.Completiontime,
           skillsId: this.Id,
         };
+        console.log(secondata)
         const res = await ChangeComment(secondata);
         this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
         this.$message({
@@ -530,6 +525,7 @@ export default {
         };
         console.log(changeDate);
         const res = await updatePosition(changeDate);
+        console.log(res)
         let change = true;
         this.$emit("mySon", row.targetPositionId, change);
         row.btn_public = 0;
