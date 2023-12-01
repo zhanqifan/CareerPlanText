@@ -329,7 +329,7 @@ export default {
         takeRole: "", //计划实践的角色
         startTime: "", //开始时间
         endTime: "", ///结束时间
-        content: "", //实习内容
+        content: "12121", //实习内容
         dialogContent: false
       });
     },

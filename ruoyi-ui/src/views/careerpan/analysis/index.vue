@@ -1,9 +1,14 @@
 <template>
   <div class="main">
     <div class="top">个人数据分析</div>
-    <div>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="前端开发" name="0"  >
+   
+    <div class="tab_btn">
+      <el-button type="text">前端开发</el-button>
+      <el-button type="text">大数据</el-button>
+      <el-button type="text">后端开发</el-button>
+      <el-button type="text">测试</el-button>
+    </div>
+
           <div class="row_title">
             <p class="title1">目标总览</p>
             <p class="title2">数据截止于:2023-11-10</p>
@@ -189,13 +194,9 @@
           </div>
           <!-- 月度完成目标数 -->
           <div class="Month" ref="Month"></div>
-        </el-tab-pane>
-        <el-tab-pane label="前端开发" name="second">配置管理</el-tab-pane>
-        <el-tab-pane label="废止目标一" name="third">角色管理</el-tab-pane>
-        <el-tab-pane label="废止目标二" name="fourth">定时任务补偿</el-tab-pane>
-      </el-tabs>
+     
     </div>
-  </div>
+
 </template>
 
 <script>
@@ -668,6 +669,7 @@ export default {
   height: 100%;
   width: 100%;
   padding: 20px 20px;
+  
   ::deep .el-tabs__header {
     height: 50px;
     border: 1px solid black;
@@ -681,6 +683,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+  .tab_btn{
+    height: 30px;
   }
   .row_title {
     display: flex;
