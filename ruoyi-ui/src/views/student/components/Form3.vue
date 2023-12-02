@@ -302,7 +302,7 @@ export default {
         takeRole: "", //备注
         startTime: "", //开始时间
         endTime: "", ///结束时间
-        content: "",
+        content: " ",
       });
     },
     // 输入框逻辑判断

@@ -445,22 +445,9 @@ export default {
       if (row != null) {
         const res = await getPosition(row.positionId);
         this.comment = null;
-        //  console.log('我是数据',res)
         this.positionDetail = res.data;
-        this.positionDetail.ctatlogueList.forEach((catalogue) => {
-          // 遍历当前目录的 skillsInfoList
-          catalogue.skillsInfoList.forEach((skillsInfo) => {
-            //     // 在每个对象中添加新的属性
-            // 更改为这样 由于是动态添加属性 保证后续组件修改保持响应式
-            this.$set(skillsInfo, "btn_public", 0); // 编辑按钮的切换
-            this.$set(skillsInfo, "inp", true); // 第一个输入框禁用
-            this.$set(skillsInfo, "PickStart", true); // 开始日期禁用
-            this.$set(skillsInfo, "PickEnd", true); // 结束日期禁用
-            this.$set(skillsInfo, "dialogContent", false); // 实习内容对话框
-          });
-        });
+        this.addString();
 
-        // this.positionDetail.ctatlogueList;
         console.log("我是真数据", this.positionDetail);
       }
       // 点击新增置空数组
@@ -474,6 +461,21 @@ export default {
       }
       // console.log(res)
       this.ObjectVisible = true;
+    },
+    // 添加数据字段
+    addString() {
+      this.positionDetail.ctatlogueList.forEach((catalogue) => {
+        // 遍历当前目录的 skillsInfoList
+        catalogue.skillsInfoList.forEach((skillsInfo) => {
+          //     // 在每个对象中添加新的属性
+          // 更改为这样 由于是动态添加属性 保证后续组件修改保持响应式
+          this.$set(skillsInfo, "btn_public", 0); // 编辑按钮的切换
+          this.$set(skillsInfo, "inp", true); // 第一个输入框禁用
+          this.$set(skillsInfo, "PickStart", true); // 开始日期禁用
+          this.$set(skillsInfo, "PickEnd", true); // 结束日期禁用
+          this.$set(skillsInfo, "dialogContent", false); // 实习内容对话框
+        });
+      });
     },
     // 删除草稿岗位
     DeleteRowClick(row) {
@@ -651,19 +653,7 @@ export default {
         const res = await getPosition(targetPositionId);
         this.positionDetail = res.data;
         if (change == true) {
-          this.positionDetail.ctatlogueList.forEach((catalogue) => {
-            // 遍历当前目录的 skillsInfoList
-            catalogue.skillsInfoList.forEach((skillsInfo) => {
-              //     // 在每个对象中添加新的属性
-              // 更改为这样 由于是动态添加属性 保证后续组件修改保持响应式
-              this.$set(skillsInfo, "btn_public", 0); // 编辑按钮的切换
-              this.$set(skillsInfo, "inp", true); // 第一个输入框禁用
-              this.$set(skillsInfo, "PickStart", true); // 开始日期禁用
-              this.$set(skillsInfo, "PickEnd", true); // 结束日期禁用
-              this.$set(skillsInfo, "OriginTime", ""); //时间比对使用
-              this.$set(skillsInfo, "dialogContent", false); // 实习内容对话框
-            });
-          });
+          this.addString()
         }
       }
     },

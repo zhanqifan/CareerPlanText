@@ -21,3 +21,8 @@ export const DeleteComment = (evaluateId) =>{
 export const DeleteSkill = (skillsId)=>{
     return request.delete('/student/position/skills/'+skillsId)
 }
+
+// 数据分析
+export const Getanalysis = (positionId) =>{
+   return request.get('/student/analysis/'+positionId)
+}

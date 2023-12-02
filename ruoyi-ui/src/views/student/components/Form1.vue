@@ -26,7 +26,7 @@
         >新增一行</el-button
       >
     </div>
-
+    <el-button @click="submitForm">校验</el-button>
     <div class="table-boder">
       <!-- 自评表单 -->
       <el-table
@@ -114,8 +114,8 @@
         </el-table-column>
         <el-table-column :label="tableHeader.skill">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules">
-              <el-form-item prop="skillsName">
+            <el-form :model="scope.row" :rules="rules" ref="formData">
+              <el-form-item prop="inp">
                 <el-input
                   :placeholder="tableHeader.point"
                   v-model="scope.row.skillsName"
@@ -129,7 +129,7 @@
         <!-- 开始时间 -->
         <el-table-column :label="tableHeader.start">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules">
+            <el-form :model="scope.row" :rules="rules" ref="formData1">
               <el-form-item prop="startTime">
                 <el-date-picker
                   v-model="scope.row.startTime"
@@ -146,7 +146,7 @@
         <!-- 截止时间 -->
         <el-table-column :label="tableHeader.end">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules">
+            <el-form :model="scope.row" :rules="rules" ref="formData2">
               <el-form-item prop="endTime">
                 <el-date-picker
                   format="yyyy 年 MM 月 dd 日"
@@ -251,6 +251,8 @@ export default {
   props: ["list", "tableHeader", "parentId", "state", "index"],
   data() {
     return {
+      
+      formRefs: [ "formData","formData1","formData2" ],
       lineNumber: 0, //行号
       evaluateId: null, //自评id
       evaluateState: 0, //自评状态
@@ -261,16 +263,15 @@ export default {
       Id: "", // 目标岗位id
       dialogComment: false, //弹出框
       tableTime: "", //表单的结束时间 用来与自评完成时间对比
-
       // 表单校验
       rules: {
-        skillsName: [
-          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+        inp: [
+          { required: true, message: "此不为空", trigger: "blur", },
         ],
         startTime: [
           { required: true, message: "此不为空", trigger: ["blur", "change"] },
         ],
-        endTime: [
+         endTime: [
           { required: true, message: "此不为空", trigger: ["blur", "change"] },
         ],
       },
@@ -287,7 +288,7 @@ export default {
         skillsName: "", //技能名称
         startTime: "", //开始时间
         endTime: "", ///结束时间
-        content: "",
+        content: " ",
       });
     },
     // 删除当前行
@@ -368,13 +369,13 @@ export default {
           evaluateId: this.evaluateId,
           content: this.textarea,
           completionStatus: this.radio,
-          skillsId:this.Id,
-        completeTime: this.Completiontime//时间格式转换
+          skillsId: this.Id,
+          completeTime: this.Completiontime, //时间格式转换
         };
         const res = await ChangeComment(secondata);
-        console.log(secondata)
-        console.log(res)
-      this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
+        console.log(secondata);
+        console.log(res);
+        this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
         this.$message({
           type: "success",
           message: "修改成功",
@@ -387,7 +388,7 @@ export default {
           skillsId: this.Id,
           content: this.textarea,
           completionStatus: this.radio,
-          completeTime: this.Completiontime
+          completeTime: this.Completiontime,
         };
         // console.log(data)
         const res = await TodoComments(data);
@@ -487,7 +488,27 @@ export default {
         });
       }
     },
+   
+    submitForm(){
+        // 标记所有表单是否通过校验的变量
+     let isValid = true
+     // 遍历表单数组，依次对每个表单进行校验
+     this.formRefs.forEach(ref => {
+     	this.$refs[ref].validate(valid => {
+     		if (!valid) {
+     			isValid = false
+     		}
+     	})
+    })
+    if (isValid) {
+     	// 执行提交操作
+      console.log('操作成功')
+     }
+     else{
+      console.log('操作失败')
+     }
 
+    }
     // 提交所有表单
     // submitForms() {
     //   // 遍历所有表单引用
@@ -505,6 +526,8 @@ export default {
     //     });
     //   }
     // },
+
+
   },
 
   computed: {
