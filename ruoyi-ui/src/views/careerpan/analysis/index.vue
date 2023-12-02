@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <div class="top">个人数据分析</div>
-   
+
     <div class="tab_btn">
       <el-button type="text">前端开发</el-button>
       <el-button type="text">大数据</el-button>
@@ -9,205 +9,207 @@
       <el-button type="text">测试</el-button>
     </div>
 
-          <div class="row_title">
-            <p class="title1">目标总览</p>
-            <p class="title2">数据截止于:2023-11-10</p>
-          </div>
-          <!-- 数据块 -->
-          <div class="row_date">
-            <div class="block_date">
-              <p class="total">目标总数</p>
-              <p class="word">8,846</p>
-            </div>
-            <div class="block_date">
-              <p class="total">总体完成率</p>
-              <p class="word">100%</p>
-            </div>
-            <div class="block_date">
-              <p class="total">本年度截取项目数</p>
-              <p class="word">8,846</p>
-            </div>
-            <div class="block_date">
-              <p class="total">本月截止项目数</p>
-              <p class="word">8,846</p>
-            </div>
-            <div class="block_date">
-              <p class="total">年度目标完成率</p>
-              <p class="word">88%</p>
-            </div>
-            <div class="block_date">
-              <p class="total">发布时长</p>
-              <p class="word">8,84天</p>
-            </div>
-          </div>
-          <!-- 柱状图 -->
-          <div class="Histogram" ref="Histogram"></div>
-          <!-- 大类完成率 -->
-          <div class="toLine">
-            <div class="Column" ref="Column"></div>
-            <!-- 同年级系聚类分析 -->
-            <div class="Scatter_plot" ref="Scatter_plot"></div>
-          </div>
-          <!-- 时效分析 -->
-          <div class="row_Circle">
-            <p>时效分析</p>
-            <div class="Circle">
-              <div class="Circle1" ref="Circle1"></div>
-              <div class="Circle2" ref="Circle2"></div>
-              <div class="Circle3" ref="Circle3"></div>
-            </div>
-            <div class="finished">
-              <div>
-                <svg
-                  t="1700728938632"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="1837"
-                  width="16"
-                  height="16"
-                >
-                  <path
-                    d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
-                    fill="#86DF6C"
-                    p-id="1838"
-                  ></path>
-                </svg>
-                <p>已完成</p>
-              </div>
-              <div>
-                <svg
-                  t="1700728938632"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="1837"
-                  width="16"
-                  height="16"
-                >
-                  <path
-                    d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
-                    fill="#B2B2B2"
-                    p-id="1838"
-                  ></path>
-                </svg>
-                <p>未完成</p>
-              </div>
-              <div>
-                <svg
-                  t="1700728938632"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="1837"
-                  width="16"
-                  height="16"
-                >
-                  <path
-                    d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
-                    fill="#249EFF"
-                    p-id="1838"
-                  ></path>
-                </svg>
-                <p>提前</p>
-              </div>
-              <div>
-                <svg
-                  t="1700728938632"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="1837"
-                  width="16"
-                  height="16"
-                >
-                  <path
-                    d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
-                    fill="#7279FF"
-                    p-id="1838"
-                  ></path>
-                </svg>
-                <p>按时</p>
-              </div>
-              <div>
-                <svg
-                  t="1700728938632"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="1837"
-                  width="16"
-                  height="16"
-                >
-                  <path
-                    d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
-                    fill="#6CDFDF"
-                    p-id="1838"
-                  ></path>
-                </svg>
-                <p>超时</p>
-              </div>
-              <div>
-                <svg
-                  t="1700728938632"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="1837"
-                  width="16"
-                  height="16"
-                >
-                  <path
-                    d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
-                    fill="#FFB400"
-                    p-id="1838"
-                  ></path>
-                </svg>
-                <p>未过期</p>
-              </div>
-              <div>
-                <svg
-                  t="1700728938632"
-                  class="icon"
-                  viewBox="0 0 1024 1024"
-                  version="1.1"
-                  xmlns="http://www.w3.org/2000/svg"
-                  p-id="1837"
-                  width="16"
-                  height="16"
-                >
-                  <path
-                    d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
-                    fill="#D20E0E"
-                    p-id="1838"
-                  ></path>
-                </svg>
-                <p>过期</p>
-              </div>
-            </div>
-          </div>
-          <!-- 月度完成目标数 -->
-          <div class="Month" ref="Month"></div>
-     
+    <div class="row_title">
+      <p class="title1">目标总览</p>
+      <p class="title2">数据截止于:{{ Studentlist.deadlineDate }}</p>
     </div>
-
+    <!-- 数据块 -->
+    <div class="row_date">
+      <div class="block_date">
+        <p class="total">目标总数</p>
+        <p class="word">{{ Studentlist.targetNum }}</p>
+      </div>
+      <div class="block_date">
+        <p class="total">总体完成率</p>
+        <p class="word">{{ Studentlist.completionRate }}%</p>
+      </div>
+      <div class="block_date">
+        <p class="total">本年度截取项目数</p>
+        <p class="word">{{ Studentlist.yearClose }}</p>
+      </div>
+      <div class="block_date">
+        <p class="total">本月截止项目数</p>
+        <p class="word">{{ Studentlist.moonClose }}</p>
+      </div>
+      <div class="block_date">
+        <p class="total">年度目标完成率</p>
+        <p class="word">{{ Studentlist.yearCompletionRate }}</p>
+      </div>
+      <div class="block_date">
+        <p class="total">发布时长</p>
+        <p class="word">{{ Studentlist.releaseDuration }}天</p>
+      </div>
+    </div>
+    <!-- 柱状图 -->
+    <div class="Histogram" ref="Histogram"></div>
+    <!-- 大类完成率 -->
+    <div class="toLine">
+      <div class="Column" ref="Column"></div>
+      <!-- 同年级系聚类分析 -->
+      <div class="Scatter_plot" ref="Scatter_plot"></div>
+    </div>
+    <!-- 时效分析 -->
+    <div class="row_Circle">
+      <p>时效分析</p>
+      <div class="Circle">
+        <div class="Circle1" ref="Circle1"></div>
+        <div class="Circle2" ref="Circle2"></div>
+        <div class="Circle3" ref="Circle3"></div>
+      </div>
+      <div class="finished">
+        <div>
+          <svg
+            t="1700728938632"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="1837"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+              fill="#86DF6C"
+              p-id="1838"
+            ></path>
+          </svg>
+          <p>已完成</p>
+        </div>
+        <div>
+          <svg
+            t="1700728938632"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="1837"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+              fill="#B2B2B2"
+              p-id="1838"
+            ></path>
+          </svg>
+          <p>未完成</p>
+        </div>
+        <div>
+          <svg
+            t="1700728938632"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="1837"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+              fill="#249EFF"
+              p-id="1838"
+            ></path>
+          </svg>
+          <p>提前</p>
+        </div>
+        <div>
+          <svg
+            t="1700728938632"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="1837"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+              fill="#7279FF"
+              p-id="1838"
+            ></path>
+          </svg>
+          <p>按时</p>
+        </div>
+        <div>
+          <svg
+            t="1700728938632"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="1837"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+              fill="#6CDFDF"
+              p-id="1838"
+            ></path>
+          </svg>
+          <p>超时</p>
+        </div>
+        <div>
+          <svg
+            t="1700728938632"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="1837"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+              fill="#FFB400"
+              p-id="1838"
+            ></path>
+          </svg>
+          <p>未过期</p>
+        </div>
+        <div>
+          <svg
+            t="1700728938632"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="1837"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+              fill="#D20E0E"
+              p-id="1838"
+            ></path>
+          </svg>
+          <p>过期</p>
+        </div>
+      </div>
+    </div>
+    <!-- 月度完成目标数 -->
+    <div class="Month" ref="Month"></div>
+  </div>
 </template>
 
 <script>
 import * as echarts from "echarts";
 import { listPosition } from "@/api/student/position.js";
-import {Getanalysis} from "@/api/student/mycomment.js"
+import { Getanalysis } from "@/api/student/mycomment.js";
 export default {
   data() {
     return {
       activeName: 0,
       positionList: [],
+      Studentlist: {}, //总数据
+      SubAnalysList: [], // 子目标数明细和完成率
+      firstAnalysisList: [], // 大类完成率
+      clusterAnalysisVos: [], //同年级系聚类分析
     };
   },
   methods: {
@@ -217,16 +219,24 @@ export default {
       this.positionList.forEach((item) => {
         item.id = this.activeName++;
       });
-      console.log(this.positionList);
-    }, 
-  async StudentData(){
-     const res = await Getanalysis("1fc20d5eafc64c25a76dfc20174c29ef")
-      console.log(res)
-  }
+      // console.log(this.positionList);
+    },
+    async StudentDate() {
+      let positionId = "a580b08a3d9644db92dd666ade768087";
+      const res = await Getanalysis(positionId);
+      console.log(res);
+      this.Studentlist = res.data;
+      this.SubAnalysList = res.data.subAnalysisList;
+      this.firstAnalysisList = res.data.firstAnalysisList;
+      this.clusterAnalysisVos = res.data.clusterAnalysisVos;
+      console.log(this.clusterAnalysisVos);
+    },
   },
-  mounted() {
-    
 
+  async mounted() {
+    await this.StudentDate();
+
+    // 子目标数明细和完成率
     var Histogram = echarts.init(this.$refs.Histogram);
     Histogram.setOption({
       title: {
@@ -238,25 +248,11 @@ export default {
         left: 40,
         right: 60,
       },
-      tooltip: {},
+      tooltip: {
+   
+      },
       xAxis: {
-        data: [
-          "专业技能",
-          "其他技能",
-          "竞赛奖项",
-          "学业奖项",
-          "实践奖项",
-          "活动奖项",
-          "其他奖项",
-          "职业资格证书",
-          "职业技能证书",
-          "其他证书",
-          "实习经历",
-          "科研项目",
-          "专利成果",
-          "学生会",
-          "兴趣爱好",
-        ],
+        data: this.SubAnalysList.map((item) => item.secondaryName),
       },
       yAxis: [
         {
@@ -266,6 +262,7 @@ export default {
           max: 10,
           interval: 5,
         },
+
         {
           type: "value",
           name: "完成率",
@@ -274,7 +271,7 @@ export default {
           interval: 50, //数值差
           position: "right", //y轴位置
           axisLabel: {
-            formatter: "{value} °%",
+            formatter: "{value}%", // 通过 formatter 显示百分比
           },
         },
       ],
@@ -282,20 +279,25 @@ export default {
         {
           barWidth: 30,
           type: "bar",
-          data: [5, 3, 10, 4, 5, 2, 9, 3, 7, 6, 1, 3, 7, 6, 1],
+          data: this.SubAnalysList.map((item) => item.secondaryCompletionNum),
           itemStyle: {
             color: "#3BA1FF", // 设置柱子颜色
           },
         },
+
         {
           name: "折线图",
           type: "line",
           yAxisIndex: 1,
-          data: [30, 55, 70, 80, 50, 12, 60, 100, 40, 88, 55, 80, 50, 12, 60],
+          data: this.SubAnalysList.map((item) =>
+            (item.secondaryCompletionRate * 100).toFixed(1)
+          ),
+          
         },
       ],
     });
 
+    // 大类完成率
     var Column = echarts.init(this.$refs.Column);
     Column.setOption({
       title: {
@@ -306,26 +308,26 @@ export default {
         axisPointer: {
           type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
         },
+        formatter: function (params) {
+          // 在这里进行格式化，将小数转为百分比
+          var percent = (params[0].data * 100).toFixed(2) + "%";
+          return params[0].name + ": " + percent;
+        },
       },
       xAxis: [
         {
           type: "value",
           name: "完成率",
+
           // 坐标轴标签名
           axisLabel: {
             show: false,
           },
+          max: 1,
         },
       ],
       yAxis: {
-        data: [
-          "专业技能",
-          "其他技能",
-          "竞赛奖项",
-          "学业奖项",
-          "实践奖项",
-          "活动奖项",
-        ],
+        data: this.firstAnalysisList.map((item) => item.firstName),
         axisLine: {
           show: false, //是否显示坐标轴轴线
         },
@@ -338,7 +340,7 @@ export default {
         {
           barWidth: 10, //柱状宽度
           type: "bar",
-          data: [1.3, 2.7, 0.5, 2.1, 0.9, 1.6, 2.4, 0.8, 1.2, 2.2], //数值
+          data: this.firstAnalysisList.map((item) => item.firstCompletionRate), //数值
           itemStyle: {
             color: "#3BA1FF", // 设置柱子颜色
             borderRadius: 10, //边框锐值
@@ -347,6 +349,7 @@ export default {
       ],
     });
 
+    // 同年级系聚类分析
     var Scatter_plot = echarts.init(this.$refs.Scatter_plot);
     Scatter_plot.setOption({
       title: [
@@ -385,15 +388,7 @@ export default {
         },
       ],
 
-      //   tooltip: {
-      //   trigger: "axis",
-      //   axisPointer: {
-      //     type: "shadow", // 默认为直线，可选为：'line' | 'shadow'
-      //   },
-      // },
       xAxis: {
-        //   type: "value",
-        //   name: "完成率",
         type: "value",
         name: "完成率",
         min: 0, //最小
@@ -447,23 +442,29 @@ export default {
         left: "center",
         top: "center",
       },
+      tooltip: {
+        formatter: function (params) {
+          return params.name + ": " + params.percent.toFixed(1) + "%";
+        },
+      },
       series: [
         {
           type: "pie",
           data: [
             {
               value: 335,
-              name: "A",
+              name: "已完成",
             },
             {
               value: 234,
-              name: "B",
-            },
-            {
-              value: 1548,
-              name: "C",
+              name: "未完成",
             },
           ],
+          label: {
+            formatter: function (data) {
+              return `${data.name}\n${data.percent.toFixed(1)}%`;
+            },
+          },
           radius: ["50%", "70%"],
         },
       ],
@@ -476,6 +477,11 @@ export default {
         left: "center",
         top: "center",
       },
+        tooltip: {
+        formatter: function (params) {
+          return params.name + ": " + params.percent.toFixed(1) + "%";
+        },
+      },
       series: [
         {
           type: "pie",
@@ -483,13 +489,18 @@ export default {
           data: [
             {
               value: 335,
-              name: "A",
+              name: "提前",
             },
             {
               value: 234,
-              name: "B",
+              name: "超时",
             },
           ],
+           label: {
+            formatter: function (data) {
+              return `${data.name}\n${data.percent.toFixed(1)}%`;
+            },
+          },
           radius: ["50%", "70%"],
         },
       ],
@@ -501,6 +512,11 @@ export default {
         text: "未完成",
         left: "center",
         top: "center",
+      },
+      tooltip: {
+        formatter: function (params) {
+          return params.name + ": " + params.percent.toFixed(1) + "%";
+        },
       },
       series: [
         {
@@ -519,6 +535,11 @@ export default {
               name: "C",
             },
           ],
+          label: {
+            formatter: function (data) {
+              return `${data.name}\n${data.percent.toFixed(1)}%`;
+            },
+          },
           // 内半径和外半径(圆大小)
           radius: ["50%", "70%"],
         },
@@ -589,8 +610,6 @@ export default {
   },
   created() {
     this.getList();
-    this.StudentData()
-
   },
 };
 </script>
@@ -601,7 +620,7 @@ export default {
   height: 100%;
   width: 100%;
   padding: 20px 20px;
-  
+
   ::deep .el-tabs__header {
     height: 50px;
     border: 1px solid black;
@@ -616,7 +635,7 @@ export default {
     align-items: center;
     justify-content: space-between;
   }
-  .tab_btn{
+  .tab_btn {
     height: 30px;
   }
   .row_title {
@@ -690,15 +709,15 @@ export default {
       display: flex;
       justify-content: space-around;
       .Circle1 {
-        width: 350px;
+        width: 450px;
         height: 350px;
       }
       .Circle2 {
-        width: 350px;
+        width: 400px;
         height: 350px;
       }
       .Circle3 {
-        width: 350px;
+        width: 400px;
         height: 350px;
       }
     }

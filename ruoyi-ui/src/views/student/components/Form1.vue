@@ -114,8 +114,8 @@
         </el-table-column>
         <el-table-column :label="tableHeader.skill">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules" ref="formData">
-              <el-form-item prop="inp">
+            <el-form :model="scope.row" :rules="rules" ref="formData1">
+              <el-form-item prop="skillsName">
                 <el-input
                   :placeholder="tableHeader.point"
                   v-model="scope.row.skillsName"
@@ -129,7 +129,7 @@
         <!-- 开始时间 -->
         <el-table-column :label="tableHeader.start">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules" ref="formData1">
+            <el-form :model="scope.row" :rules="rules" ref="formData2">
               <el-form-item prop="startTime">
                 <el-date-picker
                   v-model="scope.row.startTime"
@@ -146,7 +146,7 @@
         <!-- 截止时间 -->
         <el-table-column :label="tableHeader.end">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules" ref="formData2">
+            <el-form :model="scope.row" :rules="rules" ref="formData3">
               <el-form-item prop="endTime">
                 <el-date-picker
                   format="yyyy 年 MM 月 dd 日"
@@ -265,8 +265,8 @@ export default {
       tableTime: "", //表单的结束时间 用来与自评完成时间对比
       // 表单校验
       rules: {
-        inp: [
-          { required: true, message: "此不为空", trigger: "blur", },
+        skillsName: [
+          { required: true, message: "此不为空",  trigger: ["blur", "change"]},
         ],
         startTime: [
           { required: true, message: "此不为空", trigger: ["blur", "change"] },
@@ -488,27 +488,31 @@ export default {
         });
       }
     },
-   
-    submitForm(){
-        // 标记所有表单是否通过校验的变量
-     let isValid = true
-     // 遍历表单数组，依次对每个表单进行校验
-     this.formRefs.forEach(ref => {
-     	this.$refs[ref].validate(valid => {
-     		if (!valid) {
-     			isValid = false
-     		}
-     	})
-    })
-    if (isValid) {
-     	// 执行提交操作
-      console.log('操作成功')
-     }
-     else{
-      console.log('操作失败')
-     }
-
+   submitForm() {
+      let list = [];
+      list.push(
+        this.checkForm("formData1"),
+        this.checkForm("formData2"),
+        this.checkForm("formData3"),
+      );
+      Promise.all(list)
+        .then(() => {
+          console.log("通过检测");
+        })
+        .catch(() => {
+          console.log("未通过");
+        });
+    },
+    checkForm(formName) {
+      return new Promise((resolve, reject) => {
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            resolve();
+          } else reject();
+        });
+      });
     }
+
     // 提交所有表单
     // submitForms() {
     //   // 遍历所有表单引用
