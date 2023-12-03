@@ -86,22 +86,22 @@
       <el-table-column
         label="本年度1-6月项目数"
         align="center"
-        prop="completionRate1"
+        prop="completedQuantity1"
       />
       <el-table-column
         label="本年度1-6月完成率"
         align="center"
-        prop="completionRate2"
+        prop="completionRate1"
       />
       <el-table-column
         label="本年度7-12月项目数"
         align="center"
-        prop="completedQuantity1"
+        prop="completedQuantity2"
       />
       <el-table-column
         label="本年度7-12月完成率"
         align="center"
-        prop="completedQuantity2"
+        prop="completionRate2"
       />
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
