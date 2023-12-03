@@ -26,7 +26,7 @@
         >新增一行</el-button
       >
     </div>
-    <el-button @click="submitForm">校验</el-button>
+    <el-button @click="submitForm">测试校验</el-button>
     <div class="table-boder">
       <!-- 自评表单 -->
       <el-table

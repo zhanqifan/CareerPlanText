@@ -203,6 +203,7 @@
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 4 }"
                 placeholder="请输入内容"
+                :disabled="scope.row.inp"
                 v-model="scope.row.content"
               >
               </el-input>
@@ -329,7 +330,7 @@ export default {
         takeRole: "", //计划实践的角色
         startTime: "", //开始时间
         endTime: "", ///结束时间
-        content: "", //实习内容
+        content: " ", //实习内容
         dialogContent: false
       });
     },
@@ -516,7 +517,7 @@ export default {
           endTime: row.endTime,
           startTime: row.startTime,
           take_role: row.takeRole,
-          content: row.content!=null ? row.content : ' ',
+          content: row.content,
           targetPositionId: row.targetPositionId,
           modificationsNumber:
             row.OriginTime === row.endTime
