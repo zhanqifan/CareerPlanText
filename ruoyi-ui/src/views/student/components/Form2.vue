@@ -26,9 +26,8 @@
         >新增一行</el-button
       >
     </div>
-    <!-- 表格 -->
     <div class="table-boder">
-      <!-- 自评表单 -->
+      <!-- 自评 -->
       <el-table
         class="tables"
         :data="list.skillsInfoList"
@@ -46,7 +45,16 @@
             ></el-input>
           </template>
         </el-table-column>
-
+        <el-table-column :label="tableHeader.skillsName">
+          <template slot-scope="scope">
+            <el-input
+              :placeholder="tableHeader.point1"
+              v-model="scope.row.skillsName1"
+              disabled
+              clearable
+            ></el-input>
+          </template>
+        </el-table-column>
         <el-table-column :label="tableHeader.start">
           <template slot-scope="scope">
             <el-date-picker
@@ -57,7 +65,6 @@
             </el-date-picker>
           </template>
         </el-table-column>
-
         <el-table-column :label="tableHeader.end">
           <template slot-scope="scope">
             <el-date-picker
@@ -89,18 +96,18 @@
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.evaluateState === 0"
+              v-show="scope.row.evaluateState === 0"
               @click="ToComment(true, scope.row, 0)"
             >
               去自评
             </el-button>
             <el-button
               @click="ToComment(true, scope.row, 1)"
-              v-if="scope.row.evaluateState === 1"
+              v-show="scope.row.evaluateState === 1"
               >编辑自评</el-button
             >
             <el-button
-              v-if="scope.row.evaluateState === 1"
+              v-show="scope.row.evaluateState === 1"
               @click="delComment(scope.row)"
               >删除自评</el-button
             >
@@ -111,59 +118,79 @@
       <el-table class="tables" :data="list.skillsInfoList" v-else>
         <el-table-column label="序号" type="index" width="50">
         </el-table-column>
-        <!-- 序号 -->
         <el-table-column :label="tableHeader.skill">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules">
+            <el-form
+              :model="scope.row"
+              :rules="rules"
+              style="margin-top: 16px"
+              :ref="'formData1' + scope.$index"
+            >
               <el-form-item prop="skillsName">
                 <el-input
                   :placeholder="tableHeader.point"
-                  v-model="scope.row.skillsName"
                   :disabled="scope.row.inp"
+                  v-model="scope.row.skillsName"
                   clearable
                 ></el-input>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
-
         <el-table-column :label="tableHeader.skillsName">
           <template slot-scope="scope">
-            <el-input
-              :placeholder="tableHeader.point1"
-              v-model="scope.row.takeRole"
-              :disabled="scope.row.inp"
-              clearable
-            ></el-input>
+            <el-form
+              :model="scope.row"
+              :rules="rules"
+              style="margin-top: 16px"
+              :ref="'formData2' + scope.$index"
+            >
+              <el-form-item prop="takeRole">
+                <el-input
+                  :placeholder="tableHeader.point1"
+                  :disabled="scope.row.inp"
+                  v-model="scope.row.takeRole"
+                  clearable
+                ></el-input>
+              </el-form-item>
+            </el-form>
           </template>
         </el-table-column>
-        <!-- 开始时间 -->
         <el-table-column :label="tableHeader.start">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules">
+            <el-form
+              :model="scope.row"
+              :rules="rules"
+              style="margin-top: 16px"
+              :ref="'formData3' + scope.$index"
+            >
               <el-form-item prop="startTime">
                 <el-date-picker
+                  v-model="scope.row.startTime"
+                  placeholder="请选择时间"
+                  :disabled="scope.row.PickStart"
                   format="yyyy 年 MM 月 dd 日"
                   value-format="yyyy-MM-dd"
-                  v-model="scope.row.startTime"
-                  :disabled="scope.row.PickStart"
-                  placeholder="请选择时间"
                 >
                 </el-date-picker>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
-        <!-- 结束时间 -->
         <el-table-column :label="tableHeader.end">
           <template slot-scope="scope">
-            <el-form :model="scope.row" :rules="rules">
+            <el-form
+              :model="scope.row"
+              :rules="rules"
+              style="margin-top: 16px"
+              :ref="'formData4' + scope.$index"
+            >
               <el-form-item prop="endTime">
                 <el-date-picker
-                  format="yyyy 年 MM 月 dd 日"
-                  value-format="yyyy-MM-dd"
                   v-model="scope.row.endTime"
                   :disabled="scope.row.PickEnd"
+                  format="yyyy 年 MM 月 dd 日"
+                  value-format="yyyy-MM-dd"
                   placeholder="请选择时间"
                 >
                 </el-date-picker>
@@ -171,10 +198,9 @@
             </el-form>
           </template>
         </el-table-column>
-
         <el-table-column :label="tableHeader.content">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.content.trim()!=''">已完成</el-tag>
+            <el-tag v-if="scope.row.content != null">已完成</el-tag>
             <el-tag v-else>未完成</el-tag>
           </template>
         </el-table-column>
@@ -182,17 +208,23 @@
           <template slot-scope="scope">
             <el-button
               type="danger"
-              @click="deleteRow(scope.$index)"
+              @click="deleteRow(scope.$index, scope.row)"
               :disabled="state === 1 ? true : state === 0 ? true : false"
               >删除</el-button
             >
-            <el-button @click="scope.row.dialogContent = true">实习内容</el-button>
+            <el-button @click="scope.row.dialogContent = true"
+              >实习内容</el-button
+            >
             <el-button
               v-if="state === 1 ? true : state === 2 ? true : false"
               :type="scope.row.btn_public === 0 ? 'primary' : 'success'"
-              @click="ChangeRow(scope.row)"
+              @click="ChangeRow(scope.row, scope.$index)"
               >{{ scope.row.btn_public === 0 ? "编辑" : "保存" }}</el-button
             >
+            <el-button v-if="scope.row.evaluateState===1 && state===0" @click="ToComment(true, scope.row, 2)"
+              >查看自评</el-button
+            >
+
             <!--实习内容 弹出框 -->
             <el-dialog
               :title="'计划' + tableHeader.content"
@@ -208,8 +240,12 @@
               >
               </el-input>
               <span slot="footer" class="dialog-footer">
-                <el-button @click="scope.row.dialogContent = false">取 消</el-button>
-                <el-button type="primary" @click="scope.row.dialogContent = false"
+                <el-button @click="scope.row.dialogContent = false"
+                  >取 消</el-button
+                >
+                <el-button
+                  type="primary"
+                  @click="scope.row.dialogContent = false"
                   >确 定</el-button
                 >
               </span>
@@ -217,64 +253,71 @@
           </template>
         </el-table-column>
       </el-table>
-    </div>
 
-    <!-- 自评弹窗 -->
-    <el-dialog
-      title="自评"
-      :visible.sync="dialogComment"
-      width="25%"
-      append-to-body
-      ref="myDialog"
-    >
-      <el-form :model="form">
-        <el-form-item label="完成情况" label-width="formLabelWidth">
-          <el-radio v-model="radio" label="1">已完成</el-radio>
-          <el-radio v-model="radio" label="0">未完成</el-radio>
-        </el-form-item>
-        <el-form-item
-          label="完成时间"
-          label-width="formLabelWidth"
-          v-if="Picker"
+      <!-- 自评弹窗 -->
+      <el-dialog
+        title="自评"
+        :visible.sync="dialogComment"
+        width="25%"
+        append-to-body
+        ref="myDialog"
+      >
+        <el-form
+          :model="formComment"
+          :rules="formCommentrules"
+          class="CommentForm"
+          ref="CommentForm"
         >
-          <el-date-picker
-            v-model="Completiontime"
-            format="yyyy 年 MM 月 dd 日"
-            value-format="yyyy-MM-dd"
-            type="date"
-            placeholder="选择日期"
+          <el-form-item label="完成情况" label-width="formLabelWidth">
+            <el-radio v-model="radio" label="1" :disabled="lookComment" >已完成</el-radio>
+            <el-radio v-model="radio" label="0" :disabled="lookComment">未完成</el-radio>
+          </el-form-item>
+          <el-form-item
+            label="完成时间"
+            label-width="formLabelWidth"
+            v-if="Picker"
+            prop="Completiontime"
           >
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item>
-          <el-input
-            type="textarea"
-            v-if="PickeDate"
-            :rows="6"
-            :placeholder="
-              radio === '1' ? '请输入超时完成原因' : '请输入未完成原因'
-            "
-            v-model="textarea"
+            <el-date-picker
+              v-model="formComment.Completiontime"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd"
+              type="date"
+              placeholder="选择日期"
+              :disabled="lookComment"
+            >
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item v-if="PickeDate" prop="textarea">
+            <el-input
+              type="textarea"
+              :rows="6"
+              :placeholder="
+                radio === '1' ? '请输入超时完成原因' : '请输入未完成原因'
+              "
+              :disabled="lookComment"
+              v-model="formComment.textarea"
+            >
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="ToComment(false)"   v-if="lookComment == false">取 消</el-button>
+          <el-button
+            type="primary"
+            v-if="evaluateState === 0 && lookComment == false"
+            @click="Subcommit(evaluateState, 'CommentForm')"
+            >确 定</el-button
           >
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogComment=false">取 消</el-button>
-        <el-button
-          type="primary"
-          v-if="evaluateState === 0"
-          @click="Subcommit(evaluateState)"
-          >确 定</el-button
-        >
-        <el-button
-          type="primary"
-          v-if="evaluateState === 1"
-          @click="Subcommit(evaluateState)"
-          >修改</el-button
-        >
-      </div>
-    </el-dialog>
+          <el-button
+            type="primary"
+            v-if="evaluateState === 1 &&lookComment == false"
+            @click="Subcommit(evaluateState, 'CommentForm')"
+            >修改</el-button
+          >
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -292,29 +335,68 @@ export default {
   inject: ["comment"],
   data() {
     return {
-      dialogComment:false,//自评弹层
+      formComment: {
+        Completiontime: "", //日期选择
+        textarea: "", //自评内容
+      },
+      formCommentrules: {
+        Completiontime: [
+          {
+            required: true,
+            message: "请选择时间",
+            trigger: "blur",
+          },
+        ],
+        textarea: [
+          {
+            required: true,
+            message: "请输入你的原因",
+            trigger: ["blur","change"],
+          },
+        ],
+      },
+      dialogComment: false, //自评弹层
+      lookComment: false,//自评禁用
       // dialogContent: false, //实习内容弹层
       lineNumber: 0, //行号
       evaluateId: null, //自评id
       evaluateState: 0, //自评状态
       targetPositionId: "", //目标id(通知页面数据刷新用)
       radio: "1", //选项
-      Completiontime: "", //日期选择
-      textarea: " ", //自评内容
+
       Id: "", // 目标岗位id
       tableTime: "", //表单的结束时间 用来与自评完成时间对比
       // // 控制弹出框
       // dialog: false,
- 
+
       rules: {
         skillsName: [
-          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+          {
+            required: true,
+            message: "请输入名称",
+            trigger: ["blur", "change"],
+          },
+        ],
+        takeRole: [
+          {
+            required: true,
+            message: "请输入名称",
+            trigger: ["blur", "change"],
+          },
         ],
         startTime: [
-          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+          {
+            required: true,
+            message: "请选择时间",
+            trigger: ["blur", "change"],
+          },
         ],
         endTime: [
-          { required: true, message: "此不为空", trigger: ["blur", "change"] },
+          {
+            required: true,
+            message: "请选择时间",
+            trigger: ["blur", "change"],
+          },
         ],
       },
     };
@@ -331,14 +413,13 @@ export default {
         startTime: "", //开始时间
         endTime: "", ///结束时间
         content: " ", //实习内容
-        dialogContent: false
+        dialogContent: false,
       });
     },
-
     // 删除当前行
-    async deleteRow(index) {
-      if (this.state === 2) {
-        const res = await DeleteRow(id);
+    async deleteRow(index, row) {
+      if (this.state === 2 && row.skillsName != "") {
+        const res = await DeleteRow(row.id);
         console.log(res);
         this.$message({
           message: "删除成功",
@@ -395,32 +476,54 @@ export default {
 
     // 弹层控制
     ToComment(value, row, sum) {
-      this.dialogComment = value; //弹窗
+      this.dialogComment = value; //弹窗开关
       this.tableTime = row.endTime; //结束时间 用与用户的对比
       this.Id = row.id; //传参用的id
-      this.Completiontime = row.completeTime; //用户选择的完成时间
+      this.formComment.Completiontime = row.completeTime; //用户选择的完成时间
       this.evaluateState = row.evaluateState;
       this.targetPositionId = row.targetPositionId;
       console.log(this.Id);
-
+      
+      // 去自评 先清空所有数据
+      if(sum===0){
+        this.formComment.Completiontime=''
+        this.formComment.textarea=''
+         this.radio="1"
+         this.lookComment = false;//可编辑态
+      }
       // 如果是编辑按钮 做数据回显
       if (sum === 1) {
+        this.lookup(row);
+        this.lookComment = false;//可编辑态
+      } 
+      // 查看态 禁用权限
+      else if (sum === 2) {
+        this.lookComment = true;//禁用态
         this.lookup(row);
       }
     },
     // 发送自评1 修改自评0
-    async Subcommit(evaluateState) {
-      // console.log(evaluateState);
+    async Subcommit(evaluateState, formName) {
+      // 先进入表单校验
+      await new Promise((resolve, reject) => {
+        this.$refs[formName].validate((valid) => {
+          if (!valid) {
+            reject(); // 如果验证失败，退出整个 Promise
+          } else {
+            resolve(); // 如果验证通过，继续执行后面的代码
+          }
+        });
+      });
       // 修改自评
       if (evaluateState === 1) {
         let secondata = {
           evaluateId: this.evaluateId,
-          content: this.textarea,
+          content: this.formComment.textarea + " ",
           completionStatus: this.radio,
-          completeTime: this.Completiontime,
+          completeTime: this.formComment.Completiontime,
           skillsId: this.Id,
         };
-        console.log(secondata)
+        console.log(secondata);
         const res = await ChangeComment(secondata);
         this.$emit("mySon", this.targetPositionId); //通知爷组件刷新
         this.$message({
@@ -433,9 +536,9 @@ export default {
         // 添加自评
         let data = {
           skillsId: this.Id,
-          content: this.textarea,
+          content: this.formComment.textarea + " ",
           completionStatus: this.radio,
-          completeTime: this.Completiontime,
+          completeTime: this.formComment.Completiontime,
         };
         // console.log(data)
         const res = await TodoComments(data);
@@ -453,9 +556,9 @@ export default {
       console.log(res);
       // 以下为回显
       this.radio = row.completionStatus.toString();
-      this.textarea = res.data.content; //文本回显
+      this.formComment.textarea = res.data.content; //文本回显
       this.evaluateId = res.data.evaluateId; //自评id
-      this.Completiontime = res.data.completeTime; //日期
+      this.formComment.Completiontime = res.data.completeTime; //日期
     },
 
     // 删除自评
@@ -490,7 +593,7 @@ export default {
     },
 
     // 保存修改
-    async ChangeRow(row) {
+    async ChangeRow(row, index) {
       if (row.btn_public === 0) {
         // 进入发布态切换
         this.inputDisbale(row);
@@ -511,22 +614,25 @@ export default {
 
         return;
       } else if (row.btn_public === 1) {
+        await this.checkForm("formData1" + index);
+        await this.checkForm("formData2" + index);
+        await this.checkForm("formData3" + index);
         let changeDate = {
           id: row.id,
           skillsName: row.skillsName,
           endTime: row.endTime,
           startTime: row.startTime,
           take_role: row.takeRole,
-          content: row.content,
+          content: row.content + " ",
           targetPositionId: row.targetPositionId,
           modificationsNumber:
             row.OriginTime === row.endTime
               ? row.modificationsNumber
               : row.modificationsNumber + 1,
         };
-        console.log(changeDate);
+        // console.log(changeDate);
         const res = await updatePosition(changeDate);
-        console.log(res)
+        // console.log(res);
         let change = true;
         this.$emit("mySon", row.targetPositionId, change);
         row.btn_public = 0;
@@ -550,7 +656,39 @@ export default {
       // 格式化为 "YYYY-MM-DD"
       return `${year}-${month}-${day}`;
     },
+    // 表单校验
+    submitForm() {
+      //  console.log(this.list.skillsInfoList)
+      let list = [];
+      this.list.skillsInfoList.forEach((element, index) => {
+        list.push(
+          this.checkForm("formData1" + index),
+          this.checkForm("formData2" + index),
+          this.checkForm("formData3" + index),
+          this.checkForm("formData4" + index)
+        );
+      });
+      Promise.all(list)
+        .then(() => {
+          this.$emit("myForm", 1); //当前表单校验成功告知父组件
+          console.log("通过检测");
+        })
+        .catch(() => {
+          this.$emit("myForm", 0);
+          console.log("未通过");
+        });
+    },
+    checkForm(formName) {
+      return new Promise((resolve, reject) => {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            resolve();
+          } else reject();
+        });
+      });
+    },
   },
+
   // 自评计算属性
   computed: {
     //  完成情况控制时间显示
@@ -563,7 +701,7 @@ export default {
     },
     // 日期判断控制
     PickeDate() {
-      const date1 = new Date(this.Completiontime).getTime();
+      const date1 = new Date(this.formComment.Completiontime).getTime();
       const date2 = new Date(this.tableTime).getTime();
       if (date1 > date2) {
         return true;
@@ -574,7 +712,9 @@ export default {
       }
     },
   },
-  created() {},
+  created() {
+    console.log(this.list.skillsInfoList);
+  },
 };
 </script>
 
@@ -593,5 +733,10 @@ export default {
 }
 .btn_row {
   margin-bottom: 20px;
+}
+.CommentForm {
+  ::v-deep .el-form-item__error {
+    margin-left: 80px;
+  }
 }
 </style>

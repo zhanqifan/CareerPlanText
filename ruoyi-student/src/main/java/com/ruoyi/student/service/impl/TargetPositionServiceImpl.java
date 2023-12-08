@@ -98,12 +98,14 @@ public class TargetPositionServiceImpl implements ITargetPositionService
         targetPosition.setCreateBy(SecurityUtils.getUsername());
         targetPosition.setState(1);
         List<TargetPosition> targetPositions = targetPositionMapper.selectTargetPositionList(targetPosition);
-        if (!targetPositions.isEmpty()) {
+        if (StringUtils.isNotEmpty(targetPositions)) {
             // 如果是更新操作，将原主目标职位的 isMain 设置为 0
             if (isUpdate) {
                 TargetPosition mainPosition = targetPositions.get(0);
                 mainPosition.setIsMain(0);
                 targetPositionMapper.updateTargetPosition(mainPosition);
+                //设置当前目标为主目标
+                position.setIsMain(1);
             }
         } else {
             // 如果没有主目标职位，将当前职位设置为主目标

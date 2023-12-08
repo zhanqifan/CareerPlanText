@@ -53,6 +53,7 @@
               @click="commit('1')"
               >发布</el-button
             >
+         
           </div>
         </div>
         <!-- 表单内容 -->
@@ -60,18 +61,22 @@
           <!-- 目标岗位 -->
           <div class="inp_top">
             <p>目标岗位名称</p>
-            <el-input
-              style="width: 300px; margin-left: 30px"
-              placeholder="请输入目标岗位"
-              v-model="positionDetail.positionName"
-              :disabled="
-                this.positionDetail.state === 1
-                  ? true
-                  : this.positionDetail.state != 0
-                  ? false
-                  : true
-              "
-            ></el-input>
+            <el-form :model="positionDetail" style="margin-top:30px" :rules="rules"  ref="getName">
+              <el-form-item prop="positionName">
+                <el-input
+                  style="width: 300px; margin-left: 30px"
+                  placeholder="请输入目标岗位"
+                  v-model="positionDetail.positionName"
+                  :disabled="
+                    positionDetail.state === 1
+                      ? true
+                      : positionDetail.state != 0
+                      ? false
+                      : true
+                  "
+                ></el-input>
+              </el-form-item>
+            </el-form>
           </div>
 
           <div class="list">
@@ -88,6 +93,8 @@
                 :tableHeader="tableHeader[index]"
                 :key="list.catalogueId"
                 :list="list"
+                ref="dataForm"
+                @myForm="handleForm"
                 @mySon="handlemyson"
               />
               <Form2
@@ -101,6 +108,8 @@
                 :tableHeader="tableHeader[index + 10]"
                 :key="list.catalogueId"
                 :list="list"
+                ref="dataForm"
+                @myForm="handleForm"
                 @mySon="handlemyson"
               />
               <Form1
@@ -114,6 +123,8 @@
                 :tableHeader="tableHeader[index + 12]"
                 :key="list.catalogueId"
                 :list="list"
+                ref="dataForm"
+                @myForm="handleForm"
                 @mySon="handlemyson"
               />
               <Form3
@@ -127,6 +138,8 @@
                 :tableHeader="tableHeader[index + 15]"
                 :key="list.catalogueId"
                 :list="list"
+                ref="dataForm"
+                @myForm="handleForm"
                 @mySon="handlemyson"
               />
             </div>
@@ -177,15 +190,24 @@ export default {
   },
   data() {
     return {
+      rules: {
+        positionName: [
+          {
+            required: true,
+            message: "岗位名称不为空",
+            trigger: "blur",
+          },
+        ],
+      },
+      arrList: [], //多个子组件通知是否通过校验
+      NamePass: "", //岗位名称校验判断值 true为未通过
+      Pass: "", //父组件判断子组件是否完成校验 true为未通过
+      Formvalue: 0, //通知子组件做校验
       checked: false, //是否更新主目标
       LogList: [], //目录列表
       parentId: [], //目录父id
       FormList: [], // 筛选出表单填写的每一行数据
-      childList: [],
-      isFixed: false,
       SecondObject: false, //第二次发布
-      scrollDistance: 0,
-      isFixed: false,
       // 技能表格表头
       tableHeader: [
         {
@@ -358,20 +380,18 @@ export default {
       this.parentId = this.LogList.flatMap((item) =>
         item.child.map((subItem) => subItem.parentId)
       );
-
-      // console.log(this.parentId)
     },
-    // 目录可见
-    handleScroll() {
-      // 滚动条距离
-      this.scrollDistance =
-        window.scrollY || document.documentElement.scrollTop;
 
-      this.isFixed = this.scrollDistance >= 200;
-      // console.log(this.scrollDistance, this.isFixed);
-    },
     // 提交||保存
-    commit(state) {
+    async commit(state) {
+      this.arrList = []; //清空子组件表单通知校验队列
+      await this.testForm(); //等待数值校验
+
+      // console.log(this.Pass,this.NamePass)
+      if (this.Pass == true || this.NamePass == true) {
+        this.$message.error("表单不能有空");
+        return;
+      }
       // 预先判断是发布还是保存 且判断已发布岗位不多余2个
       if (state == 1 && this.Computedstate >= 2) {
         this.$alert("最多仅能发布两个目标岗位", "提示", {
@@ -436,11 +456,33 @@ export default {
         type: "success",
       });
     },
-    // 接受子组件数据
+    // 接受子组件数据并再向上通知
     handlemyson(targetPositionId, change) {
       if (targetPositionId) {
         this.$emit("getIndex", targetPositionId, change);
       }
+    },
+    // 测试表单按钮
+    async testForm() {
+      await this.positionDetail.ctatlogueList.forEach((element, index) => {
+        this.$refs.dataForm[index].submitForm();
+      });
+      // 岗位名称
+      await this.$refs.getName.validate((valid) => {
+        if (valid) {
+          this.NamePass = false;
+          console.log(this.NamePass);
+        } else {
+          this.NamePass = true;
+          console.log("岗位名称没通过");
+          console.log(this.NamePass);
+        }
+      });
+    },
+    handleForm(value) {
+      this.arrList.push(value);
+      this.Pass = this.arrList.includes(0);
+      console.log(this.arrList);
     },
     // 锚点定位
     goAnchor(id) {
@@ -465,8 +507,6 @@ export default {
   created() {
     this.getLog(); //获取目录
   },
-
-  mounted() {},
 };
 </script>
 
@@ -492,7 +532,7 @@ export default {
       height: 750px;
       .list {
         margin-left: 30px;
-          
+
         p {
           font-weight: 800;
           margin: 5px 0;
@@ -502,12 +542,12 @@ export default {
           margin: 0 0;
           list-style: none;
           padding: 0 0 0 20px;
-        li{
-          &:hover {
-             color: #1890FF;
-             cursor: pointer;
+          li {
+            &:hover {
+              color: #1890ff;
+              cursor: pointer;
+            }
           }
-        }
         }
       }
     }
@@ -543,12 +583,14 @@ export default {
         .inp_top {
           display: flex;
           align-items: center;
+          ::v-deep .el-form-item__error {
+          padding-left:30px
+         }
           p {
             font-size: 20px;
             font-weight: 900;
           }
         }
-     
       }
     }
   }
@@ -556,5 +598,7 @@ export default {
     position: fixed;
     bottom: 20px; /* 调整按钮距离底部的位置 */
   }
+ 
+
 }
 </style>

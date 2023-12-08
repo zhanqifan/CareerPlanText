@@ -444,6 +444,7 @@ export default {
       // 点击编辑时候发请求
       if (row != null) {
         const res = await getPosition(row.positionId);
+        console.log(res.data)
         this.comment = null;
         this.positionDetail = res.data;
         this.addString();
@@ -593,9 +594,9 @@ export default {
         });
     },
     // 查看废止状态
-    SeeObject(row) {
+   async  SeeObject(row) {
       console.log(row);
-      //  this.ObjectVisible=true
+       this.ObjectVisible=true
       this.handleRowClick(row);
     },
     // 设置主目标取消按钮
@@ -664,11 +665,7 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.first {
-  ::deep .el-dialog__body {
-    padding: 0;
-  }
-}
+
 .block {
   margin-top: 130px;
   margin-right: 20px;

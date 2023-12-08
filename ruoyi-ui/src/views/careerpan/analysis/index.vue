@@ -222,7 +222,7 @@ export default {
       // console.log(this.positionList);
     },
     async StudentDate() {
-      let positionId = "a580b08a3d9644db92dd666ade768087";
+      let positionId = "f0d6881b750c466b90bfc8fbdc6855e9";
       const res = await Getanalysis(positionId);
       console.log(res);
       this.Studentlist = res.data;
