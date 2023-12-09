@@ -22,7 +22,7 @@
     <div class="btn_row">
       <el-button
         @click="AddRow"
-        v-if="state === 3 ? true : state === 2 ? true : false"
+        v-if="state === 3 ? true  : false"
         >新增一行</el-button
       >
     </div>
