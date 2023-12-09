@@ -200,7 +200,7 @@
         </el-table-column>
         <el-table-column :label="tableHeader.content">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.content != null">已完成</el-tag>
+            <el-tag v-if="scope.row.content != ' '&&scope.row.content !=null">已完成</el-tag>
             <el-tag v-else>未完成</el-tag>
           </template>
         </el-table-column>
@@ -613,10 +613,12 @@ export default {
         }
 
         return;
-      } else if (row.btn_public === 1) {
+      }
+      else if (row.btn_public === 1) {
         await this.checkForm("formData1" + index);
         await this.checkForm("formData2" + index);
         await this.checkForm("formData3" + index);
+        await this.checkForm("formData4" + index);
         let changeDate = {
           id: row.id,
           skillsName: row.skillsName,

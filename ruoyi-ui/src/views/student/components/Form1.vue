@@ -22,7 +22,7 @@
     <div class="btn_row">
       <el-button
         @click="AddRow"
-        v-if="state === 3 ? true : state === 2 ? true : false"
+        v-if="state === 3 ? true:false "
         >新增一行</el-button
       >
     </div>
@@ -536,11 +536,12 @@ export default {
           row.btn_public = 1;
           row.OriginTime = row.endTime;
         }
-
         return;
-      } else if (row.btn_public === 1) {
+      }
+      
+      else if (row.btn_public === 1) {
         // console.log(typeof this.DataFormat(row.startTime)
-
+  
         await this.checkForm("formData1" + index);
         await this.checkForm("formData2" + index);
         await this.checkForm("formData3" + index);
