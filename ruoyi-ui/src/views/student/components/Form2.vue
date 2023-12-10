@@ -20,9 +20,7 @@
       <p class="word">{{ list.catalogueName }}</p>
     </div>
     <div class="btn_row">
-      <el-button
-        @click="AddRow"
-        v-if="state === 3 ? true : false"
+      <el-button @click="AddRow" v-if="state === 3 ? true : false"
         >新增一行</el-button
       >
     </div>
@@ -156,6 +154,7 @@
             </el-form>
           </template>
         </el-table-column>
+        <!-- 开始时间 -->
         <el-table-column :label="tableHeader.start">
           <template slot-scope="scope">
             <el-form
@@ -171,12 +170,14 @@
                   :disabled="scope.row.PickStart"
                   format="yyyy 年 MM 月 dd 日"
                   value-format="yyyy-MM-dd"
+                  :picker-options="startTimePickerOptions(scope.row)"
                 >
                 </el-date-picker>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
+        <!-- 结束时间 -->
         <el-table-column :label="tableHeader.end">
           <template slot-scope="scope">
             <el-form
@@ -192,6 +193,7 @@
                   format="yyyy 年 MM 月 dd 日"
                   value-format="yyyy-MM-dd"
                   placeholder="请选择时间"
+                  :picker-options="endTimePickerOptions(scope.row)"
                 >
                 </el-date-picker>
               </el-form-item>
@@ -200,7 +202,9 @@
         </el-table-column>
         <el-table-column :label="tableHeader.content">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.content != ' '&&scope.row.content !=null">已完成</el-tag>
+            <el-tag v-if="scope.row.content != ' ' && scope.row.content != null"
+              >已完成</el-tag
+            >
             <el-tag v-else>未完成</el-tag>
           </template>
         </el-table-column>
@@ -221,7 +225,9 @@
               @click="ChangeRow(scope.row, scope.$index)"
               >{{ scope.row.btn_public === 0 ? "编辑" : "保存" }}</el-button
             >
-            <el-button v-if="scope.row.evaluateState===1 && state===0" @click="ToComment(true, scope.row, 2)"
+            <el-button
+              v-if="scope.row.evaluateState === 1 && state === 0"
+              @click="ToComment(true, scope.row, 2)"
               >查看自评</el-button
             >
 
@@ -269,8 +275,12 @@
           ref="CommentForm"
         >
           <el-form-item label="完成情况" label-width="formLabelWidth">
-            <el-radio v-model="radio" label="1" :disabled="lookComment" >已完成</el-radio>
-            <el-radio v-model="radio" label="0" :disabled="lookComment">未完成</el-radio>
+            <el-radio v-model="radio" label="1" :disabled="lookComment"
+              >已完成</el-radio
+            >
+            <el-radio v-model="radio" label="0" :disabled="lookComment"
+              >未完成</el-radio
+            >
           </el-form-item>
           <el-form-item
             label="完成时间"
@@ -302,7 +312,9 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="ToComment(false)"   v-if="lookComment == false">取 消</el-button>
+          <el-button @click="ToComment(false)" v-if="lookComment == false"
+            >取 消</el-button
+          >
           <el-button
             type="primary"
             v-if="evaluateState === 0 && lookComment == false"
@@ -311,7 +323,7 @@
           >
           <el-button
             type="primary"
-            v-if="evaluateState === 1 &&lookComment == false"
+            v-if="evaluateState === 1 && lookComment == false"
             @click="Subcommit(evaluateState, 'CommentForm')"
             >修改</el-button
           >
@@ -351,12 +363,12 @@ export default {
           {
             required: true,
             message: "请输入你的原因",
-            trigger: ["blur","change"],
+            trigger: ["blur", "change"],
           },
         ],
       },
       dialogComment: false, //自评弹层
-      lookComment: false,//自评禁用
+      lookComment: false, //自评禁用
       // dialogContent: false, //实习内容弹层
       lineNumber: 0, //行号
       evaluateId: null, //自评id
@@ -418,7 +430,7 @@ export default {
     },
     // 删除当前行
     async deleteRow(index, row) {
-      if (this.state === 2 && row.id!=undefined) {
+      if (this.state === 2 && row.id != undefined) {
         const res = await DeleteRow(row.id);
         console.log(res);
         this.$message({
@@ -483,22 +495,22 @@ export default {
       this.evaluateState = row.evaluateState;
       this.targetPositionId = row.targetPositionId;
       console.log(this.Id);
-      
+
       // 去自评 先清空所有数据
-      if(sum===0){
-        this.formComment.Completiontime=''
-        this.formComment.textarea=''
-         this.radio="1"
-         this.lookComment = false;//可编辑态
+      if (sum === 0) {
+        this.formComment.Completiontime = "";
+        this.formComment.textarea = "";
+        this.radio = "1";
+        this.lookComment = false; //可编辑态
       }
       // 如果是编辑按钮 做数据回显
       if (sum === 1) {
         this.lookup(row);
-        this.lookComment = false;//可编辑态
-      } 
+        this.lookComment = false; //可编辑态
+      }
       // 查看态 禁用权限
       else if (sum === 2) {
-        this.lookComment = true;//禁用态
+        this.lookComment = true; //禁用态
         this.lookup(row);
       }
     },
@@ -613,8 +625,7 @@ export default {
         }
 
         return;
-      }
-      else if (row.btn_public === 1) {
+      } else if (row.btn_public === 1) {
         await this.checkForm("formData1" + index);
         await this.checkForm("formData2" + index);
         await this.checkForm("formData3" + index);
@@ -680,6 +691,7 @@ export default {
           console.log("未通过");
         });
     },
+    // 调用校验
     checkForm(formName) {
       return new Promise((resolve, reject) => {
         this.$refs[formName].validate((valid) => {
@@ -688,6 +700,27 @@ export default {
           } else reject();
         });
       });
+    },
+    // 开始时间范围不大于结束
+    startTimePickerOptions(row) {
+      return {
+        disabledDate: (time) =>
+          row.endTime && time.getTime() > new Date(row.endTime).getTime(),
+      };
+    },
+    // 结束时间范围不小于开始
+    endTimePickerOptions(row) {
+      return {
+        disabledDate: (time) => {
+          // 将结束时间设置为不小于开始时间减一天
+          const startDate = row.startTime ? new Date(row.startTime) : null;
+          if (startDate) {
+            startDate.setDate(startDate.getDate() - 1);
+            return time.getTime() < startDate.getTime();
+          }
+          return false;
+        },
+      };
     },
   },
 

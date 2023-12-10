@@ -20,9 +20,7 @@
       <p class="word">{{ list.catalogueName }}</p>
     </div>
     <div class="btn_row">
-      <el-button
-        @click="AddRow"
-        v-if="state === 3 ? true  : false"
+      <el-button @click="AddRow" v-if="state === 3 ? true : false"
         >新增一行</el-button
       >
     </div>
@@ -156,6 +154,7 @@
             </el-form>
           </template>
         </el-table-column>
+        <!-- 开始时间 -->
         <el-table-column :label="tableHeader.start">
           <template slot-scope="scope">
             <el-form
@@ -171,12 +170,14 @@
                   :disabled="scope.row.PickStart"
                   format="yyyy 年 MM 月 dd 日"
                   value-format="yyyy-MM-dd"
+                  :picker-options="startTimePickerOptions(scope.row)"
                 >
                 </el-date-picker>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
+        <!-- 结束时间 -->
         <el-table-column :label="tableHeader.end">
           <template slot-scope="scope">
             <el-form
@@ -192,6 +193,7 @@
                   format="yyyy 年 MM 月 dd 日"
                   value-format="yyyy-MM-dd"
                   placeholder="请选择时间"
+                  :picker-options="endTimePickerOptions(scope.row)"
                 >
                 </el-date-picker>
               </el-form-item>
@@ -221,7 +223,7 @@
         </el-table-column>
       </el-table>
 
-        <!-- 自评弹窗 -->
+      <!-- 自评弹窗 -->
       <el-dialog
         title="自评"
         :visible.sync="dialogComment"
@@ -236,8 +238,12 @@
           ref="CommentForm"
         >
           <el-form-item label="完成情况" label-width="formLabelWidth">
-            <el-radio v-model="radio" label="1" :disabled="lookComment" >已完成</el-radio>
-            <el-radio v-model="radio" label="0" :disabled="lookComment">未完成</el-radio>
+            <el-radio v-model="radio" label="1" :disabled="lookComment"
+              >已完成</el-radio
+            >
+            <el-radio v-model="radio" label="0" :disabled="lookComment"
+              >未完成</el-radio
+            >
           </el-form-item>
           <el-form-item
             label="完成时间"
@@ -269,7 +275,9 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="ToComment(false)"   v-if="lookComment == false">取 消</el-button>
+          <el-button @click="ToComment(false)" v-if="lookComment == false"
+            >取 消</el-button
+          >
           <el-button
             type="primary"
             v-if="evaluateState === 0 && lookComment == false"
@@ -278,7 +286,7 @@
           >
           <el-button
             type="primary"
-            v-if="evaluateState === 1 &&lookComment == false"
+            v-if="evaluateState === 1 && lookComment == false"
             @click="Subcommit(evaluateState, 'CommentForm')"
             >修改</el-button
           >
@@ -412,7 +420,7 @@ export default {
     },
     // 删除当前行
     async deleteRow(index) {
-      if (this.state === 2 && row.id!=undefined) {
+      if (this.state === 2 && row.id != undefined) {
         const res = await DeleteRow(id);
         console.log(res);
         this.$message({
@@ -452,7 +460,7 @@ export default {
         this.lookup(row);
       }
     },
-     // 发送自评1 修改自评0
+    // 发送自评1 修改自评0
     async Subcommit(evaluateState, formName) {
       await new Promise((resolve, reject) => {
         this.$refs[formName].validate((valid) => {
@@ -500,16 +508,15 @@ export default {
         this.dialogComment = false;
       }
     },
-   // 查看自评
+    // 查看自评
     async lookup(row) {
       const res = await getComment(row.id);
       console.log(res);
       // 以下为回显
       this.radio = row.completionStatus.toString();
-      this.formComment.textarea = res.data.content //文本回显
+      this.formComment.textarea = res.data.content; //文本回显
       this.evaluateId = res.data.evaluateId; //自评id
       this.formComment.Completiontime = res.data.completeTime; //日期
-      
     },
     // 删除自评
     async delComment(row) {
@@ -587,6 +594,7 @@ export default {
         });
       }
     },
+    // 表单校验
     submitForm() {
       let list = [];
       this.list.skillsInfoList.forEach((element, index) => {
@@ -607,6 +615,7 @@ export default {
           console.log("未通过");
         });
     },
+    // 调用表单校验
     checkForm(formName) {
       return new Promise((resolve, reject) => {
         this.$refs[formName].validate((valid) => {
@@ -615,6 +624,27 @@ export default {
           } else reject();
         });
       });
+    },
+    // 开始时间范围不大于结束
+    startTimePickerOptions(row) {
+      return {
+        disabledDate: (time) =>
+          row.endTime && time.getTime() > new Date(row.endTime).getTime(),
+      };
+    },
+    // 结束时间范围不小于开始
+    endTimePickerOptions(row) {
+      return {
+        disabledDate: (time) => {
+          // 将结束时间设置为不小于开始时间减一天
+          const startDate = row.startTime ? new Date(row.startTime) : null;
+          if (startDate) {
+            startDate.setDate(startDate.getDate() - 1);
+            return time.getTime() < startDate.getTime();
+          }
+          return false;
+        },
+      };
     },
   },
 
