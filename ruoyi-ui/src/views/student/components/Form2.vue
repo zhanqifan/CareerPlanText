@@ -418,7 +418,7 @@ export default {
     },
     // 删除当前行
     async deleteRow(index, row) {
-      if (this.state === 2 && row.skillsName != "") {
+      if (this.state === 2 && row.id!=undefined) {
         const res = await DeleteRow(row.id);
         console.log(res);
         this.$message({

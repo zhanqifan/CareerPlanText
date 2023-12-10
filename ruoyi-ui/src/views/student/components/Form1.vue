@@ -341,12 +341,13 @@ export default {
         startTime: "", //开始时间
         endTime: "", ///结束时间
         content: "",
+     
       });
     },
-    // 删除当前行
+    // 删除当前行、
     async deleteRow(index, row) {
-      console.log(row);
-      if (this.state === 2 && row.skillsName != "") {
+      // console.log(row.id);
+      if (this.state === 2 && row.id!=undefined) {
         const res = await DeleteRow(row.id);
         console.log(res);
         this.$message({
