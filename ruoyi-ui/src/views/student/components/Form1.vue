@@ -349,6 +349,7 @@ export default {
         endTime: "", ///结束时间
         content: "",
       });
+ 
     },
     // 删除当前行、
     async deleteRow(index, row) {
@@ -554,7 +555,7 @@ export default {
           skillsName: row.skillsName,
           endTime: row.endTime,
           startTime: row.startTime,
-          take_role: "",
+           takeRole: "",
           content: row.content + " ",
           targetPositionId: row.targetPositionId,
           modificationsNumber:

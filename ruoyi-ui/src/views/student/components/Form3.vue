@@ -573,7 +573,7 @@ export default {
           skillsName: row.skillsName,
           startTime: row.startTime,
           endTime: row.endTime,
-          take_role: row.takeRole,
+          takeRole: row.takeRole,
           content: " ",
           targetPositionId: row.targetPositionId,
           modificationsNumber:

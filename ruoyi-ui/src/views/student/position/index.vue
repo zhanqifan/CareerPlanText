@@ -350,7 +350,7 @@ export default {
             skillsInfoList: [],
           },
           {
-            catalogueId: 142,
+            catalogueId: 141,
             catalogueName: "实践经历",
             skillsInfoList: [],
           },
@@ -659,8 +659,10 @@ export default {
       }
     },
   },
-  created() {
+  async created() {
     this.getList();
+    const res =await ReviewList()
+    console.log(res)
   },
 };
 </script>

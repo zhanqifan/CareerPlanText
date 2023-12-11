@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import req from 'express/lib/request'
 
 // 查询岗位管理列表
 export function listPosition(positionName, state, pageNum, pageSize ) {
@@ -70,4 +71,11 @@ export const SetPositoin = (positionId) => {
 // 废止目标
 export const StopPosition = (positionId) => {
   return request.get('/student/position/repeal/' + positionId)
+}
+// 修改草稿岗位名称
+export const changeName =(data)=>{
+  return request.put('/student/position/draft',data)
+}
+export const ReviewList = ()=>{
+  return request.get('/teacher/review')
 }

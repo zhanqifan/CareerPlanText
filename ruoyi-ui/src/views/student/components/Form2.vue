@@ -427,6 +427,7 @@ export default {
         content: " ", //实习内容
         dialogContent: false,
       });
+           console.log(this.list.skillsInfoList)
     },
     // 删除当前行
     async deleteRow(index, row) {
@@ -635,7 +636,7 @@ export default {
           skillsName: row.skillsName,
           endTime: row.endTime,
           startTime: row.startTime,
-          take_role: row.takeRole,
+          takeRole: row.takeRole,
           content: row.content + " ",
           targetPositionId: row.targetPositionId,
           modificationsNumber:

@@ -53,7 +53,6 @@
               @click="commit('1')"
               >发布</el-button
             >
-         
           </div>
         </div>
         <!-- 表单内容 -->
@@ -61,22 +60,24 @@
           <!-- 目标岗位 -->
           <div class="inp_top">
             <p>目标岗位名称</p>
-            <el-form :model="positionDetail" style="margin-top:30px" :rules="rules"  ref="getName">
+            <el-form
+              :model="positionDetail"
+              style="margin-top: 30px"
+              :rules="rules"
+              ref="getName"
+            >
               <el-form-item prop="positionName">
                 <el-input
                   style="width: 300px; margin-left: 30px"
                   placeholder="请输入目标岗位"
                   v-model="positionDetail.positionName"
-                  :disabled="
-                    positionDetail.state === 1
-                      ? true
-                      : positionDetail.state != 0
-                      ? false
-                      : true
-                  "
+                  :disabled="positionDetail.state===3?false:changePositionName"
                 ></el-input>
               </el-form-item>
             </el-form>
+            <el-button style="margin:8px 0 0 5px" @click="changeObejctName" v-if="positionDetail.state===2"
+           :type="changePositionName === true ? 'primary' : 'success'"
+            >{{changePositionName===true?"编辑名称":"修改名称"}}</el-button>
           </div>
 
           <div class="list">
@@ -170,7 +171,7 @@
 </template>
 
 <script>
-import { getcateLog, AddPosition } from "@/api/student/position.js";
+import { getcateLog, AddPosition, changeName } from "@/api/student/position.js";
 import Form1 from "../components/Form1.vue";
 import Form2 from "../components/Form2.vue";
 import Form3 from "../components/Form3.vue";
@@ -199,6 +200,7 @@ export default {
           },
         ],
       },
+      changePositionName: true,
       arrList: [], //多个子组件通知是否通过校验
       NamePass: "", //岗位名称校验判断值 true为未通过
       Pass: "", //父组件判断子组件是否完成校验 true为未通过
@@ -456,7 +458,25 @@ export default {
         type: "success",
       });
     },
-    // 接受子组件数据并再向上通知
+    // 修改草稿岗位名称
+    async changeObejctName() {
+      this.changePositionName = !this.changePositionName;
+      // 再次禁用按钮时候发送修改请求
+      if (this.changePositionName == true) {
+        let data = {
+          positionId: this.positionDetail.positionId,
+          positionName: this.positionDetail.positionName,
+        };
+       const res=  await changeName(data);
+        this.$message({
+          message: res.msg,
+          type: 'success'
+        });
+        // 更新岗位列表
+        this.$emit('closeDialog',true)
+      }
+    },
+    // 接受Form子组件数据并再向父通知
     handlemyson(targetPositionId, change) {
       if (targetPositionId) {
         this.$emit("getIndex", targetPositionId, change);
@@ -506,6 +526,7 @@ export default {
 
   created() {
     this.getLog(); //获取目录
+    console.log(this.positionDetail);
   },
 };
 </script>
@@ -584,8 +605,8 @@ export default {
           display: flex;
           align-items: center;
           ::v-deep .el-form-item__error {
-          padding-left:30px
-         }
+            padding-left: 30px;
+          }
           p {
             font-size: 20px;
             font-weight: 900;
@@ -598,7 +619,5 @@ export default {
     position: fixed;
     bottom: 20px; /* 调整按钮距离底部的位置 */
   }
- 
-
 }
 </style>
