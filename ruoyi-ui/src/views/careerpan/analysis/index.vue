@@ -66,6 +66,7 @@
           <div class="Circle2" ref="Circle2"></div>
           <div class="Circle3" ref="Circle3"></div>
         </div>
+        <!-- 圆点svg -->
         <div class="finished">
           <div>
             <svg
@@ -203,7 +204,50 @@
         </div>
       </div>
       <!-- 月度完成目标数 -->
-      <div class="Month" ref="Month"></div>
+      <div class="Object">
+        <div class="Month" ref="Month"></div>
+        <!-- 圆点svg -->
+        <div class="finished">
+          <div>
+            <svg
+              t="1700728938632"
+              class="icon"
+              viewBox="0 0 1024 1024"
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              p-id="1837"
+              width="16"
+              height="16"
+            >
+              <path
+                d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+                fill="#86DF6C"
+                p-id="1838"
+              ></path>
+            </svg>
+            <p>当月截止项目数</p>
+          </div>
+          <div>
+            <svg
+              t="1700728938632"
+              class="icon"
+              viewBox="0 0 1024 1024"
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              p-id="1837"
+              width="16"
+              height="16"
+            >
+              <path
+                d="M514 512.4m-445.4 0a445.4 445.4 0 1 0 890.8 0 445.4 445.4 0 1 0-890.8 0Z"
+                fill="#249EFF"
+                p-id="1838"
+              ></path>
+            </svg>
+            <p>当月完成项目数</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -223,6 +267,8 @@ export default {
       firstAnalysisList: [], // 大类完成率
       clusterAnalysisVos: [], //同年级系聚类分析
       listactive: 0, //控制高亮
+      TimeAnalysisList: {}, //时效分析
+      moonCloseCompletionsNumVOS: [], //月完成目标数
     };
   },
   methods: {
@@ -238,13 +284,28 @@ export default {
       this.loading = true;
       let positionId = "a580b08a3d9644db92dd666ade768087";
       const res = await Getanalysis(positionId);
-      // console.log(res);
       this.Studentlist = res.data;
-      this.SubAnalysList = res.data.subAnalysisList;
-      this.firstAnalysisList = res.data.firstAnalysisList;
-      this.clusterAnalysisVos = res.data.clusterAnalysisVos;
+      this.SubAnalysList = res.data.subAnalysisList; //子目标数明细和完成率
+      this.firstAnalysisList = res.data.firstAnalysisList; //大类完成率
+      this.clusterAnalysisVos = res.data.clusterAnalysisVos; //同年级系聚类分析
+      // 时效分析
+      this.TimeAnalysisList = {
+        completionsNum: res.data.completionsNum, //完成数
+        unfinishedNum: res.data.unfinishedNum, //未完成数
+        timeoutCompletionsNum: res.data.timeoutCompletionsNum, //超时完成数
+        beforeCompletionsNum: res.data.beforeCompletionsNum, //提前完成数
+        justCompletionsNum: res.data.justCompletionsNum, //按时完成数
+        expiredTargetNum: res.data.expiredTargetNum, //未完成过期数
+        notExpiredTargetNum: res.data.notExpiredTargetNum, //未完成未过期数
+      };
+      this.moonCloseCompletionsNumVOS = res.data.moonCloseCompletionsNumVOS;
+      // console.log(this.firstAnalysisList);
       this.loading = false;
-      // console.log(this.clusterAnalysisVos);
+      //    let echartsData =this.clusterAnalysisVos.filter((item)=>item.isMyself===1).map((item) => {
+      //   return [item.targetNum, parseFloat(item.completionProgress)];
+      // });
+      console.log(this.SubAnalysList);
+      // console.log('同年级系聚类分析',this.clusterAnalysisVos);
     },
   },
 
@@ -290,16 +351,27 @@ export default {
       ],
       series: [
         {
-          barWidth: 30,
+          name: "已完成数量",
+          barWidth: 40,
           type: "bar",
           data: this.SubAnalysList.map((item) => item.secondaryCompletionNum),
           itemStyle: {
             color: "#3BA1FF", // 设置柱子颜色
           },
         },
-
         {
-          name: "折线图",
+          name: "子项目数量",
+          barWidth: 40,
+          type: "bar",
+          data: this.SubAnalysList.map((item) => item.secondaryTargetNum),
+          itemStyle: {
+            color: "#F2F2F2", // 设置柱子颜色
+          },
+          barGap: "-100%", //如果想要两个系列的柱子重叠，可以设置 barGap 为 '-100%'。这在用柱子做背景的时候有用。
+          z: "-1", //z 值小的图形会被 z 值大的图形覆盖
+        },
+        {
+          name: "完成率", //折线图
           type: "line",
           yAxisIndex: 1,
           data: this.SubAnalysList.map((item) =>
@@ -399,52 +471,54 @@ export default {
           },
         },
       ],
-      tooltip: {
-       
-      },
+      tooltip: {},
       xAxis: {
         type: "value",
         name: "完成率",
         min: 0, //最小
-        max: 10, //最大
-        interval: 1, //数值差
+        max: 100, //最大
+        interval: 10, //数值差
         position: "right", //y轴位置
-        axisLabel: {
-          formatter: "{value} °%",
+       axisLine: {
+          show: false, //是否显示坐标轴轴线
         },
+        
         // 坐标轴标签名
         axisLabel: {
           show: false,
         },
       },
-      yAxis: [
-        {
-          data: [0, 2, 4, 6, 8],
-          axisTick: {
-            //是否显示坐标刻度线
-            show: false,
-          },
-          axisLine: {
-            show: false, //是否显示坐标轴轴线
-          },
+      yAxis: {
+         name:'项目数',
+         
+        axisLine: {
+          show: false, //是否显示坐标轴轴线
         },
-      ],
+      },
       series: [
         {
-          symbolSize: 10,
+          // 本人目标
+          type: "scatter",
+          data: this.clusterAnalysisVos
+            .filter((item) => item.isMyself === 1)
+            .map((item) => {
+              return [parseFloat(item.completionProgress), item.targetNum];
+            }),
           itemStyle: {
             color: "#6CDFDF", // 设置圆点的颜色
           },
-          data: [1, 3, 6, 4, 5, 7, 1, 3, 4],
-          type: "scatter",
         },
-        {
-          symbolSize: 10,
-          itemStyle: {
-            color: "#f4ea2a", // 设置圆点的颜色
-          },
-          data: [2, 4, 7, 3, 1, 7, 8, 5, 6],
+         {
+          // 他人目标
           type: "scatter",
+          data: this.clusterAnalysisVos
+            .filter((item) => item.isMyself != 1)
+            .map((item) => {
+              return [parseFloat(item.completionProgress), item.targetNum];
+            }),
+          itemStyle: {
+            color: "#6CDFDF", // 设置圆点的颜色
+          },
         },
       ],
     });
@@ -459,7 +533,7 @@ export default {
       },
       tooltip: {
         formatter: function (params) {
-          return params.name + ": " + params.percent.toFixed(1) + "%";
+          return params.name + ": " + params.value + "项";
         },
       },
       series: [
@@ -467,19 +541,18 @@ export default {
           type: "pie",
           data: [
             {
-              value: 234,
+              value: this.TimeAnalysisList.unfinishedNum,
               name: "未完成",
-               itemStyle: {
+              itemStyle: {
                 color: "#B2B2B2", // 设置柱子颜色
               },
             },
             {
-              value: 335,
+              value: this.TimeAnalysisList.completionsNum,
               name: "已完成",
-                 itemStyle: {
+              itemStyle: {
                 color: "#86DF6C", // 设置柱子颜色
               },
-             
             },
           ],
           label: {
@@ -501,7 +574,7 @@ export default {
       },
       tooltip: {
         formatter: function (params) {
-          return params.name + ": " + params.percent.toFixed(1) + "%";
+          return params.name + ": " + params.value + "项";
         },
       },
       series: [
@@ -510,22 +583,21 @@ export default {
 
           data: [
             {
-              value: 134,
+              value: this.TimeAnalysisList.justCompletionsNum,
               name: "按时",
             },
             {
-              value: 234,
+              value: this.TimeAnalysisList.timeoutCompletionsNum,
               name: "超时",
-                  itemStyle: {
+              itemStyle: {
                 color: "#6CDFDF", // 设置柱子颜色
               },
-              
             },
-            
-              {
-              value: 335,
+
+            {
+              value: this.TimeAnalysisList.beforeCompletionsNum,
               name: "提前",
-                itemStyle: {
+              itemStyle: {
                 color: "#249EFF", // 设置柱子颜色
               },
             },
@@ -549,29 +621,27 @@ export default {
       },
       tooltip: {
         formatter: function (params) {
-          return params.name + ": " + params.percent.toFixed(1) + "%";
+          return params.name + ": " + params.value + "项";
         },
       },
       series: [
         {
           type: "pie",
           data: [
-              {
-              value: 234,
+            {
+              value: this.TimeAnalysisList.notExpiredTargetNum,
               name: "未过期",
-               itemStyle: {
+              itemStyle: {
                 color: "#FFB400", // 设置柱子颜色
               },
             },
             {
-              value: 335,
+              value: this.TimeAnalysisList.expiredTargetNum,
               name: "过期",
-               itemStyle: {
+              itemStyle: {
                 color: "#D20E0E", // 设置柱子颜色
               },
             },
-          
-           
           ],
           label: {
             formatter: function (data) {
@@ -583,7 +653,7 @@ export default {
         },
       ],
     });
-
+    // 月度完成目标数
     var Month = echarts.init(this.$refs.Month);
     Month.setOption({
       title: {
@@ -604,43 +674,56 @@ export default {
           let result = ""; // 用于存储提示信息
 
           params.forEach((item) => {
-            result += `${item.seriesName}: ${item.value}%<br/>`; // 系列名和数据值
+            // const month = item.axisValue; // 获取xAxis的月份数
+            result += `${item.seriesName}: ${item.value}%<br/>`; // 月份数和数据值
           });
-
-          // 添加数据点之间的对比信息
-          if (params.length > 1) {
-            for (let i = 0; i < params.length - 1; i++) {
-              const diff = Math.abs(params[i].value - params[i + 1].value);
-              result += `与${params[i + 1].seriesName}的对比: ${diff}%<br/>`;
-            }
-          }
 
           return result;
         },
       },
       xAxis: {
         type: "category",
-        name:'月份',
-        data: ["2201", "2202", "2203", "2204", "2205", "2206", "2207"],
+        name: "月份",
+        data: this.moonCloseCompletionsNumVOS
+          .map((item) => item.moon)
+          .reverse(),
+        axisTick: {
+          alignWithLabel: true, // 刻度线与标签对齐
+        },
+        nameTextStyle: {
+          color: "black",
+          fontSize: 20, // 设置name字体大小
+          fontWeight: "bold", // 设置加粗
+        },
       },
       yAxis: {
         type: "value",
-         name:'项目数',
+        name: "项目数",
         min: 0,
         max: 100,
+        nameTextStyle: {
+          color: "black",
+          fontSize: 20, // 设置name字体大小
+          fontWeight: "bold", // 设置加粗
+        },
       },
       series: [
         {
-          data: [40, 30, 40, 50, 20, 30, 60],
+          name: "完成项目数",
+          data: this.moonCloseCompletionsNumVOS.map(
+            (item) => item.moonCompletionsNum
+          ),
           type: "line",
           smooth: true,
           symbol: "none", // 设置节点为'none'
           lineStyle: {
-            color: "#69BCFF", // 将折线颜色设为透明
+            color: "#69BCFF", // 将折线颜色设为蓝色 为完成数
           },
         },
+
         {
-          data: [70, 50, 10, 60, 30, 80, 10],
+          name: "截止项目数",
+          data: this.moonCloseCompletionsNumVOS.map((item) => item.moonClose),
           type: "line",
           smooth: true,
           symbol: "none", // 设置节点为'none'
@@ -787,11 +870,26 @@ export default {
       }
     }
   }
-  .Month {
+  .Object {
     padding-top: 20px;
     margin-top: 30px;
     background-color: white;
-    height: 350px;
+    height: 400px;
+    .Month {
+      height: 330px;
+      top: 30px;
+    }
+    .finished {
+      display: flex;
+      justify-content: center;
+      div {
+        margin-right: 30px;
+        display: flex;
+        font-size: 14px;
+        align-items: center;
+        font-weight: 600;
+      }
+    }
   }
 }
 </style>
