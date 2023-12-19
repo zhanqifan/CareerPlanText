@@ -130,7 +130,23 @@
           }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="教师批阅" align="center" prop="reviewsNumber" />
+      <el-table-column label="教师批阅" align="center" prop="reviewsNumber">
+        <template slot-scope="scope">
+          <!-- 使用一个可点击的元素，比如 span，并绑定点击事件 -->
+          <el-popover
+            placement="bottom"
+            title="教师批阅"
+            width="300"
+            trigger="click"
+          >
+           <div v-for="item in TeacherComment" :key="item" style="margin-top:10px">{{item.text}}<br/>发布于:{{item.time}}</div>
+         
+            <el-link slot="reference"  @click="handleReviewsClick(scope.row)">
+              {{ scope.row.reviewsNumber }}
+            </el-link>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         align="center"
@@ -253,6 +269,7 @@ import {
   delPosition,
   PublicPosition,
   SetPositoin,
+  GetRead,
 } from "@/api/student/position";
 
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -416,6 +433,17 @@ export default {
       // 分页默认参数
       pageNum: 1,
       pageSize: 10,
+      //教师评价
+      TeacherComment: [
+        {
+          text: "我是教师批阅意见。正文 表格文本 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.",
+          time: "2023-10-30 23:37:37",
+        },
+        {
+          text: "我是教师批阅意见。正文 表格文本 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.",
+          time: "1999-10-30 23:37:37",
+        },
+      ],
     };
   },
   methods: {
@@ -444,7 +472,7 @@ export default {
       // 点击编辑时候发请求
       if (row != null) {
         const res = await getPosition(row.positionId);
-        console.log(res.data)
+        console.log(res.data);
         this.comment = null;
         this.positionDetail = res.data;
         this.addString();
@@ -594,9 +622,9 @@ export default {
         });
     },
     // 查看废止状态
-   async  SeeObject(row) {
+    async SeeObject(row) {
       console.log(row);
-       this.ObjectVisible=true
+      this.ObjectVisible = true;
       this.handleRowClick(row);
     },
     // 设置主目标取消按钮
@@ -654,20 +682,25 @@ export default {
         const res = await getPosition(targetPositionId);
         this.positionDetail = res.data;
         if (change == true) {
-          this.addString()
+          this.addString();
         }
       }
+    },
+    async handleReviewsClick(row) {
+      //  console.log(row)
+      const res = await GetRead(row.positionId);
+
+      console.log(res);
     },
   },
   async created() {
     this.getList();
-    const res =await ReviewList()
-    console.log(res)
+    const res = await ReviewList();
+    console.log(res);
   },
 };
 </script>
 <style scoped lang="scss">
-
 .block {
   margin-top: 130px;
   margin-right: 20px;

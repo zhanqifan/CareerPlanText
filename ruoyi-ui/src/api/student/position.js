@@ -79,3 +79,7 @@ export const changeName =(data)=>{
 export const ReviewList = ()=>{
   return request.get('/teacher/review')
 }
+// 学生查看教室批阅
+export const GetRead =(positionId)=>{
+  return request.get('/teacher/review/evaluate/'+positionId)
+}
