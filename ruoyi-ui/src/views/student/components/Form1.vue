@@ -356,7 +356,7 @@ export default {
       // console.log(row.id);
       if (this.state === 2 && row.id != undefined) {
         const res = await DeleteRow(row.id);
-        console.log(res);
+        // console.log(res);
         this.$message({
           message: "删除成功",
           type: "success",
@@ -417,7 +417,7 @@ export default {
       this.formComment.Completiontime = row.completeTime; //用户选择的完成时间
       this.evaluateState = row.evaluateState;
       this.targetPositionId = row.targetPositionId;
-      console.log(this.Id);
+      // console.log(this.Id);
 
       // 去自评 先清空所有数据
       if (sum === 0) {

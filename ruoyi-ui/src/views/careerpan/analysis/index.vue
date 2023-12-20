@@ -289,15 +289,15 @@ export default {
     async getList() {
       const res = await listPosition();
       this.positionList = res.rows.filter((item) => {
-        return item.state == 1;
+        return item.state !=2;
       });
 
       this.listactive = res.rows
-        .filter((item) => item.state === 1)
+        .filter((item) => item.state != 2)
         .findIndex((item) => {
           return item.isMain === 1;
         });
-      this.positionId = res.rows.filter((item) => item.state === 1)[
+      this.positionId = res.rows.filter((item) => item.state != 2)[
         this.listactive
       ].positionId;
 
@@ -313,9 +313,7 @@ export default {
       try {
         const res = await Getanalysis(this.positionId);
         this.isShow = true;
-        // console.log(res);
         this.Studentlist = res.data;
-        console.log(this.StudentDate);
         this.SubAnalysList = res.data.subAnalysisList; //子目标数明细和完成率
         this.firstAnalysisList = res.data.firstAnalysisList; //大类完成率
         this.clusterAnalysisVos = res.data.clusterAnalysisVos; //同年级系聚类分析
@@ -331,8 +329,7 @@ export default {
         };
         // 月度完成目标数
         this.moonCloseCompletionsNumVOS = res.data.moonCloseCompletionsNumVOS;
-        // console.log(this.moonCloseCompletionsNumVOS);
-        // console.log(this.TimeAnalysisList);
+    
 
         // ...处理响应数据
       } catch (error) {
@@ -343,6 +340,7 @@ export default {
         this.isShow = false;
       }
     },
+    // 更新视图
     updateCharts() {
       this.Histogram.setOption({
         title: {
