@@ -286,23 +286,27 @@ export default {
     };
   },
   methods: {
+    // 岗位列表
     async getList() {
       const res = await listPosition();
+      // 筛选不为草稿态岗位
       this.positionList = res.rows.filter((item) => {
         return item.state !=2;
       });
-
+      // 默认选中主目标
       this.listactive = res.rows
         .filter((item) => item.state != 2)
         .findIndex((item) => {
           return item.isMain === 1;
         });
+        // 默认选中岗位id
       this.positionId = res.rows.filter((item) => item.state != 2)[
         this.listactive
       ].positionId;
 
       console.log(this.listactive);
     },
+    // 按钮切换
     async ToggleTargets(item, index) {
       this.positionId = item.positionId;
       this.listactive = index; //高亮赋值

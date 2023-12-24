@@ -134,14 +134,21 @@
         <template slot-scope="scope">
           <!-- 使用一个可点击的元素，比如 span，并绑定点击事件 -->
           <el-popover
+            :disabled="scope.row.reviewsNumber > 0 ? false : true"
             placement="bottom"
             title="教师批阅"
             width="300"
             trigger="click"
           >
-           <div v-for="item in TeacherComment" :key="item" style="margin-top:10px">{{item.text}}<br/>发布于:{{item.time}}</div>
-         
-            <el-link slot="reference"  @click="handleReviewsClick(scope.row)">
+            <div
+              v-for="item in TeacherComment"
+              :key="item"
+              style="margin-top: 10px"
+            >
+              {{ item.content }}<br />发布于:{{ item.updateTime }}
+            </div>
+
+            <el-link slot="reference" @click="handleReviewsClick(scope.row)">
               {{ scope.row.reviewsNumber }}
             </el-link>
           </el-popover>
@@ -434,16 +441,7 @@ export default {
       pageNum: 1,
       pageSize: 10,
       //教师评价
-      TeacherComment: [
-        {
-          text: "我是教师批阅意见。正文 表格文本 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.",
-          time: "2023-10-30 23:37:37",
-        },
-        {
-          text: "我是教师批阅意见。正文 表格文本 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.",
-          time: "1999-10-30 23:37:37",
-        },
-      ],
+      TeacherComment: [],
     };
   },
   methods: {
@@ -686,11 +684,10 @@ export default {
         }
       }
     },
+    // 获取教师评价
     async handleReviewsClick(row) {
-      //  console.log(row)
       const res = await GetRead(row.positionId);
-
-      console.log(res);
+      this.TeacherComment = res.data;
     },
   },
   async created() {
