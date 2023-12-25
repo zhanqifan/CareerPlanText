@@ -686,7 +686,11 @@ export default {
     },
     // 获取教师评价
     async handleReviewsClick(row) {
+      if(row.reviewsNumber==0){
+        return
+      }
       const res = await GetRead(row.positionId);
+      console.log(res)
       this.TeacherComment = res.data;
     },
   },

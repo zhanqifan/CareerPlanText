@@ -294,17 +294,16 @@ export default {
         return item.state !=2;
       });
       // 默认选中主目标
-      this.listactive = res.rows
-        .filter((item) => item.state != 2)
+      this.listactive =  this.positionList
         .findIndex((item) => {
           return item.isMain === 1;
         });
         // 默认选中岗位id
-      this.positionId = res.rows.filter((item) => item.state != 2)[
+      this.positionId = this.positionList[
         this.listactive
       ].positionId;
 
-      console.log(this.listactive);
+      // console.log(this.listactive);
     },
     // 按钮切换
     async ToggleTargets(item, index) {
