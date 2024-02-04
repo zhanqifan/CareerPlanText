@@ -289,10 +289,11 @@ export default {
     // 岗位列表
     async getList() {
       const res = await listPosition();
-      // 筛选不为草稿态岗位
+      // 筛选不为废止态岗位
       this.positionList = res.rows.filter((item) => {
         return item.state !=2;
       });
+      console.log(this.positionList)
       // 默认选中主目标
       this.listactive =  this.positionList
         .findIndex((item) => {
@@ -332,8 +333,6 @@ export default {
         };
         // 月度完成目标数
         this.moonCloseCompletionsNumVOS = res.data.moonCloseCompletionsNumVOS;
-    
-
         // ...处理响应数据
       } catch (error) {
         this.$message({

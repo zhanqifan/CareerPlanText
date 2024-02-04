@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import req from 'express/lib/request'
 
 // 查询岗位管理列表
 export function listPosition(positionName, state, pageNum, pageSize ) {

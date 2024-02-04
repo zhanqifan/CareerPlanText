@@ -220,9 +220,9 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="1"
+        :current-page="pageNum"
         :page-sizes="[10, 20, 30, 40]"
-        :page-size="10"
+        :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
       >
@@ -435,7 +435,7 @@ export default {
           label: "草稿",
         },
       ],
-      value: "", //搜索框
+      value: "", //搜索框目标状态赋值
       Name: "", //搜索岗位名称
       // 分页默认参数
       pageNum: 1,
@@ -546,12 +546,6 @@ export default {
             message: "已取消",
           });
         });
-      // console.log(this.ComputedisMain)
-
-      // this.$message({
-      //   message: "发布成功",
-      //   type: "success",
-      // });
     },
     // 进入目标自评
     async handleComment(row, num) {
@@ -580,12 +574,19 @@ export default {
     reset() {
       this.Name = "";
       this.value = "";
+      this.pageNum=1
+      this.pageSize=10
       this.getList();
     },
     /** 搜索按钮操作 */
     async handleQuery() {
       this.loading = true;
-      const res = await listPosition(this.Name, this.value);
+      const res = await listPosition(
+        this.Name,
+        this.value,
+        this.pageNum=1,
+        this.pageSize=10
+      );
       console.log(res);
       this.loading = false;
       this.positionList = res.rows;
@@ -659,10 +660,10 @@ export default {
       this.positionList = res.rows;
       this.loading = false;
     },
+
     // 页面展示数量
     async handleSizeChange(val) {
       this.pageSize = val;
-
       this.loading = true;
       const res = await listPosition(
         this.Name,
@@ -686,11 +687,11 @@ export default {
     },
     // 获取教师评价
     async handleReviewsClick(row) {
-      if(row.reviewsNumber==0){
-        return
+      if (row.reviewsNumber == 0) {
+        return;
       }
       const res = await GetRead(row.positionId);
-      console.log(res)
+      console.log(res);
       this.TeacherComment = res.data;
     },
   },
@@ -703,7 +704,6 @@ export default {
 </script>
 <style scoped lang="scss">
 .block {
-  margin-top: 130px;
   margin-right: 20px;
   display: flex;
   justify-content: flex-end;
